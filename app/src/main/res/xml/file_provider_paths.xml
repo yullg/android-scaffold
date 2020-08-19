@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <files-path
+        name="files"
+        path="yg/share/" />
+    <cache-path
+        name="cache"
+        path="yg/share/" />
+    <external-files-path
+        name="external-files"
+        path="yg/share/" />
+    <external-cache-path
+        name="external-cache"
+        path="yg/share/" />
+</paths>

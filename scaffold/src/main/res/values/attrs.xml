@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="yg_ThemeAttrDeclare">
+        <!-- dialog -->
+        <attr name="yg_dialogTipStyle" format="reference" />
+        <attr name="yg_dialogWaitStyle" format="reference" />
+        <attr name="yg_dialogAlertStyle" format="reference" />
+        <attr name="yg_dialogCustomStyle" format="reference" />
+        <attr name="yg_dialogCustomBottomSheetStyle" format="reference" />
+        <!-- chart -->
+        <attr name="yg_chartArcStyle" format="reference" />
+        <!-- widget -->
+        <attr name="yg_widgetSimpleCardStyle" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="ArcChart">
+        <attr name="yg_arcUnderWidth" format="dimension" />
+        <attr name="yg_arcUnderStyle" format="enum">
+            <enum name="fill" value="1" />
+            <enum name="stroke" value="2" />
+            <enum name="fill_and_stroke" value="3" />
+        </attr>
+        <attr name="yg_arcUnderCap" format="enum">
+            <enum name="butt" value="1" />
+            <enum name="round" value="2" />
+            <enum name="square" value="3" />
+        </attr>
+        <attr name="yg_arcUnderColor" format="color|reference" />
+        <attr name="yg_arcUnderStartAngle" format="float" />
+        <attr name="yg_arcUnderSweepAngle" format="float" />
+        <attr name="yg_arcUnderUseCenter" format="boolean" />
+        <attr name="yg_arcUnderReverse" format="enum">
+            <enum name="horizontal" value="1" />
+            <enum name="vertical" value="2" />
+            <enum name="none" value="0" />
+        </attr>
+        <attr name="yg_arcUpperWidth" format="dimension" />
+        <attr name="yg_arcUpperStyle" format="enum">
+            <enum name="fill" value="1" />
+            <enum name="stroke" value="2" />
+            <enum name="fill_and_stroke" value="3" />
+        </attr>
+        <attr name="yg_arcUpperCap" format="enum">
+            <enum name="butt" value="1" />
+            <enum name="round" value="2" />
+            <enum name="square" value="3" />
+        </attr>
+        <attr name="yg_arcUpperColor" format="color|reference" />
+        <attr name="yg_arcUpperStartAngle" format="float" />
+        <attr name="yg_arcUpperSweepAngle" format="float" />
+        <attr name="yg_arcUpperUseCenter" format="boolean" />
+        <attr name="yg_arcUpperReverse" format="enum">
+            <enum name="horizontal" value="1" />
+            <enum name="vertical" value="2" />
+            <enum name="none" value="0" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="SimpleCardWidget">
+        <attr name="yg_cardAlpha" format="integer" />
+        <attr name="yg_cardElevation" format="dimension" />
+        <attr name="yg_cardFillColor" format="color|reference" />
+        <attr name="yg_cardShadowColor" format="color|reference" />
+        <attr name="yg_cardStrokeColor" format="color|reference" />
+        <attr name="yg_cardStrokeWidth" format="dimension" />
+        <attr name="yg_cardCornerFamily" format="enum">
+            <enum name="rounded" value="1" />
+            <enum name="cut" value="2" />
+        </attr>
+        <attr name="yg_cardCornerSize" format="dimension" />
+        <attr name="yg_cardTopLeftCornerFamily" format="enum">
+            <enum name="rounded" value="1" />
+            <enum name="cut" value="2" />
+        </attr>
+        <attr name="yg_cardTopLeftCornerSize" format="dimension" />
+        <attr name="yg_cardTopRightCornerFamily" format="enum">
+            <enum name="rounded" value="1" />
+            <enum name="cut" value="2" />
+        </attr>
+        <attr name="yg_cardTopRightCornerSize" format="dimension" />
+        <attr name="yg_cardBottomLeftCornerFamily" format="enum">
+            <enum name="rounded" value="1" />
+            <enum name="cut" value="2" />
+        </attr>
+        <attr name="yg_cardBottomLeftCornerSize" format="dimension" />
+        <attr name="yg_cardBottomRightCornerFamily" format="enum">
+            <enum name="rounded" value="1" />
+            <enum name="cut" value="2" />
+        </attr>
+        <attr name="yg_cardBottomRightCornerSize" format="dimension" />
+    </declare-styleable>
+
+</resources>

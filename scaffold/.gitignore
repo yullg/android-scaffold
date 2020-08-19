@@ -1,0 +1,8 @@
+/*
+!/libs/
+!/src/
+!/.gitignore
+!/build.gradle
+!/consumer-rules.pro
+!/proguard-rules.pro
+!/publish-signing.gradle

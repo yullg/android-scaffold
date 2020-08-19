@@ -1,0 +1,51 @@
+group = 'com.yullg.android'
+version = '1.0.2.43-SNAPSHOT'
+
+afterEvaluate {
+    publishing {
+        publications {
+            mavenRelease(MavenPublication) {
+                from components.release
+                artifactId = 'scaffold'
+                pom {
+                    name = 'android-scaffold'
+                    description = 'The android scaffold project.'
+                    url = 'https://github.com/yullg/android-scaffold'
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'yullg'
+                            name = 'yullg'
+                            email = 'yullg@foxmail.com'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/yullg/android-scaffold.git'
+                        developerConnection = 'scm:git:ssh://github.com/yullg/android-scaffold.git'
+                        url = 'https://github.com/yullg/android-scaffold'
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                def releasesRepoUrl = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+                def snapshotsRepoUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                credentials {
+                    username = ossrhUsername
+                    password = ossrhPassword
+                }
+            }
+        }
+    }
+
+    signing {
+        sign publishing.publications.mavenRelease
+    }
+}

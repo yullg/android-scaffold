@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="yg_DialogTipDefaultStyle" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="android:windowMinWidthMajor">0dp</item>
+        <item name="android:windowMinWidthMinor">0dp</item>
+    </style>
+
+    <style name="yg_DialogWaitDefaultStyle" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="android:windowMinWidthMajor">0dp</item>
+        <item name="android:windowMinWidthMinor">0dp</item>
+    </style>
+
+    <style name="yg_DialogAlertDefaultStyle" parent="ThemeOverlay.Material3.MaterialAlertDialog" />
+
+    <style name="yg_DialogCustomDefaultStyle" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="android:windowMinWidthMajor">0dp</item>
+        <item name="android:windowMinWidthMinor">0dp</item>
+    </style>
+
+    <style name="yg_DialogCustomBottomSheetDefaultStyle" parent="ThemeOverlay.Material3.BottomSheetDialog" />
+
+    <style name="yg_ChartArcDefaultStyle">
+        <item name="yg_arcUnderColor">?attr/colorPrimaryContainer</item>
+        <item name="yg_arcUpperColor">?attr/colorOnPrimaryContainer</item>
+    </style>
+
+    <style name="yg_WidgetSimpleCardDefaultStyle">
+        <item name="yg_cardFillColor">?attr/colorSurface</item>
+        <item name="yg_cardShadowColor">?attr/elevationOverlayColor</item>
+        <item name="yg_cardStrokeColor">?attr/colorOutline</item>
+    </style>
+
+    <style name="yg_DialogAlertCupertinoButtonShapeStyle">
+        <item name="cornerSize">0dp</item>
+    </style>
+
+</resources>

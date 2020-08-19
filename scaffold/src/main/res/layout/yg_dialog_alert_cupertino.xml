@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorSurface"
+    android:paddingTop="30dp">
+
+    <TextView
+        android:id="@+id/yg_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="30dp"
+        android:paddingBottom="16dp"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/yg_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="30dp"
+        android:paddingBottom="16dp"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/yg_title" />
+
+    <View
+        android:id="@+id/yg_divider1"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:alpha="0.12"
+        android:background="?attr/colorOnSurface"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/yg_message" />
+
+    <Button
+        android:id="@+id/yg_button_negative"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:textColor="?attr/colorOnSurface"
+        app:layout_constraintEnd_toStartOf="@+id/yg_divider2"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/yg_divider1"
+        app:shapeAppearanceOverlay="@style/yg_DialogAlertCupertinoButtonShapeStyle" />
+
+    <View
+        android:id="@+id/yg_divider2"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:alpha="0.12"
+        android:background="?attr/colorOnSurface"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/yg_button_neutral"
+        app:layout_constraintStart_toEndOf="@+id/yg_button_negative"
+        app:layout_constraintTop_toBottomOf="@+id/yg_divider1" />
+
+    <Button
+        android:id="@+id/yg_button_neutral"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:textColor="?attr/colorOnSurface"
+        app:layout_constraintEnd_toStartOf="@+id/yg_divider3"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@+id/yg_divider2"
+        app:layout_constraintTop_toBottomOf="@+id/yg_divider1"
+        app:shapeAppearanceOverlay="@style/yg_DialogAlertCupertinoButtonShapeStyle" />
+
+    <View
+        android:id="@+id/yg_divider3"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:alpha="0.12"
+        android:background="?attr/colorOnSurface"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/yg_button_positive"
+        app:layout_constraintStart_toEndOf="@+id/yg_button_neutral"
+        app:layout_constraintTop_toBottomOf="@+id/yg_divider1" />
+
+    <Button
+        android:id="@+id/yg_button_positive"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@+id/yg_divider3"
+        app:layout_constraintTop_toBottomOf="@+id/yg_divider1"
+        app:shapeAppearanceOverlay="@style/yg_DialogAlertCupertinoButtonShapeStyle" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
