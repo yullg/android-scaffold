@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.*
+import androidx.fragment.app.FragmentActivity
 import com.yullg.android.scaffold.R
 import com.yullg.android.scaffold.databinding.YgDialogAlertCupertinoBinding
 import com.yullg.android.scaffold.databinding.YgDialogAlertMaterialBinding
@@ -49,8 +50,8 @@ class AlertDialog(handler: BaseDialogHandler<AlertDialogMetadata>) :
     private var positiveButtonText: CharSequence? = null
     private var positiveButtonClickListener: View.OnClickListener? = null
 
-    constructor(@UiContext context: Context) :
-            this(UIConfig.defaultAlertDialogHandlerCreator(context))
+    constructor(fragmentActivity: FragmentActivity) :
+            this(UIConfig.defaultAlertDialogHandlerCreator(fragmentActivity))
 
     fun setTitleResource(@StringRes resId: Int?): AlertDialog {
         this.titleResId = resId
@@ -178,12 +179,13 @@ class AlertDialog(handler: BaseDialogHandler<AlertDialogMetadata>) :
 }
 
 class DefaultAlertDialogHandler(
-    @UiContext context: Context,
-    override val template: DialogTemplate<AlertDialogMetadata> = MaterialAlertDialogTemplate(context),
+    fragmentActivity: FragmentActivity,
+    override val template: DialogTemplate<AlertDialogMetadata> =
+        MaterialAlertDialogTemplate(fragmentActivity),
     @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogAlertStyle,
     @StyleRes defStyleRes: Int = R.style.yg_DialogAlertDefaultStyle
 ) : MaterialDialogHandler<AlertDialogMetadata>(
-    context,
+    fragmentActivity,
     defStyleAttr,
     defStyleRes,
 ), DialogTemplateHandler<DialogTemplate<AlertDialogMetadata>> {

@@ -1,6 +1,6 @@
 package com.yullg.android.scaffold.ui
 
-import android.content.Context
+import androidx.fragment.app.FragmentActivity
 import com.yullg.android.scaffold.ui.dialog.*
 import com.yullg.android.scaffold.ui.util.ActionProxy
 import com.yullg.android.scaffold.ui.util.ThrottledActionProxy
@@ -11,15 +11,15 @@ interface UIConfig {
 
     val sharedThrottledActionProxyCreator: () -> ActionProxy
 
-    val defaultTipDialogHandlerCreator: (Context) -> BaseDialogHandler<TipDialogMetadata>
+    val defaultTipDialogHandlerCreator: (FragmentActivity) -> BaseDialogHandler<TipDialogMetadata>
 
-    val defaultWaitDialogHandlerCreator: (Context) -> BaseDialogHandler<WaitDialogMetadata>
+    val defaultWaitDialogHandlerCreator: (FragmentActivity) -> BaseDialogHandler<WaitDialogMetadata>
 
-    val defaultAlertDialogHandlerCreator: (Context) -> BaseDialogHandler<AlertDialogMetadata>
+    val defaultAlertDialogHandlerCreator: (FragmentActivity) -> BaseDialogHandler<AlertDialogMetadata>
 
-    val defaultCustomDialogHandlerCreator: (Context) -> BaseDialogHandler<CustomDialogMetadata>
+    val defaultCustomDialogHandlerCreator: (FragmentActivity) -> BaseDialogHandler<CustomDialogMetadata>
 
-    val defaultCustomBottomSheetDialogHandlerCreator: (Context) -> BaseDialogHandler<CustomBottomSheetDialogMetadata>
+    val defaultCustomBottomSheetDialogHandlerCreator: (FragmentActivity) -> BaseDialogHandler<CustomBottomSheetDialogMetadata>
 
     val defaultTipDialogCancelable: Boolean
 
@@ -53,20 +53,20 @@ open class MutableUIConfig private constructor() : UIConfig {
     override var sharedThrottledActionProxyCreator: () -> ActionProxy =
         { throttledActionProxyCreator() }
 
-    override var defaultTipDialogHandlerCreator: (Context) -> BaseDialogHandler<TipDialogMetadata> =
-        { context -> DefaultTipDialogHandler(context) }
+    override var defaultTipDialogHandlerCreator: (FragmentActivity) -> BaseDialogHandler<TipDialogMetadata> =
+        { activity -> DefaultTipDialogHandler(activity) }
 
-    override var defaultWaitDialogHandlerCreator: (Context) -> BaseDialogHandler<WaitDialogMetadata> =
-        { context -> DefaultWaitDialogHandler(context) }
+    override var defaultWaitDialogHandlerCreator: (FragmentActivity) -> BaseDialogHandler<WaitDialogMetadata> =
+        { activity -> DefaultWaitDialogHandler(activity) }
 
-    override var defaultAlertDialogHandlerCreator: (Context) -> BaseDialogHandler<AlertDialogMetadata> =
-        { context -> DefaultAlertDialogHandler(context) }
+    override var defaultAlertDialogHandlerCreator: (FragmentActivity) -> BaseDialogHandler<AlertDialogMetadata> =
+        { activity -> DefaultAlertDialogHandler(activity) }
 
-    override var defaultCustomDialogHandlerCreator: (Context) -> BaseDialogHandler<CustomDialogMetadata> =
-        { context -> DefaultCustomDialogHandler(context) }
+    override var defaultCustomDialogHandlerCreator: (FragmentActivity) -> BaseDialogHandler<CustomDialogMetadata> =
+        { activity -> DefaultCustomDialogHandler(activity) }
 
-    override var defaultCustomBottomSheetDialogHandlerCreator: (Context) -> BaseDialogHandler<CustomBottomSheetDialogMetadata> =
-        { context -> DefaultCustomBottomSheetDialogHandler(context) }
+    override var defaultCustomBottomSheetDialogHandlerCreator: (FragmentActivity) -> BaseDialogHandler<CustomBottomSheetDialogMetadata> =
+        { activity -> DefaultCustomBottomSheetDialogHandler(activity) }
 
     override var defaultTipDialogCancelable: Boolean = true
 

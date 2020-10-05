@@ -1,18 +1,17 @@
 package com.yullg.android.scaffold.ui.dialog
 
-import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.view.View
 import androidx.annotation.CallSuper
 import androidx.annotation.StyleRes
 import androidx.annotation.StyleableRes
-import androidx.annotation.UiContext
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentActivity
 import com.yullg.android.scaffold.R
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.lang.ref.WeakReference
 import com.google.android.material.bottomsheet.BottomSheetDialog as GoogleBottomSheetDialog
 
 interface BottomSheetDialogMetadata : DialogMetadata {
@@ -74,68 +73,66 @@ abstract class BottomSheetDialog<M : DialogMetadata, S : BottomSheetDialog<M, S>
 }
 
 abstract class BottomSheetDialogHandler<M : BottomSheetDialogMetadata>(
-    @UiContext context: Context,
+    fragmentActivity: FragmentActivity,
     @StyleableRes private val defStyleAttr: Int = 0,
     @StyleRes private val defStyleRes: Int = 0
-) : AbstractDialogHandler<M>() {
-
-    private val contextRef = WeakReference(context)
+) : AbstractDialogHandler<M>(fragmentActivity) {
 
     final override fun createDialog(
         metadata: M,
-        inbuiltDismissListener: DialogInterface.OnDismissListener
-    ): Dialog {
-        val context =
-            contextRef.get() ?: throw IllegalStateException("The context has been cleared")
+        inbuiltDismissListener: (DialogFragment) -> Unit
+    ): DialogFragment {
         val dialogTheme =
-            context.theme.obtainStyledAttributes(R.styleable.yg_ThemeAttrDeclare).run {
+            activity.theme.obtainStyledAttributes(R.styleable.yg_ThemeAttrDeclare).run {
                 try {
                     getResourceId(defStyleAttr, defStyleRes)
                 } finally {
                     recycle()
                 }
             }
-        val dialog = GoogleBottomSheetDialog(context, dialogTheme).apply {
-            setContentView(createDialogView(context, metadata))
-            setCancelable(metadata.cancelable)
-            setOnDismissListener { dismissedDialog ->
-                try {
-                    inbuiltDismissListener.onDismiss(dismissedDialog)
-                } finally {
-                    metadata.onDismissListener?.onDismiss(dismissedDialog)
-                }
-            }
-        }
-        if (metadata.showDuration > 0 || metadata.onShowListener != null) {
-            dialog.setOnShowListener { showedDialog ->
-                try {
-                    if (metadata.showDuration > 0) {
-                        dialogCoroutineScope?.launch {
+        return DialogFragmentImpl(
+            createDialogCallback = { dialogFragmentImpl ->
+                GoogleBottomSheetDialog(dialogFragmentImpl.requireActivity(), dialogTheme).apply {
+                    setContentView(createDialogView(dialogFragmentImpl.requireActivity(), metadata))
+                    if (metadata.showDuration > 0 || metadata.onShowListener != null) {
+                        setOnShowListener { showedDialog ->
                             try {
-                                delay(metadata.showDuration)
-                                showedDialog.dismiss()
-                            } catch (e: Exception) {
-                                if (ScaffoldLogger.isErrorEnabled()) {
-                                    ScaffoldLogger.error(
-                                        "Cannot dismiss this dialog [ $showedDialog ]",
-                                        e
-                                    )
+                                if (metadata.showDuration > 0) {
+                                    dialogCoroutineScope?.launch {
+                                        try {
+                                            delay(metadata.showDuration)
+                                            dialogFragmentImpl.dismiss()
+                                        } catch (e: Exception) {
+                                            if (ScaffoldLogger.isErrorEnabled()) {
+                                                ScaffoldLogger.error(
+                                                    "Cannot dismiss this dialog [ $dialogFragmentImpl ]",
+                                                    e
+                                                )
+                                            }
+                                        }
+                                    }
                                 }
+                            } finally {
+                                metadata.onShowListener?.onShow(showedDialog)
                             }
                         }
                     }
+                }
+            },
+            dismissDialogCallback = { dialogFragmentImpl, dialogInterface ->
+                try {
+                    inbuiltDismissListener(dialogFragmentImpl)
                 } finally {
-                    metadata.onShowListener?.onShow(showedDialog)
+                    metadata.onDismissListener?.onDismiss(dialogInterface)
                 }
             }
+        ).apply {
+            isCancelable = metadata.cancelable
         }
-        return dialog
     }
 
-    final override fun updateDialog(dialog: Dialog, metadata: M) {
-        val context =
-            contextRef.get() ?: throw IllegalStateException("The context has been cleared")
-        updateDialogView(context, metadata)
+    final override fun updateDialog(dialog: DialogFragment, metadata: M) {
+        updateDialogView(activity, metadata)
     }
 
     protected abstract fun createDialogView(context: Context, metadata: M): View

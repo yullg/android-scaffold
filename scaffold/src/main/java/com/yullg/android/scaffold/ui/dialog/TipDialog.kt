@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.*
+import androidx.fragment.app.FragmentActivity
 import com.yullg.android.scaffold.R
 import com.yullg.android.scaffold.databinding.YgDialogTipBinding
 import com.yullg.android.scaffold.ui.UIConfig
@@ -31,8 +32,8 @@ class TipDialog(handler: BaseDialogHandler<TipDialogMetadata>) :
     private var messageResId: Int? = null
     private var message: CharSequence? = null
 
-    constructor(@UiContext context: Context) :
-            this(UIConfig.defaultTipDialogHandlerCreator(context))
+    constructor(fragmentActivity: FragmentActivity) :
+            this(UIConfig.defaultTipDialogHandlerCreator(fragmentActivity))
 
     fun setIconResource(@DrawableRes resId: Int?): TipDialog {
         this.iconResId = resId
@@ -89,12 +90,12 @@ class TipDialog(handler: BaseDialogHandler<TipDialogMetadata>) :
 }
 
 class DefaultTipDialogHandler(
-    @UiContext context: Context,
-    override val template: DialogTemplate<TipDialogMetadata> = TipDialogTemplate(context),
+    fragmentActivity: FragmentActivity,
+    override val template: DialogTemplate<TipDialogMetadata> = TipDialogTemplate(fragmentActivity),
     @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogTipStyle,
     @StyleRes defStyleRes: Int = R.style.yg_DialogTipDefaultStyle,
 ) : MaterialDialogHandler<TipDialogMetadata>(
-    context,
+    fragmentActivity,
     defStyleAttr,
     defStyleRes,
 ), DialogTemplateHandler<DialogTemplate<TipDialogMetadata>> {

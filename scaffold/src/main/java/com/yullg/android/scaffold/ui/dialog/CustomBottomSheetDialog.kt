@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.*
+import androidx.fragment.app.FragmentActivity
 import com.yullg.android.scaffold.R
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 import com.yullg.android.scaffold.ui.UIConfig
@@ -29,8 +30,8 @@ class CustomBottomSheetDialog(handler: BaseDialogHandler<CustomBottomSheetDialog
     private var viewLayoutResId: Int? = null
     private var viewBinder: ((View) -> Unit)? = null
 
-    constructor(@UiContext context: Context) :
-            this(UIConfig.defaultCustomBottomSheetDialogHandlerCreator(context))
+    constructor(fragmentActivity: FragmentActivity) :
+            this(UIConfig.defaultCustomBottomSheetDialogHandlerCreator(fragmentActivity))
 
     fun setView(view: View?): CustomBottomSheetDialog {
         this.view = view
@@ -69,13 +70,13 @@ class CustomBottomSheetDialog(handler: BaseDialogHandler<CustomBottomSheetDialog
 }
 
 class DefaultCustomBottomSheetDialogHandler(
-    @UiContext context: Context,
+    fragmentActivity: FragmentActivity,
     override val template: DialogTemplate<CustomBottomSheetDialogMetadata> =
-        CustomBottomDialogTemplate(context),
+        CustomBottomDialogTemplate(fragmentActivity),
     @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogCustomBottomSheetStyle,
     @StyleRes defStyleRes: Int = R.style.yg_DialogCustomBottomSheetDefaultStyle,
 ) : BottomSheetDialogHandler<CustomBottomSheetDialogMetadata>(
-    context,
+    fragmentActivity,
     defStyleAttr,
     defStyleRes
 ), DialogTemplateHandler<DialogTemplate<CustomBottomSheetDialogMetadata>> {

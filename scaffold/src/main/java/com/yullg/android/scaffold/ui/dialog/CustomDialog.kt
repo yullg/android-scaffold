@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.*
+import androidx.fragment.app.FragmentActivity
 import com.yullg.android.scaffold.R
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 import com.yullg.android.scaffold.ui.UIConfig
@@ -29,8 +30,8 @@ class CustomDialog(handler: BaseDialogHandler<CustomDialogMetadata>) :
     private var viewLayoutResId: Int? = null
     private var viewBinder: ((View) -> Unit)? = null
 
-    constructor(@UiContext context: Context) :
-            this(UIConfig.defaultCustomDialogHandlerCreator(context))
+    constructor(fragmentActivity: FragmentActivity) :
+            this(UIConfig.defaultCustomDialogHandlerCreator(fragmentActivity))
 
     fun setView(view: View?): CustomDialog {
         this.view = view
@@ -69,12 +70,13 @@ class CustomDialog(handler: BaseDialogHandler<CustomDialogMetadata>) :
 }
 
 class DefaultCustomDialogHandler(
-    @UiContext context: Context,
-    override val template: DialogTemplate<CustomDialogMetadata> = CustomDialogTemplate(context),
+    fragmentActivity: FragmentActivity,
+    override val template: DialogTemplate<CustomDialogMetadata> =
+        CustomDialogTemplate(fragmentActivity),
     @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogCustomStyle,
     @StyleRes defStyleRes: Int = R.style.yg_DialogCustomDefaultStyle
 ) : MaterialDialogHandler<CustomDialogMetadata>(
-    context,
+    fragmentActivity,
     defStyleAttr,
     defStyleRes,
 ), DialogTemplateHandler<DialogTemplate<CustomDialogMetadata>> {

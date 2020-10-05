@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.*
+import androidx.fragment.app.FragmentActivity
 import com.yullg.android.scaffold.R
 import com.yullg.android.scaffold.databinding.YgDialogWaitCircularBinding
 import com.yullg.android.scaffold.databinding.YgDialogWaitLinearBinding
@@ -29,8 +30,8 @@ class WaitDialog(handler: BaseDialogHandler<WaitDialogMetadata>) :
     private var message: CharSequence? = null
     private var progress: Int? = null
 
-    constructor(@UiContext context: Context) :
-            this(UIConfig.defaultWaitDialogHandlerCreator(context))
+    constructor(fragmentActivity: FragmentActivity) :
+            this(UIConfig.defaultWaitDialogHandlerCreator(fragmentActivity))
 
     fun setMessageResource(@StringRes resId: Int?): WaitDialog {
         this.messageResId = resId
@@ -67,12 +68,13 @@ class WaitDialog(handler: BaseDialogHandler<WaitDialogMetadata>) :
 }
 
 class DefaultWaitDialogHandler(
-    @UiContext context: Context,
-    override val template: DialogTemplate<WaitDialogMetadata> = CircularWaitDialogTemplate(context),
+    fragmentActivity: FragmentActivity,
+    override val template: DialogTemplate<WaitDialogMetadata> =
+        CircularWaitDialogTemplate(fragmentActivity),
     @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogWaitStyle,
     @StyleRes defStyleRes: Int = R.style.yg_DialogWaitDefaultStyle
 ) : MaterialDialogHandler<WaitDialogMetadata>(
-    context,
+    fragmentActivity,
     defStyleAttr,
     defStyleRes,
 ), DialogTemplateHandler<DialogTemplate<WaitDialogMetadata>> {

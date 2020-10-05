@@ -1,11 +1,12 @@
 package com.yullg.android.scaffold.ui.dialog
 
-import android.app.Dialog
-import android.content.DialogInterface
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentActivity
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
+import java.lang.ref.WeakReference
 
 interface DialogMetadata
 
@@ -38,9 +39,14 @@ interface BaseDialogHandler<M : DialogMetadata> {
 
 }
 
-abstract class AbstractDialogHandler<M : DialogMetadata> : BaseDialogHandler<M> {
+abstract class AbstractDialogHandler<M : DialogMetadata>(fragmentActivity: FragmentActivity) :
+    BaseDialogHandler<M> {
 
-    private var dialogAndCoroutineScope: Pair<Dialog, CoroutineScope>? = null
+    private val activityRef = WeakReference(fragmentActivity)
+    private var dialogAndCoroutineScope: Pair<DialogFragment, CoroutineScope>? = null
+
+    protected val activity: FragmentActivity
+        get() = activityRef.get() ?: throw IllegalStateException("The activity has been cleared")
 
     protected val dialogCoroutineScope: CoroutineScope?
         get() = dialogAndCoroutineScope?.second
@@ -55,7 +61,7 @@ abstract class AbstractDialogHandler<M : DialogMetadata> : BaseDialogHandler<M> 
                 afterDialogDismiss(dismissedDialog)
             }
             dialogAndCoroutineScope = Pair(dialog, MainScope())
-            dialog.show()
+            dialog.show(activity.supportFragmentManager, null)
         }
     }
 
@@ -72,10 +78,10 @@ abstract class AbstractDialogHandler<M : DialogMetadata> : BaseDialogHandler<M> 
     }
 
     final override fun isShowing(): Boolean {
-        return dialogAndCoroutineScope?.first?.isShowing ?: false
+        return dialogAndCoroutineScope?.first?.dialog?.isShowing ?: false
     }
 
-    private fun afterDialogDismiss(dismissedDialog: DialogInterface) {
+    private fun afterDialogDismiss(dismissedDialog: DialogFragment) {
         synchronized(this) {
             (dialogAndCoroutineScope?.first === dismissedDialog).let {
                 if (ScaffoldLogger.isDebugEnabled()) {
@@ -100,9 +106,9 @@ abstract class AbstractDialogHandler<M : DialogMetadata> : BaseDialogHandler<M> 
 
     protected abstract fun createDialog(
         metadata: M,
-        inbuiltDismissListener: DialogInterface.OnDismissListener
-    ): Dialog
+        inbuiltDismissListener: (DialogFragment) -> Unit
+    ): DialogFragment
 
-    protected abstract fun updateDialog(dialog: Dialog, metadata: M)
+    protected abstract fun updateDialog(dialog: DialogFragment, metadata: M)
 
 }
