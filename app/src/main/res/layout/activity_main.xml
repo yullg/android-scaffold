@@ -2,7 +2,8 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:keepScreenOn="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -35,19 +36,42 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="50dp">
 
-                <com.yullg.android.scaffold.ui.chart.ArcChart
-                    android:id="@+id/ring_chart"
-                    android:layout_width="200dp"
-                    android:layout_height="120dp"
-                    android:padding="10dp"
-                    app:yg_arcUnderCap="round"
-                    app:yg_arcUnderStartAngle="300"
-                    app:yg_arcUnderStyle="fill_and_stroke"
-                    app:yg_arcUnderSweepAngle="310"
-                    app:yg_arcUnderUseCenter="true"
-                    app:yg_arcUnderWidth="5dp"
-                    app:yg_arcUpperSweepAngle="100"
-                    app:yg_arcUpperWidth="10dp" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <com.yullg.android.scaffold.ui.canvas.ArcCanvasView
+                        android:layout_width="200dp"
+                        android:layout_height="120dp"
+                        android:padding="10dp"
+                        app:yg_arcSweepAngle="60"
+                        app:yg_arcUseCenter="false"
+                        app:yg_cvPaintStrokeCap="round"
+                        app:yg_cvPaintStrokeWidth="5dp"
+                        app:yg_cvPaintStyle="stroke"
+                        app:yg_cvReverseMode="horizontal|none" />
+
+                    <com.yullg.android.scaffold.ui.canvas.CircleCanvasView
+                        android:layout_width="100dp"
+                        android:layout_height="200dp"
+                        app:yg_cvPaintColor="#0f0"
+                        app:yg_cvPaintStrokeWidth="10dp"
+                        app:yg_cvPaintStyle="stroke" />
+
+                    <com.yullg.android.scaffold.ui.canvas.OvalCanvasView
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        app:yg_cvPaintColor="#0f0"
+                        app:yg_cvPaintStrokeWidth="10dp"
+                        app:yg_cvPaintStyle="stroke" />
+
+                    <com.yullg.android.scaffold.ui.canvas.RectCanvasView
+                        android:layout_width="10dp"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="10dp" />
+
+                </LinearLayout>
 
             </com.yullg.android.scaffold.ui.widget.SimpleCardWidget>
 

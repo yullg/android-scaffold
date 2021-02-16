@@ -165,14 +165,6 @@ open class SimpleCardWidget @JvmOverloads constructor(
         }
     }
 
-    private fun Int.toCornerFamily() = let {
-        when (it) {
-            1 -> CornerFamily.ROUNDED
-            2 -> CornerFamily.CUT
-            else -> CornerFamily.ROUNDED
-        }
-    }
-
     protected inner class CardBackgroundDrawable : MaterialShapeDrawable() {
 
         private var shadowColorBackup: Int = Color.BLACK
@@ -199,4 +191,12 @@ open class SimpleCardWidget @JvmOverloads constructor(
 
     }
 
+}
+
+private fun Int.toCornerFamily() = let {
+    when (it) {
+        1 -> CornerFamily.ROUNDED
+        2 -> CornerFamily.CUT
+        else -> throw IllegalArgumentException("Unable to convert the number [$it] to CornerFamily")
+    }
 }

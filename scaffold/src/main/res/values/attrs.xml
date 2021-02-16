@@ -8,53 +8,53 @@
         <attr name="yg_dialogAlertStyle" format="reference" />
         <attr name="yg_dialogCustomStyle" format="reference" />
         <attr name="yg_dialogCustomBottomSheetStyle" format="reference" />
-        <!-- chart -->
-        <attr name="yg_chartArcStyle" format="reference" />
         <!-- widget -->
         <attr name="yg_widgetSimpleCardStyle" format="reference" />
     </declare-styleable>
 
-    <declare-styleable name="ArcChart">
-        <attr name="yg_arcUnderWidth" format="dimension" />
-        <attr name="yg_arcUnderStyle" format="enum">
-            <enum name="fill" value="1" />
-            <enum name="stroke" value="2" />
-            <enum name="fill_and_stroke" value="3" />
+    <declare-styleable name="CanvasView">
+        <attr name="yg_cvPaintAlpha" format="integer" />
+        <attr name="yg_cvPaintAntiAlias" format="boolean" />
+        <attr name="yg_cvPaintColor" format="color|reference" />
+        <attr name="yg_cvPaintDither" format="boolean" />
+        <attr name="yg_cvPaintFilterBitmap" format="boolean" />
+        <attr name="yg_cvPaintHinting" format="enum">
+            <enum name="off" value="0" />
+            <enum name="on" value="1" />
         </attr>
-        <attr name="yg_arcUnderCap" format="enum">
+        <attr name="yg_cvPaintStrokeCap" format="enum">
             <enum name="butt" value="1" />
             <enum name="round" value="2" />
             <enum name="square" value="3" />
         </attr>
-        <attr name="yg_arcUnderColor" format="color|reference" />
-        <attr name="yg_arcUnderStartAngle" format="float" />
-        <attr name="yg_arcUnderSweepAngle" format="float" />
-        <attr name="yg_arcUnderUseCenter" format="boolean" />
-        <attr name="yg_arcUnderReverse" format="enum">
-            <enum name="horizontal" value="1" />
-            <enum name="vertical" value="2" />
-            <enum name="none" value="0" />
+        <attr name="yg_cvPaintStrokeJoin" format="enum">
+            <enum name="bevel" value="1" />
+            <enum name="miter" value="2" />
+            <enum name="round" value="3" />
         </attr>
-        <attr name="yg_arcUpperWidth" format="dimension" />
-        <attr name="yg_arcUpperStyle" format="enum">
+        <attr name="yg_cvPaintStrokeMiter" format="dimension" />
+        <attr name="yg_cvPaintStrokeWidth" format="dimension" />
+        <attr name="yg_cvPaintStyle" format="enum">
             <enum name="fill" value="1" />
             <enum name="stroke" value="2" />
             <enum name="fill_and_stroke" value="3" />
         </attr>
-        <attr name="yg_arcUpperCap" format="enum">
-            <enum name="butt" value="1" />
-            <enum name="round" value="2" />
-            <enum name="square" value="3" />
+        <attr name="yg_cvReverseMode" format="flags">
+            <flag name="none" value="0" />
+            <flag name="horizontal" value="1" />
+            <flag name="vertical" value="2" />
         </attr>
-        <attr name="yg_arcUpperColor" format="color|reference" />
-        <attr name="yg_arcUpperStartAngle" format="float" />
-        <attr name="yg_arcUpperSweepAngle" format="float" />
-        <attr name="yg_arcUpperUseCenter" format="boolean" />
-        <attr name="yg_arcUpperReverse" format="enum">
-            <enum name="horizontal" value="1" />
-            <enum name="vertical" value="2" />
-            <enum name="none" value="0" />
-        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="ArcCanvasView">
+        <attr name="yg_arcStartAngle" format="float" />
+        <attr name="yg_arcSweepAngle" format="float" />
+        <attr name="yg_arcUseCenter" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="RectCanvasView">
+        <attr name="yg_rectXRadius" format="dimension" />
+        <attr name="yg_rectYRadius" format="dimension" />
     </declare-styleable>
 
     <declare-styleable name="SimpleCardWidget">
