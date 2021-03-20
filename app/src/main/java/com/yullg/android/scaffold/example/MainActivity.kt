@@ -36,7 +36,7 @@ class MainActivity : BaseActivity<EmptyAC>() {
         setContentView(R.layout.activity_main)
         val textView: TextView = findViewById(R.id.text_view)
         textView.setOnClickListener {
-            testCustomBottomSheet()
+            testAlert()
         }
 //        Logger.error("test", RuntimeException())
 //        Logger.error("test", RuntimeException())
@@ -104,6 +104,7 @@ class MainActivity : BaseActivity<EmptyAC>() {
     private fun testAlert() {
         alertDialog.resetMetadata()
             .setTitle("退出登录")
+            .setCancelable(false)
             .setMessage("您确定退出登录吗？")
             .setNegativeButtonText("取消", null)
             .setNeutralButtonText("2", null)

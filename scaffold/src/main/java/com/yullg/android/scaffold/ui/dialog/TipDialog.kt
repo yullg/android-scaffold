@@ -1,7 +1,6 @@
 package com.yullg.android.scaffold.ui.dialog
 
 import android.content.Context
-import android.content.DialogInterface
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
@@ -20,8 +19,8 @@ data class TipDialogMetadata(
     val message: CharSequence?,
     override val cancelable: Boolean,
     override val showDuration: Long,
-    override val onShowListener: DialogInterface.OnShowListener?,
-    override val onDismissListener: DialogInterface.OnDismissListener?,
+    override val onShowListener: (() -> Unit)?,
+    override val onDismissListener: (() -> Unit)?,
 ) : MaterialDialogMetadata
 
 class TipDialog(handler: BaseDialogHandler<TipDialogMetadata>) :

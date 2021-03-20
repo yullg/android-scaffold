@@ -1,7 +1,6 @@
 package com.yullg.android.scaffold.ui.dialog
 
 import android.content.Context
-import android.content.DialogInterface
 import android.view.View
 import androidx.annotation.CallSuper
 import androidx.annotation.StyleRes
@@ -20,9 +19,9 @@ interface BottomSheetDialogMetadata : DialogMetadata {
 
     val showDuration: Long
 
-    val onShowListener: DialogInterface.OnShowListener?
+    val onShowListener: (() -> Unit)?
 
-    val onDismissListener: DialogInterface.OnDismissListener?
+    val onDismissListener: (() -> Unit)?
 
 }
 
@@ -32,8 +31,8 @@ abstract class BottomSheetDialog<M : DialogMetadata, S : BottomSheetDialog<M, S>
 
     protected var cancelable: Boolean? = null
     protected var showDuration: Long? = null
-    protected var onShowListener: DialogInterface.OnShowListener? = null
-    protected var onDismissListener: DialogInterface.OnDismissListener? = null
+    protected var onShowListener: (() -> Unit)? = null
+    protected var onDismissListener: (() -> Unit)? = null
 
     private val self get() = this as S
 
@@ -49,14 +48,14 @@ abstract class BottomSheetDialog<M : DialogMetadata, S : BottomSheetDialog<M, S>
 
     open fun setOnShowListener(onShowListener: ((S) -> Unit)?): S {
         this.onShowListener = onShowListener?.let {
-            DialogInterface.OnShowListener { _ -> it(self) }
+            { it(self) }
         }
         return self
     }
 
     open fun setOnDismissListener(onDismissListener: ((S) -> Unit)?): S {
         this.onDismissListener = onDismissListener?.let {
-            DialogInterface.OnDismissListener { _ -> it(self) }
+            { it(self) }
         }
         return self
     }
@@ -90,7 +89,7 @@ abstract class BottomSheetDialogHandler<M : BottomSheetDialogMetadata>(
                     recycle()
                 }
             }
-        return DialogFragmentImpl(
+        return DialogFragmentImpl().apply {
             createDialogCallback = { dialogFragmentImpl ->
                 GoogleBottomSheetDialog(dialogFragmentImpl.requireActivity(), dialogTheme).apply {
                     setContentView(createDialogView(dialogFragmentImpl.requireActivity(), metadata))
@@ -113,20 +112,19 @@ abstract class BottomSheetDialogHandler<M : BottomSheetDialogMetadata>(
                                     }
                                 }
                             } finally {
-                                metadata.onShowListener?.onShow(showedDialog)
+                                metadata.onShowListener?.invoke()
                             }
                         }
                     }
                 }
-            },
-            dismissDialogCallback = { dialogFragmentImpl, dialogInterface ->
+            }
+            dismissDialogCallback = { dialogFragmentImpl ->
                 try {
                     inbuiltDismissListener(dialogFragmentImpl)
                 } finally {
-                    metadata.onDismissListener?.onDismiss(dialogInterface)
+                    metadata.onDismissListener?.invoke()
                 }
             }
-        ).apply {
             isCancelable = metadata.cancelable
         }
     }

@@ -1,7 +1,6 @@
 package com.yullg.android.scaffold.ui.dialog
 
 import android.content.Context
-import android.content.DialogInterface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,8 +18,8 @@ data class CustomBottomSheetDialogMetadata(
     val viewBinder: ((View) -> Unit)?,
     override val cancelable: Boolean,
     override val showDuration: Long,
-    override val onShowListener: DialogInterface.OnShowListener?,
-    override val onDismissListener: DialogInterface.OnDismissListener?,
+    override val onShowListener: (() -> Unit)?,
+    override val onDismissListener: (() -> Unit)?,
 ) : BottomSheetDialogMetadata
 
 class CustomBottomSheetDialog(handler: BaseDialogHandler<CustomBottomSheetDialogMetadata>) :
