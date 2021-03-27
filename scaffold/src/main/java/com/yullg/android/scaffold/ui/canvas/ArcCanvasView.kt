@@ -16,7 +16,7 @@ open class ArcCanvasView @JvmOverloads constructor(
 ) : CanvasView(context, attrs, defStyleAttr, defStyleRes) {
 
     protected var _arcStartAngle: Float = 0f
-    protected var _arcSweepAngle: Float = 360f
+    protected var _arcSweepAngle: Float = 0f
     protected var _arcUseCenter: Boolean = true
 
     init {

@@ -100,7 +100,7 @@ abstract class BottomSheetDialogHandler<M : BottomSheetDialogMetadata>(
                                     dialogCoroutineScope?.launch {
                                         try {
                                             delay(metadata.showDuration)
-                                            dialogFragmentImpl.dismiss()
+                                            dialogFragmentImpl.dismissAllowingStateLoss()
                                         } catch (e: Exception) {
                                             if (ScaffoldLogger.isErrorEnabled()) {
                                                 ScaffoldLogger.error(

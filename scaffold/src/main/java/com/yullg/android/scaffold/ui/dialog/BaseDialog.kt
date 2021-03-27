@@ -69,7 +69,7 @@ abstract class AbstractDialogHandler<M : DialogMetadata>(fragmentActivity: Fragm
         synchronized(this) {
             dialogAndCoroutineScope?.first?.let {
                 try {
-                    it.dismiss()
+                    it.dismissAllowingStateLoss()
                 } finally {
                     afterDialogDismiss(it)
                 }

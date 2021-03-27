@@ -102,7 +102,7 @@ abstract class MaterialDialogHandler<M : MaterialDialogMetadata>(
                                         dialogCoroutineScope?.launch {
                                             try {
                                                 delay(metadata.showDuration)
-                                                dialogFragmentImpl.dismiss()
+                                                dialogFragmentImpl.dismissAllowingStateLoss()
                                             } catch (e: Exception) {
                                                 if (ScaffoldLogger.isErrorEnabled()) {
                                                     ScaffoldLogger.error(
