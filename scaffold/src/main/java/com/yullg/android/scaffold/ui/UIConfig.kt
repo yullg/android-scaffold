@@ -9,8 +9,6 @@ interface UIConfig {
 
     val throttledActionProxyCreator: () -> ActionProxy
 
-    val sharedThrottledActionProxyCreator: () -> ActionProxy
-
     val defaultTipDialogHandlerCreator: (FragmentActivity) -> BaseDialogHandler<TipDialogMetadata>
 
     val defaultWaitDialogHandlerCreator: (FragmentActivity) -> BaseDialogHandler<WaitDialogMetadata>
@@ -49,9 +47,6 @@ open class MutableUIConfig private constructor() : UIConfig {
 
     override var throttledActionProxyCreator: () -> ActionProxy =
         { ThrottledActionProxy(1500) }
-
-    override var sharedThrottledActionProxyCreator: () -> ActionProxy =
-        { throttledActionProxyCreator() }
 
     override var defaultTipDialogHandlerCreator: (FragmentActivity) -> BaseDialogHandler<TipDialogMetadata> =
         { activity -> DefaultTipDialogHandler(activity) }
