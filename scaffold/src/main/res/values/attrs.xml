@@ -91,4 +91,24 @@
         <attr name="yg_cardBottomRightCornerSize" format="dimension" />
     </declare-styleable>
 
+    <declare-styleable name="SafeAreaWidget">
+        <attr name="yg_saConsumeInsets" format="boolean" />
+        <attr name="yg_saIgnoringVisibility" format="boolean" />
+        <attr name="yg_saApplyMode" format="enum">
+            <enum name="margin" value="1" />
+            <enum name="padding" value="2" />
+        </attr>
+        <attr name="yg_saInsetsType" format="flags">
+            <flag name="caption_bar" value="1" />
+            <flag name="display_cutout" value="2" />
+            <flag name="ime" value="4" />
+            <flag name="mandatory_system_gestures" value="8" />
+            <flag name="navigation_bars" value="16" />
+            <flag name="status_bars" value="32" />
+            <flag name="system_bars" value="64" />
+            <flag name="system_gestures" value="128" />
+            <flag name="tappable_element" value="256" />
+        </attr>
+    </declare-styleable>
+
 </resources>
