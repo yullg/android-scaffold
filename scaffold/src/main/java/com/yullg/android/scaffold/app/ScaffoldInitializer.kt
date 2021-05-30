@@ -11,7 +11,6 @@ open class ScaffoldInitializer : Initializer<Any> {
 
     final override fun create(context: Context): Any {
         try {
-            ScaffoldLogger.info("[ScaffoldInitializer] Initializing...")
             Scaffold.activate(context)
             configure(context, ScaffoldConfig())
             bootUploadLog(context)

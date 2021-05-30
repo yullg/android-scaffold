@@ -2,6 +2,7 @@ package com.yullg.android.scaffold.support.logger
 
 import android.content.Context
 import androidx.work.*
+import com.yullg.android.scaffold.helper.DateHelper
 import com.yullg.android.scaffold.helper.SystemHelper
 import com.yullg.android.scaffold.internal.AliyunOSSClient
 import com.yullg.android.scaffold.internal.ScaffoldLogger
@@ -9,21 +10,23 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.InputStream
 import java.net.URI
+import java.util.concurrent.TimeUnit
 
 private const val NAME_LOG_UPLOAD_WORKER = "YG_LogUploadWorker"
 
 internal fun bootUploadLog(context: Context) {
-    if (LoggerConfig.uploader != null) {
+    val uploader = LoggerConfig.uploader
+    if (uploader != null) {
         ScaffoldLogger.info("[LogUpload] LogUploader has provided, enqueue worker")
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
         val workRequest = PeriodicWorkRequestBuilder<LogUploadWorker>(
-            LoggerConfig.uploadRepeatInterval.first,
-            LoggerConfig.uploadRepeatInterval.second
+            uploader.repeatInterval,
+            TimeUnit.MILLISECONDS
         ).setInitialDelay(
-            LoggerConfig.uploadInitialDelay.first,
-            LoggerConfig.uploadInitialDelay.second
+            uploader.initialDelay,
+            TimeUnit.MILLISECONDS
         ).setConstraints(constraints)
             .build()
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
@@ -77,6 +80,10 @@ class LogUploadWorker(context: Context, workerParams: WorkerParameters) :
 
 interface LogUploader {
 
+    val initialDelay: Long
+
+    val repeatInterval: Long
+
     fun upload(name: String, inputStream: InputStream)
 
 }
@@ -88,6 +95,10 @@ class AliyunOSSLogUploader(
     private val bucketName: String,
     private val objectKeyGetter: (String) -> String = { "${SystemHelper.SSAID}/$it" }
 ) : LogUploader {
+
+    override var initialDelay: Long = 0
+
+    override var repeatInterval: Long = 12 * DateHelper.MILLIS_PER_HOUR
 
     private val ossClient = AliyunOSSClient(endpointURI, accessKeyId, accessKeySecret)
 

@@ -1,7 +1,5 @@
 package com.yullg.android.scaffold.support.logger
 
-import java.util.concurrent.TimeUnit
-
 interface LoggerConfig {
 
     val consoleAppenderEnabled: Boolean
@@ -13,10 +11,6 @@ interface LoggerConfig {
     val fileAppenderLevel: LogLevel
 
     val logFileMaxLife: Int
-
-    val uploadRepeatInterval: Pair<Long, TimeUnit>
-
-    val uploadInitialDelay: Pair<Long, TimeUnit>
 
     val uploader: LogUploader?
 
@@ -43,10 +37,6 @@ open class MutableLoggerConfig private constructor() : LoggerConfig {
     override var fileAppenderLevel: LogLevel = LogLevel.WARN
 
     override var logFileMaxLife: Int = 30
-
-    override var uploadRepeatInterval: Pair<Long, TimeUnit> = Pair(12, TimeUnit.HOURS)
-
-    override var uploadInitialDelay: Pair<Long, TimeUnit> = Pair(0, TimeUnit.MINUTES)
 
     override var uploader: LogUploader? = null
 
