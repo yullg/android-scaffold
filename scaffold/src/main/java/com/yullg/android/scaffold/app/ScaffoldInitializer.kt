@@ -4,8 +4,6 @@ import android.content.Context
 import androidx.startup.Initializer
 import androidx.work.WorkManagerInitializer
 import com.yullg.android.scaffold.internal.ScaffoldLogger
-import com.yullg.android.scaffold.support.logger.bootDeleteExpiredLog
-import com.yullg.android.scaffold.support.logger.bootUploadLog
 
 open class ScaffoldInitializer : Initializer<Any> {
 
@@ -13,8 +11,6 @@ open class ScaffoldInitializer : Initializer<Any> {
         try {
             Scaffold.activate(context)
             configure(context, ScaffoldConfig())
-            bootUploadLog(context)
-            bootDeleteExpiredLog(context)
             onInitialized(context)
             ScaffoldLogger.info("[ScaffoldInitializer] Initialization succeeded")
             return Unit
@@ -30,7 +26,9 @@ open class ScaffoldInitializer : Initializer<Any> {
 
     protected open fun configure(context: Context, config: ScaffoldConfig) {}
 
-    protected open fun onInitialized(context: Context) {}
+    protected open fun onInitialized(context: Context) {
+        ScaffoldBoot.bootAll()
+    }
 
 }
 

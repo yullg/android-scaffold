@@ -1,7 +1,8 @@
 package com.yullg.android.scaffold.support.logger
 
 import android.content.Context
-import androidx.work.*
+import androidx.work.CoroutineWorker
+import androidx.work.WorkerParameters
 import com.yullg.android.scaffold.helper.DateHelper
 import com.yullg.android.scaffold.helper.SystemHelper
 import com.yullg.android.scaffold.internal.AliyunOSSClient
@@ -10,37 +11,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.InputStream
 import java.net.URI
-import java.util.concurrent.TimeUnit
-
-private const val NAME_LOG_UPLOAD_WORKER = "YG_LogUploadWorker"
-
-internal fun bootUploadLog(context: Context) {
-    val uploader = LoggerConfig.uploader
-    if (uploader != null) {
-        ScaffoldLogger.info("[LogUpload] LogUploader has provided, enqueue worker")
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-        val workRequest = PeriodicWorkRequestBuilder<LogUploadWorker>(
-            uploader.repeatInterval,
-            TimeUnit.MILLISECONDS
-        ).setInitialDelay(
-            uploader.initialDelay,
-            TimeUnit.MILLISECONDS
-        ).setConstraints(constraints)
-            .build()
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            NAME_LOG_UPLOAD_WORKER,
-            ExistingPeriodicWorkPolicy.REPLACE,
-            workRequest
-        )
-        ScaffoldLogger.info("[LogUpload] Worker enqueued")
-    } else {
-        ScaffoldLogger.info("[LogUpload] LogUploader not provided, cancel worker")
-        WorkManager.getInstance(context).cancelUniqueWork(NAME_LOG_UPLOAD_WORKER)
-        ScaffoldLogger.info("[LogUpload] Worker cancelled")
-    }
-}
 
 class LogUploadWorker(context: Context, workerParams: WorkerParameters) :
     CoroutineWorker(context, workerParams) {

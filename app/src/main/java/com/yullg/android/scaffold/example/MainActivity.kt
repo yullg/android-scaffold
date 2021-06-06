@@ -6,10 +6,16 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.widget.TextView
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.Preview
 import com.yullg.android.scaffold.framework.BaseActivity
 import com.yullg.android.scaffold.framework.BaseViewModel
 import com.yullg.android.scaffold.framework.EmptyAC
+import com.yullg.android.scaffold.support.camera.CameraXWrapper
 import com.yullg.android.scaffold.ui.dialog.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 // 28256, 28257, 282931, 38356, 38357, 383941
 
@@ -26,17 +32,27 @@ class MainActivity : BaseActivity<EmptyAC>() {
         return EmptyAC
     }
 
+    private lateinit var cameraXWrapper: CameraXWrapper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         waitDialog = WaitDialog(this)
         tipDialog = TipDialog(this)
-        alertDialog = AlertDialog(DefaultAlertDialogHandler(this,CupertinoAlertDialogTemplate(this)))
+        alertDialog =
+            AlertDialog(DefaultAlertDialogHandler(this, CupertinoAlertDialogTemplate(this)))
         customDialog = CustomDialog(this)
         customBottomSheetDialog = CustomBottomSheetDialog(this)
         setContentView(R.layout.activity_main)
         val textView: TextView = findViewById(R.id.text_view)
         textView.setOnClickListener {
-            testAlert()
+            cameraXWrapper.setCameraSelectorBuilder(
+                CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_FRONT)
+            )
+        }
+        cameraXWrapper = CameraXWrapper(this, this)
+        cameraXWrapper.enablePreview(findViewById(R.id.preview_view), Preview.Builder())
+        GlobalScope.launch(Dispatchers.Main) {
+            cameraXWrapper.bind()
         }
 //        Logger.error("test", RuntimeException())
 //        Logger.error("test", RuntimeException())

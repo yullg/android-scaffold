@@ -7,6 +7,9 @@ object StringResources {
 
     object Date {
 
+        val am get() = Scaffold.context.getString(R.string.yg_string_resources_date_am)
+        val pm get() = Scaffold.context.getString(R.string.yg_string_resources_date_pm)
+
         object Month {
             val january
                 get() = Scaffold.context.getString(R.string.yg_string_resources_date_month_january)
@@ -49,13 +52,6 @@ object StringResources {
                 get() = Scaffold.context.getString(R.string.yg_string_resources_date_week_friday)
             val saturday
                 get() = Scaffold.context.getString(R.string.yg_string_resources_date_week_saturday)
-        }
-
-        object Period {
-            val am
-                get() = Scaffold.context.getString(R.string.yg_string_resources_date_period_am);
-            val pm
-                get() = Scaffold.context.getString(R.string.yg_string_resources_date_period_pm);
         }
 
     }
@@ -103,9 +99,9 @@ object StringResources {
 
         object Temperature {
             val centigrade
-                get() = Scaffold.context.getString(R.string.yg_string_resources_measure_unit_temperature_centigrade);
+                get() = Scaffold.context.getString(R.string.yg_string_resources_measure_unit_temperature_centigrade)
             val fahrenheit
-                get() = Scaffold.context.getString(R.string.yg_string_resources_measure_unit_temperature_fahrenheit);
+                get() = Scaffold.context.getString(R.string.yg_string_resources_measure_unit_temperature_fahrenheit)
         }
 
     }

@@ -30,6 +30,11 @@
             android:background="#fff"
             android:orientation="vertical">
 
+            <androidx.camera.view.PreviewView
+                android:id="@+id/preview_view"
+                android:layout_width="match_parent"
+                android:layout_height="500dp" />
+
             <com.yullg.android.scaffold.ui.widget.SimpleCardWidget
                 android:id="@+id/card_view"
                 android:layout_width="wrap_content"

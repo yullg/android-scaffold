@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- StringResources -->
+    <string name="yg_string_resources_date_am">AM</string>
+    <string name="yg_string_resources_date_pm">PM</string>
     <string name="yg_string_resources_date_month_january">January</string>
     <string name="yg_string_resources_date_month_february">February</string>
     <string name="yg_string_resources_date_month_march">March</string>
@@ -20,8 +22,6 @@
     <string name="yg_string_resources_date_week_thursday">Thursday</string>
     <string name="yg_string_resources_date_week_friday">Friday</string>
     <string name="yg_string_resources_date_week_saturday">Saturday</string>
-    <string name="yg_string_resources_date_period_am">AM</string>
-    <string name="yg_string_resources_date_period_pm">PM</string>
     <string name="yg_string_resources_measure_unit_length_nanometre">nm</string>
     <string name="yg_string_resources_measure_unit_length_micrometer">μm</string>
     <string name="yg_string_resources_measure_unit_length_millimeter">mm</string>

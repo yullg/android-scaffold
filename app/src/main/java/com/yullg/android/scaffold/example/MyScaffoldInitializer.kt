@@ -12,12 +12,12 @@ class MyScaffoldInitializer : ScaffoldInitializer() {
     override fun configure(context: Context, config: ScaffoldConfig) {
         config.logger {
             fileAppenderLevel = LogLevel.TRACE
-            uploader = AliyunOSSLogUploader(
-                URI("https://oss-cn-hangzhou.aliyuncs.com"),
-                "",
-                "",
-                "yullg"
-            )
+//            uploader = AliyunOSSLogUploader(
+//                URI("https://oss-cn-hangzhou.aliyuncs.com"),
+//                "",
+//                "",
+//                "yullg"
+//            )
         }
     }
 

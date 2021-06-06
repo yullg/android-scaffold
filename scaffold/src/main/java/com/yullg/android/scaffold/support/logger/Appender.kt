@@ -1,22 +1,11 @@
 package com.yullg.android.scaffold.support.logger
 
-import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
 import com.yullg.android.scaffold.core.Constants
 import com.yullg.android.scaffold.helper.ExceptionHelper
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 import java.text.SimpleDateFormat
-
-internal fun bootDeleteExpiredLog(context: Context) {
-    Appender.deleteLog(LoggerConfig.logFileMaxLife).let {
-        ScaffoldLogger.info(
-            "[LogAppender] Ready to delete expired log files : logFileMaxLife = ${
-                LoggerConfig.logFileMaxLife
-            }, result = $it"
-        )
-    }
-}
 
 internal object Appender {
 

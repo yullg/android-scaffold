@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- StringResources -->
+    <string name="yg_string_resources_date_am">上午</string>
+    <string name="yg_string_resources_date_pm">下午</string>
     <string name="yg_string_resources_date_month_january">1月</string>
     <string name="yg_string_resources_date_month_february">2月</string>
     <string name="yg_string_resources_date_month_march">3月</string>
@@ -20,8 +22,6 @@
     <string name="yg_string_resources_date_week_thursday">周四</string>
     <string name="yg_string_resources_date_week_friday">周五</string>
     <string name="yg_string_resources_date_week_saturday">周六</string>
-    <string name="yg_string_resources_date_period_am">上午</string>
-    <string name="yg_string_resources_date_period_pm">下午</string>
     <string name="yg_string_resources_measure_unit_length_nanometre">nm</string>
     <string name="yg_string_resources_measure_unit_length_micrometer">μm</string>
     <string name="yg_string_resources_measure_unit_length_millimeter">mm</string>

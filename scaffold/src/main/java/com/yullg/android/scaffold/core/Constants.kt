@@ -18,6 +18,8 @@ object Constants {
 
         const val TAG_SCAFFOLD = "yg_log_scaffold"
 
+        const val WORKER_NAME_UPLOADER = "YG_LogUploadWorker"
+
     }
 
 }
