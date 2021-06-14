@@ -49,8 +49,8 @@ class AlertDialog(handler: BaseDialogHandler<AlertDialogMetadata>) :
     private var positiveButtonText: CharSequence? = null
     private var positiveButtonClickListener: View.OnClickListener? = null
 
-    constructor(fragmentActivity: FragmentActivity) :
-            this(UIConfig.defaultAlertDialogHandlerCreator(fragmentActivity))
+    constructor(activity: FragmentActivity) :
+            this(UIConfig.defaultAlertDialogHandlerCreator(activity))
 
     fun setTitleResource(@StringRes resId: Int?): AlertDialog {
         this.titleResId = resId
@@ -178,13 +178,13 @@ class AlertDialog(handler: BaseDialogHandler<AlertDialogMetadata>) :
 }
 
 class DefaultAlertDialogHandler(
-    fragmentActivity: FragmentActivity,
+    activity: FragmentActivity,
     override val template: DialogTemplate<AlertDialogMetadata> =
-        MaterialAlertDialogTemplate(fragmentActivity),
+        MaterialAlertDialogTemplate(activity),
     @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogAlertStyle,
     @StyleRes defStyleRes: Int = R.style.yg_DialogAlertDefaultStyle
 ) : MaterialDialogHandler<AlertDialogMetadata>(
-    fragmentActivity,
+    activity,
     defStyleAttr,
     defStyleRes,
 ), DialogTemplateHandler<DialogTemplate<AlertDialogMetadata>> {
@@ -214,7 +214,7 @@ class MaterialAlertDialogTemplate(@UiContext context: Context) :
 
     val binding: YgDialogAlertMaterialBinding by lazy {
         val context =
-            contextRef.get() ?: throw IllegalStateException("The context has been cleared")
+            contextRef.get() ?: throw IllegalStateException("Context has been reclaimed")
         YgDialogAlertMaterialBinding.inflate(LayoutInflater.from(context))
     }
 
@@ -291,7 +291,7 @@ class CupertinoAlertDialogTemplate(@UiContext context: Context) :
 
     val binding: YgDialogAlertCupertinoBinding by lazy {
         val context =
-            contextRef.get() ?: throw IllegalStateException("The context has been cleared")
+            contextRef.get() ?: throw IllegalStateException("Context has been reclaimed")
         YgDialogAlertCupertinoBinding.inflate(LayoutInflater.from(context))
     }
 

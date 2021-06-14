@@ -31,8 +31,8 @@ class TipDialog(handler: BaseDialogHandler<TipDialogMetadata>) :
     private var messageResId: Int? = null
     private var message: CharSequence? = null
 
-    constructor(fragmentActivity: FragmentActivity) :
-            this(UIConfig.defaultTipDialogHandlerCreator(fragmentActivity))
+    constructor(activity: FragmentActivity) :
+            this(UIConfig.defaultTipDialogHandlerCreator(activity))
 
     fun setIconResource(@DrawableRes resId: Int?): TipDialog {
         this.iconResId = resId
@@ -89,12 +89,12 @@ class TipDialog(handler: BaseDialogHandler<TipDialogMetadata>) :
 }
 
 class DefaultTipDialogHandler(
-    fragmentActivity: FragmentActivity,
-    override val template: DialogTemplate<TipDialogMetadata> = TipDialogTemplate(fragmentActivity),
+    activity: FragmentActivity,
+    override val template: DialogTemplate<TipDialogMetadata> = TipDialogTemplate(activity),
     @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogTipStyle,
     @StyleRes defStyleRes: Int = R.style.yg_DialogTipDefaultStyle,
 ) : MaterialDialogHandler<TipDialogMetadata>(
-    fragmentActivity,
+    activity,
     defStyleAttr,
     defStyleRes,
 ), DialogTemplateHandler<DialogTemplate<TipDialogMetadata>> {
@@ -124,7 +124,7 @@ class TipDialogTemplate(@UiContext context: Context) :
 
     val binding: YgDialogTipBinding by lazy {
         val context =
-            contextRef.get() ?: throw IllegalStateException("The context has been cleared")
+            contextRef.get() ?: throw IllegalStateException("Context has been reclaimed")
         YgDialogTipBinding.inflate(LayoutInflater.from(context))
     }
 

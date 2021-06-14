@@ -5,7 +5,6 @@ import android.view.View
 import androidx.annotation.CallSuper
 import androidx.annotation.StyleRes
 import androidx.annotation.StyleableRes
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.yullg.android.scaffold.R
@@ -72,41 +71,41 @@ abstract class MaterialDialog<M : DialogMetadata, S : MaterialDialog<M, S>>(
 }
 
 abstract class MaterialDialogHandler<M : MaterialDialogMetadata>(
-    fragmentActivity: FragmentActivity,
+    activity: FragmentActivity,
     @StyleableRes private val defStyleAttr: Int = 0,
     @StyleRes private val defStyleRes: Int = 0
-) : AbstractDialogHandler<M>(fragmentActivity) {
+) : AbstractDialogHandler<M>(activity) {
 
     final override fun createDialog(
         metadata: M,
-        inbuiltDismissListener: (DialogFragment) -> Unit
-    ): DialogFragment {
+        inbuiltDismissListener: (DialogShell) -> Unit
+    ): DialogShell {
         val dialogTheme =
-            activity.theme.obtainStyledAttributes(R.styleable.yg_ThemeAttrDeclare).run {
+            requireActivity.theme.obtainStyledAttributes(R.styleable.yg_ThemeAttrDeclare).run {
                 try {
                     getResourceId(defStyleAttr, defStyleRes)
                 } finally {
                     recycle()
                 }
             }
-        return DialogFragmentImpl().apply {
-            createDialogCallback = { dialogFragmentImpl ->
-                MaterialAlertDialogBuilder(dialogFragmentImpl.requireActivity(), dialogTheme)
-                    .setView(createDialogView(dialogFragmentImpl.requireActivity(), metadata))
+        return MaterialDialogShell().apply {
+            createDialogCallback = { dialogShell ->
+                MaterialAlertDialogBuilder(dialogShell.requireContext(), dialogTheme)
+                    .setView(createDialogView(dialogShell.requireContext(), metadata))
                     .create()
                     .apply {
                         if (metadata.showDuration > 0 || metadata.onShowListener != null) {
-                            setOnShowListener { showedDialog ->
+                            setOnShowListener {
                                 try {
                                     if (metadata.showDuration > 0) {
-                                        dialogCoroutineScope?.launch {
+                                        coroutineScope?.launch {
                                             try {
                                                 delay(metadata.showDuration)
-                                                dialogFragmentImpl.dismissAllowingStateLoss()
+                                                dialogShell.dismissAllowingStateLoss()
                                             } catch (e: Exception) {
                                                 if (ScaffoldLogger.isErrorEnabled()) {
                                                     ScaffoldLogger.error(
-                                                        "Cannot dismiss this dialog [ $dialogFragmentImpl ]",
+                                                        "Cannot dismiss this dialog [ $dialogShell ]",
                                                         e
                                                     )
                                                 }
@@ -120,9 +119,9 @@ abstract class MaterialDialogHandler<M : MaterialDialogMetadata>(
                         }
                     }
             }
-            dismissDialogCallback = { dialogFragmentImpl ->
+            dismissDialogCallback = { dialogShell ->
                 try {
-                    inbuiltDismissListener(dialogFragmentImpl)
+                    inbuiltDismissListener(dialogShell)
                 } finally {
                     metadata.onDismissListener?.invoke()
                 }
@@ -131,8 +130,8 @@ abstract class MaterialDialogHandler<M : MaterialDialogMetadata>(
         }
     }
 
-    final override fun updateDialog(dialog: DialogFragment, metadata: M) {
-        updateDialogView(activity, metadata)
+    final override fun updateDialog(dialog: DialogShell, metadata: M) {
+        updateDialogView(requireActivity, metadata)
     }
 
     protected abstract fun createDialogView(context: Context, metadata: M): View

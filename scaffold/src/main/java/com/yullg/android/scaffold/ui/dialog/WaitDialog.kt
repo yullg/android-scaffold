@@ -29,8 +29,8 @@ class WaitDialog(handler: BaseDialogHandler<WaitDialogMetadata>) :
     private var message: CharSequence? = null
     private var progress: Int? = null
 
-    constructor(fragmentActivity: FragmentActivity) :
-            this(UIConfig.defaultWaitDialogHandlerCreator(fragmentActivity))
+    constructor(activity: FragmentActivity) :
+            this(UIConfig.defaultWaitDialogHandlerCreator(activity))
 
     fun setMessageResource(@StringRes resId: Int?): WaitDialog {
         this.messageResId = resId
@@ -67,13 +67,13 @@ class WaitDialog(handler: BaseDialogHandler<WaitDialogMetadata>) :
 }
 
 class DefaultWaitDialogHandler(
-    fragmentActivity: FragmentActivity,
+    activity: FragmentActivity,
     override val template: DialogTemplate<WaitDialogMetadata> =
-        CircularWaitDialogTemplate(fragmentActivity),
+        CircularWaitDialogTemplate(activity),
     @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogWaitStyle,
     @StyleRes defStyleRes: Int = R.style.yg_DialogWaitDefaultStyle
 ) : MaterialDialogHandler<WaitDialogMetadata>(
-    fragmentActivity,
+    activity,
     defStyleAttr,
     defStyleRes,
 ), DialogTemplateHandler<DialogTemplate<WaitDialogMetadata>> {
@@ -103,7 +103,7 @@ class CircularWaitDialogTemplate(@UiContext context: Context) :
 
     val binding: YgDialogWaitCircularBinding by lazy {
         val context =
-            contextRef.get() ?: throw IllegalStateException("The context has been cleared")
+            contextRef.get() ?: throw IllegalStateException("Context has been reclaimed")
         YgDialogWaitCircularBinding.inflate(LayoutInflater.from(context))
     }
 
@@ -148,7 +148,7 @@ class LinearWaitDialogTemplate(@UiContext context: Context) :
 
     val binding: YgDialogWaitLinearBinding by lazy {
         val context =
-            contextRef.get() ?: throw IllegalStateException("The context has been cleared")
+            contextRef.get() ?: throw IllegalStateException("Context has been reclaimed")
         YgDialogWaitLinearBinding.inflate(LayoutInflater.from(context))
     }
 

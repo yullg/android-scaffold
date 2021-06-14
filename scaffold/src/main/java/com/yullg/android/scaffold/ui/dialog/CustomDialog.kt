@@ -29,8 +29,8 @@ class CustomDialog(handler: BaseDialogHandler<CustomDialogMetadata>) :
     private var viewLayoutResId: Int? = null
     private var viewBinder: ((View) -> Unit)? = null
 
-    constructor(fragmentActivity: FragmentActivity) :
-            this(UIConfig.defaultCustomDialogHandlerCreator(fragmentActivity))
+    constructor(activity: FragmentActivity) :
+            this(UIConfig.defaultCustomDialogHandlerCreator(activity))
 
     fun setView(view: View?): CustomDialog {
         this.view = view
@@ -69,13 +69,13 @@ class CustomDialog(handler: BaseDialogHandler<CustomDialogMetadata>) :
 }
 
 class DefaultCustomDialogHandler(
-    fragmentActivity: FragmentActivity,
+    activity: FragmentActivity,
     override val template: DialogTemplate<CustomDialogMetadata> =
-        CustomDialogTemplate(fragmentActivity),
+        CustomDialogTemplate(activity),
     @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogCustomStyle,
     @StyleRes defStyleRes: Int = R.style.yg_DialogCustomDefaultStyle
 ) : MaterialDialogHandler<CustomDialogMetadata>(
-    fragmentActivity,
+    activity,
     defStyleAttr,
     defStyleRes,
 ), DialogTemplateHandler<DialogTemplate<CustomDialogMetadata>> {
@@ -106,7 +106,7 @@ class CustomDialogTemplate(@UiContext context: Context) :
     @RestrictTo(RestrictTo.Scope.LIBRARY, RestrictTo.Scope.SUBCLASSES)
     override fun onCreateView(metadata: CustomDialogMetadata): View {
         val context =
-            contextRef.get() ?: throw IllegalStateException("The context has been cleared")
+            contextRef.get() ?: throw IllegalStateException("Context has been reclaimed")
         val view = when {
             metadata.view != null -> metadata.view.apply {
                 (parent as? ViewGroup)?.removeView(this)

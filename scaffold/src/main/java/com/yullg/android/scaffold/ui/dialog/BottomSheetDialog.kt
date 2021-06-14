@@ -5,7 +5,6 @@ import android.view.View
 import androidx.annotation.CallSuper
 import androidx.annotation.StyleRes
 import androidx.annotation.StyleableRes
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import com.yullg.android.scaffold.R
 import com.yullg.android.scaffold.internal.ScaffoldLogger
@@ -72,39 +71,39 @@ abstract class BottomSheetDialog<M : DialogMetadata, S : BottomSheetDialog<M, S>
 }
 
 abstract class BottomSheetDialogHandler<M : BottomSheetDialogMetadata>(
-    fragmentActivity: FragmentActivity,
+    activity: FragmentActivity,
     @StyleableRes private val defStyleAttr: Int = 0,
     @StyleRes private val defStyleRes: Int = 0
-) : AbstractDialogHandler<M>(fragmentActivity) {
+) : AbstractDialogHandler<M>(activity) {
 
     final override fun createDialog(
         metadata: M,
-        inbuiltDismissListener: (DialogFragment) -> Unit
-    ): DialogFragment {
+        inbuiltDismissListener: (DialogShell) -> Unit
+    ): DialogShell {
         val dialogTheme =
-            activity.theme.obtainStyledAttributes(R.styleable.yg_ThemeAttrDeclare).run {
+            requireActivity.theme.obtainStyledAttributes(R.styleable.yg_ThemeAttrDeclare).run {
                 try {
                     getResourceId(defStyleAttr, defStyleRes)
                 } finally {
                     recycle()
                 }
             }
-        return DialogFragmentImpl().apply {
-            createDialogCallback = { dialogFragmentImpl ->
-                GoogleBottomSheetDialog(dialogFragmentImpl.requireActivity(), dialogTheme).apply {
-                    setContentView(createDialogView(dialogFragmentImpl.requireActivity(), metadata))
+        return BottomSheetDialogShell().apply {
+            createDialogCallback = { dialogShell ->
+                GoogleBottomSheetDialog(dialogShell.requireContext(), dialogTheme).apply {
+                    setContentView(createDialogView(dialogShell.requireContext(), metadata))
                     if (metadata.showDuration > 0 || metadata.onShowListener != null) {
-                        setOnShowListener { showedDialog ->
+                        setOnShowListener {
                             try {
                                 if (metadata.showDuration > 0) {
-                                    dialogCoroutineScope?.launch {
+                                    coroutineScope?.launch {
                                         try {
                                             delay(metadata.showDuration)
-                                            dialogFragmentImpl.dismissAllowingStateLoss()
+                                            dialogShell.dismissAllowingStateLoss()
                                         } catch (e: Exception) {
                                             if (ScaffoldLogger.isErrorEnabled()) {
                                                 ScaffoldLogger.error(
-                                                    "Cannot dismiss this dialog [ $dialogFragmentImpl ]",
+                                                    "Cannot dismiss this dialog [ $dialogShell ]",
                                                     e
                                                 )
                                             }
@@ -118,9 +117,9 @@ abstract class BottomSheetDialogHandler<M : BottomSheetDialogMetadata>(
                     }
                 }
             }
-            dismissDialogCallback = { dialogFragmentImpl ->
+            dismissDialogCallback = { dialogShell ->
                 try {
-                    inbuiltDismissListener(dialogFragmentImpl)
+                    inbuiltDismissListener(dialogShell)
                 } finally {
                     metadata.onDismissListener?.invoke()
                 }
@@ -129,8 +128,8 @@ abstract class BottomSheetDialogHandler<M : BottomSheetDialogMetadata>(
         }
     }
 
-    final override fun updateDialog(dialog: DialogFragment, metadata: M) {
-        updateDialogView(activity, metadata)
+    final override fun updateDialog(dialog: DialogShell, metadata: M) {
+        updateDialogView(requireActivity, metadata)
     }
 
     protected abstract fun createDialogView(context: Context, metadata: M): View

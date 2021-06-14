@@ -1,6 +1,5 @@
 package com.yullg.android.scaffold.ui.dialog
 
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 import kotlinx.coroutines.CoroutineScope
@@ -39,37 +38,43 @@ interface BaseDialogHandler<M : DialogMetadata> {
 
 }
 
-abstract class AbstractDialogHandler<M : DialogMetadata>(fragmentActivity: FragmentActivity) :
+abstract class AbstractDialogHandler<M : DialogMetadata>(activity: FragmentActivity) :
     BaseDialogHandler<M> {
 
-    private val activityRef = WeakReference(fragmentActivity)
-    private var dialogAndCoroutineScope: Pair<DialogFragment, CoroutineScope>? = null
+    private val activityRef = WeakReference(activity)
+    private var dscs: Pair<DialogShell, CoroutineScope>? = null
 
-    protected val activity: FragmentActivity
-        get() = activityRef.get() ?: throw IllegalStateException("The activity has been cleared")
+    protected val activity: FragmentActivity?
+        get() = activityRef.get()
 
-    protected val dialogCoroutineScope: CoroutineScope?
-        get() = dialogAndCoroutineScope?.second
+    protected val requireActivity: FragmentActivity
+        get() = activityRef.get() ?: throw IllegalStateException("Activity has been reclaimed")
+
+    protected val dialogShell: DialogShell?
+        get() = dscs?.first
+
+    protected val coroutineScope: CoroutineScope?
+        get() = dscs?.second
 
     final override fun show(metadata: M) {
         synchronized(this) {
-            dialogAndCoroutineScope?.apply {
+            dscs?.apply {
                 updateDialog(first, metadata)
                 return
             }
             val dialog = createDialog(metadata) { dismissedDialog ->
                 afterDialogDismiss(dismissedDialog)
             }
-            dialogAndCoroutineScope = Pair(dialog, MainScope())
-            dialog.show(activity.supportFragmentManager, null)
+            dscs = Pair(dialog, MainScope())
+            dialog.show(requireActivity)
         }
     }
 
     final override fun dismiss() {
         synchronized(this) {
-            dialogAndCoroutineScope?.first?.let {
+            dscs?.first?.let {
                 try {
-                    it.dismissAllowingStateLoss()
+                    it.dismiss(requireActivity)
                 } finally {
                     afterDialogDismiss(it)
                 }
@@ -78,21 +83,21 @@ abstract class AbstractDialogHandler<M : DialogMetadata>(fragmentActivity: Fragm
     }
 
     final override fun isShowing(): Boolean {
-        return dialogAndCoroutineScope?.first?.dialog?.isShowing ?: false
+        return dscs?.first?.isShowing(requireActivity) ?: false
     }
 
-    private fun afterDialogDismiss(dismissedDialog: DialogFragment) {
+    private fun afterDialogDismiss(dismissedDialog: DialogShell) {
         synchronized(this) {
-            (dialogAndCoroutineScope?.first === dismissedDialog).let {
+            (dscs?.first === dismissedDialog).let {
                 if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("Dialog dismiss [ ${dialogAndCoroutineScope?.first.hashCode()}, ${dismissedDialog.hashCode()}, $it ]")
+                    ScaffoldLogger.debug("Dialog dismiss [ ${dscs?.first.hashCode()}, ${dismissedDialog.hashCode()}, $it ]")
                 }
                 if (it) {
                     try {
                         try {
-                            dialogAndCoroutineScope?.second?.cancel()
+                            dscs?.second?.cancel()
                         } finally {
-                            dialogAndCoroutineScope = null
+                            dscs = null
                         }
                     } finally {
                         onDismiss()
@@ -106,9 +111,9 @@ abstract class AbstractDialogHandler<M : DialogMetadata>(fragmentActivity: Fragm
 
     protected abstract fun createDialog(
         metadata: M,
-        inbuiltDismissListener: (DialogFragment) -> Unit
-    ): DialogFragment
+        inbuiltDismissListener: (DialogShell) -> Unit
+    ): DialogShell
 
-    protected abstract fun updateDialog(dialog: DialogFragment, metadata: M)
+    protected abstract fun updateDialog(dialog: DialogShell, metadata: M)
 
 }

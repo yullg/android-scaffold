@@ -29,8 +29,8 @@ class CustomBottomSheetDialog(handler: BaseDialogHandler<CustomBottomSheetDialog
     private var viewLayoutResId: Int? = null
     private var viewBinder: ((View) -> Unit)? = null
 
-    constructor(fragmentActivity: FragmentActivity) :
-            this(UIConfig.defaultCustomBottomSheetDialogHandlerCreator(fragmentActivity))
+    constructor(activity: FragmentActivity) :
+            this(UIConfig.defaultCustomBottomSheetDialogHandlerCreator(activity))
 
     fun setView(view: View?): CustomBottomSheetDialog {
         this.view = view
@@ -69,13 +69,13 @@ class CustomBottomSheetDialog(handler: BaseDialogHandler<CustomBottomSheetDialog
 }
 
 class DefaultCustomBottomSheetDialogHandler(
-    fragmentActivity: FragmentActivity,
+    activity: FragmentActivity,
     override val template: DialogTemplate<CustomBottomSheetDialogMetadata> =
-        CustomBottomDialogTemplate(fragmentActivity),
+        CustomBottomDialogTemplate(activity),
     @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogCustomBottomSheetStyle,
     @StyleRes defStyleRes: Int = R.style.yg_DialogCustomBottomSheetDefaultStyle,
 ) : BottomSheetDialogHandler<CustomBottomSheetDialogMetadata>(
-    fragmentActivity,
+    activity,
     defStyleAttr,
     defStyleRes
 ), DialogTemplateHandler<DialogTemplate<CustomBottomSheetDialogMetadata>> {
@@ -109,7 +109,7 @@ class CustomBottomDialogTemplate(@UiContext context: Context) :
     @RestrictTo(RestrictTo.Scope.LIBRARY, RestrictTo.Scope.SUBCLASSES)
     override fun onCreateView(metadata: CustomBottomSheetDialogMetadata): View {
         val context =
-            contextRef.get() ?: throw IllegalStateException("The context has been cleared")
+            contextRef.get() ?: throw IllegalStateException("Context has been reclaimed")
         val view = when {
             metadata.view != null -> metadata.view.apply {
                 (parent as? ViewGroup)?.removeView(this)
