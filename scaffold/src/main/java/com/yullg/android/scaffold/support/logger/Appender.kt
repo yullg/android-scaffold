@@ -2,6 +2,7 @@ package com.yullg.android.scaffold.support.logger
 
 import android.os.Handler
 import android.os.HandlerThread
+import com.yullg.android.scaffold.app.ScaffoldConfig
 import com.yullg.android.scaffold.core.Constants
 import com.yullg.android.scaffold.helper.ExceptionHelper
 import com.yullg.android.scaffold.internal.ScaffoldLogger
@@ -46,13 +47,13 @@ internal object Appender {
         handler.sendMessage(handler.obtainMessage(WHAT_LOG, log))
 
     private fun doWriteLog(log: Log) {
-        if (LoggerConfig.findConsoleAppenderEnabled(log.name)
-            && LoggerConfig.findConsoleAppenderLevel(log.name) <= log.logLevel
+        if (ScaffoldConfig.Logger.findConsoleAppenderEnabled(log.name)
+            && ScaffoldConfig.Logger.findConsoleAppenderLevel(log.name) <= log.logLevel
         ) {
             doWriteConsoleLog(log)
         }
-        if (LoggerConfig.findFileAppenderEnabled(log.name)
-            && LoggerConfig.findFileAppenderLevel(log.name) <= log.logLevel
+        if (ScaffoldConfig.Logger.findFileAppenderEnabled(log.name)
+            && ScaffoldConfig.Logger.findFileAppenderLevel(log.name) <= log.logLevel
         ) {
             doWriteFileLog(log)
         }

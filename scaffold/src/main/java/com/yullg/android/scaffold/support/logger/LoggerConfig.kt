@@ -22,8 +22,6 @@ interface LoggerConfig {
 
     fun findFileAppenderLevel(name: String): LogLevel
 
-    companion object : LoggerConfig by MutableLoggerConfig
-
 }
 
 open class MutableLoggerConfig private constructor() : LoggerConfig {

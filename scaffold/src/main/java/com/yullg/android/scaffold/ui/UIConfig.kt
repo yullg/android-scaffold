@@ -1,13 +1,13 @@
 package com.yullg.android.scaffold.ui
 
 import androidx.fragment.app.FragmentActivity
+import com.yullg.android.scaffold.core.ActionProxy
+import com.yullg.android.scaffold.core.ThrottledActionProxy
 import com.yullg.android.scaffold.ui.dialog.*
-import com.yullg.android.scaffold.ui.util.ActionProxy
-import com.yullg.android.scaffold.ui.util.ThrottledActionProxy
 
 interface UIConfig {
 
-    val throttledActionProxyCreator: () -> ActionProxy
+    val clickThrottledActionProxyCreator: () -> ActionProxy<Unit>
 
     val defaultTipDialogHandlerCreator: (FragmentActivity) -> BaseDialogHandler<TipDialogMetadata>
 
@@ -39,14 +39,12 @@ interface UIConfig {
 
     val defaultCustomBottomSheetDialogShowDuration: Long
 
-    companion object : UIConfig by MutableUIConfig
-
 }
 
 open class MutableUIConfig private constructor() : UIConfig {
 
-    override var throttledActionProxyCreator: () -> ActionProxy =
-        { ThrottledActionProxy(1500) }
+    override var clickThrottledActionProxyCreator: () -> ActionProxy<Unit> =
+        { ThrottledActionProxy(1000) {} }
 
     override var defaultTipDialogHandlerCreator: (FragmentActivity) -> BaseDialogHandler<TipDialogMetadata> =
         { activity -> DefaultTipDialogHandler(activity) }

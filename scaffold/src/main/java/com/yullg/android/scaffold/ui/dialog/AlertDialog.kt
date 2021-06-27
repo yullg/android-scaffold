@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import androidx.annotation.*
 import androidx.fragment.app.FragmentActivity
 import com.yullg.android.scaffold.R
+import com.yullg.android.scaffold.app.ScaffoldConfig
 import com.yullg.android.scaffold.databinding.YgDialogAlertCupertinoBinding
 import com.yullg.android.scaffold.databinding.YgDialogAlertMaterialBinding
-import com.yullg.android.scaffold.ui.UIConfig
 import java.lang.ref.WeakReference
 
 data class AlertDialogMetadata(
@@ -50,7 +50,7 @@ class AlertDialog(handler: BaseDialogHandler<AlertDialogMetadata>) :
     private var positiveButtonClickListener: View.OnClickListener? = null
 
     constructor(activity: FragmentActivity) :
-            this(UIConfig.defaultAlertDialogHandlerCreator(activity))
+            this(ScaffoldConfig.UI.defaultAlertDialogHandlerCreator(activity))
 
     fun setTitleResource(@StringRes resId: Int?): AlertDialog {
         this.titleResId = resId
@@ -152,8 +152,8 @@ class AlertDialog(handler: BaseDialogHandler<AlertDialogMetadata>) :
         positiveButtonTextResId = positiveButtonTextResId,
         positiveButtonText = positiveButtonText,
         positiveButtonClickListener = positiveButtonClickListener,
-        cancelable = cancelable ?: UIConfig.defaultAlertDialogCancelable,
-        showDuration = showDuration ?: UIConfig.defaultAlertDialogShowDuration,
+        cancelable = cancelable ?: ScaffoldConfig.UI.defaultAlertDialogCancelable,
+        showDuration = showDuration ?: ScaffoldConfig.UI.defaultAlertDialogShowDuration,
         onShowListener = onShowListener,
         onDismissListener = onDismissListener,
     )

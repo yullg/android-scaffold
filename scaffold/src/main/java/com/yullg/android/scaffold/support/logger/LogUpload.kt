@@ -3,6 +3,7 @@ package com.yullg.android.scaffold.support.logger
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.yullg.android.scaffold.app.ScaffoldConfig
 import com.yullg.android.scaffold.helper.DateHelper
 import com.yullg.android.scaffold.helper.SystemHelper
 import com.yullg.android.scaffold.internal.AliyunOSSClient
@@ -18,7 +19,7 @@ class LogUploadWorker(context: Context, workerParams: WorkerParameters) :
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         try {
             ScaffoldLogger.info("[LogUpload - Worker] begin")
-            val logUploader = LoggerConfig.uploader
+            val logUploader = ScaffoldConfig.Logger.uploader
             if (logUploader != null) {
                 LogFileUtil.uploadEachLogFile { file ->
                     try {

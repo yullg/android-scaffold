@@ -1,6 +1,7 @@
 package com.yullg.android.scaffold.support.logger
 
 import android.os.Process
+import com.yullg.android.scaffold.app.ScaffoldConfig
 import com.yullg.android.scaffold.core.Constants
 import java.util.*
 
@@ -22,10 +23,10 @@ class Logger(private val name: String) : ILogger {
     }
 
     override fun isEnabled(logLevel: LogLevel): Boolean =
-        (LoggerConfig.findConsoleAppenderEnabled(name)
-                && LoggerConfig.findConsoleAppenderLevel(name) <= logLevel)
-                || (LoggerConfig.findFileAppenderEnabled(name)
-                && LoggerConfig.findFileAppenderLevel(name) <= logLevel)
+        (ScaffoldConfig.Logger.findConsoleAppenderEnabled(name)
+                && ScaffoldConfig.Logger.findConsoleAppenderLevel(name) <= logLevel)
+                || (ScaffoldConfig.Logger.findFileAppenderEnabled(name)
+                && ScaffoldConfig.Logger.findFileAppenderLevel(name) <= logLevel)
 
     companion object : ILogger by Logger(Constants.Logger.NAME_DEFAULT)
 

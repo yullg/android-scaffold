@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import androidx.annotation.*
 import androidx.fragment.app.FragmentActivity
 import com.yullg.android.scaffold.R
+import com.yullg.android.scaffold.app.ScaffoldConfig
 import com.yullg.android.scaffold.databinding.YgDialogWaitCircularBinding
 import com.yullg.android.scaffold.databinding.YgDialogWaitLinearBinding
-import com.yullg.android.scaffold.ui.UIConfig
 import java.lang.ref.WeakReference
 
 data class WaitDialogMetadata(
@@ -30,7 +30,7 @@ class WaitDialog(handler: BaseDialogHandler<WaitDialogMetadata>) :
     private var progress: Int? = null
 
     constructor(activity: FragmentActivity) :
-            this(UIConfig.defaultWaitDialogHandlerCreator(activity))
+            this(ScaffoldConfig.UI.defaultWaitDialogHandlerCreator(activity))
 
     fun setMessageResource(@StringRes resId: Int?): WaitDialog {
         this.messageResId = resId
@@ -51,8 +51,8 @@ class WaitDialog(handler: BaseDialogHandler<WaitDialogMetadata>) :
         messageResId = messageResId,
         message = message,
         progress = progress,
-        cancelable = cancelable ?: UIConfig.defaultWaitDialogCancelable,
-        showDuration = showDuration ?: UIConfig.defaultWaitDialogShowDuration,
+        cancelable = cancelable ?: ScaffoldConfig.UI.defaultWaitDialogCancelable,
+        showDuration = showDuration ?: ScaffoldConfig.UI.defaultWaitDialogShowDuration,
         onShowListener = onShowListener,
         onDismissListener = onDismissListener,
     )

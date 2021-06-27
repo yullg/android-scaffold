@@ -2,10 +2,11 @@ package com.yullg.android.scaffold.ui.util
 
 import android.text.style.ClickableSpan
 import android.view.View
-import com.yullg.android.scaffold.ui.UIConfig
+import com.yullg.android.scaffold.app.ScaffoldConfig
+import com.yullg.android.scaffold.core.ActionProxy
 
 open class ClickListenerProxy(
-    protected val actionProxy: ActionProxy,
+    protected val actionProxy: ActionProxy<Unit>,
     protected val listener: View.OnClickListener
 ) : View.OnClickListener {
 
@@ -16,7 +17,7 @@ open class ClickListenerProxy(
 }
 
 open class ClickableSpanProxy(
-    protected val actionProxy: ActionProxy,
+    protected val actionProxy: ActionProxy<Unit>,
     protected val listener: (View) -> Unit
 ) : ClickableSpan() {
 
@@ -27,11 +28,11 @@ open class ClickableSpanProxy(
 }
 
 open class ThrottledClickListener(listener: View.OnClickListener) : ClickListenerProxy(
-    UIConfig.throttledActionProxyCreator(),
+    ScaffoldConfig.UI.clickThrottledActionProxyCreator(),
     listener
 )
 
 open class ThrottledClickableSpan(listener: (View) -> Unit) : ClickableSpanProxy(
-    UIConfig.throttledActionProxyCreator(),
+    ScaffoldConfig.UI.clickThrottledActionProxyCreator(),
     listener
 )

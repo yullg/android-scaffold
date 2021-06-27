@@ -8,8 +8,8 @@ import android.widget.FrameLayout
 import androidx.annotation.*
 import androidx.fragment.app.FragmentActivity
 import com.yullg.android.scaffold.R
+import com.yullg.android.scaffold.app.ScaffoldConfig
 import com.yullg.android.scaffold.internal.ScaffoldLogger
-import com.yullg.android.scaffold.ui.UIConfig
 import java.lang.ref.WeakReference
 
 data class CustomBottomSheetDialogMetadata(
@@ -30,7 +30,7 @@ class CustomBottomSheetDialog(handler: BaseDialogHandler<CustomBottomSheetDialog
     private var viewBinder: ((View) -> Unit)? = null
 
     constructor(activity: FragmentActivity) :
-            this(UIConfig.defaultCustomBottomSheetDialogHandlerCreator(activity))
+            this(ScaffoldConfig.UI.defaultCustomBottomSheetDialogHandlerCreator(activity))
 
     fun setView(view: View?): CustomBottomSheetDialog {
         this.view = view
@@ -53,8 +53,8 @@ class CustomBottomSheetDialog(handler: BaseDialogHandler<CustomBottomSheetDialog
         view = view,
         viewLayoutResId = viewLayoutResId,
         viewBinder = viewBinder,
-        cancelable = cancelable ?: UIConfig.defaultCustomBottomSheetDialogCancelable,
-        showDuration = showDuration ?: UIConfig.defaultCustomBottomSheetDialogShowDuration,
+        cancelable = cancelable ?: ScaffoldConfig.UI.defaultCustomBottomSheetDialogCancelable,
+        showDuration = showDuration ?: ScaffoldConfig.UI.defaultCustomBottomSheetDialogShowDuration,
         onShowListener = onShowListener,
         onDismissListener = onDismissListener,
     )

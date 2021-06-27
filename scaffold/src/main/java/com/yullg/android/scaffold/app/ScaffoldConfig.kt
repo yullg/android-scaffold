@@ -1,8 +1,11 @@
 package com.yullg.android.scaffold.app
 
+import com.yullg.android.scaffold.support.logger.LoggerConfig
 import com.yullg.android.scaffold.support.logger.MutableLoggerConfig
+import com.yullg.android.scaffold.support.media.MediaConfig
 import com.yullg.android.scaffold.support.media.MutableMediaConfig
 import com.yullg.android.scaffold.ui.MutableUIConfig
+import com.yullg.android.scaffold.ui.UIConfig
 
 class ScaffoldConfig internal constructor() {
 
@@ -19,6 +22,16 @@ class ScaffoldConfig internal constructor() {
     fun ui(block: MutableUIConfig.() -> Unit): ScaffoldConfig {
         block(MutableUIConfig)
         return this
+    }
+
+    companion object {
+
+        val Logger: LoggerConfig get() = MutableLoggerConfig
+
+        val Media: MediaConfig get() = MutableMediaConfig
+
+        val UI: UIConfig get() = MutableUIConfig
+
     }
 
 }

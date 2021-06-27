@@ -5,7 +5,6 @@ import com.yullg.android.scaffold.core.Constants
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 import com.yullg.android.scaffold.support.logger.Appender
 import com.yullg.android.scaffold.support.logger.LogUploadWorker
-import com.yullg.android.scaffold.support.logger.LoggerConfig
 import java.util.concurrent.TimeUnit
 
 object ScaffoldBoot {
@@ -16,7 +15,7 @@ object ScaffoldBoot {
     }
 
     fun bootUploadLog() {
-        val uploader = LoggerConfig.uploader
+        val uploader = ScaffoldConfig.Logger.uploader
         if (uploader != null) {
             ScaffoldLogger.info("[LogUpload] LogUploader has provided, enqueue worker")
             val constraints = Constraints.Builder()
@@ -45,10 +44,10 @@ object ScaffoldBoot {
     }
 
     fun bootDeleteExpiredLog() {
-        Appender.deleteLog(LoggerConfig.logFileMaxLife).let {
+        Appender.deleteLog(ScaffoldConfig.Logger.logFileMaxLife).let {
             ScaffoldLogger.info(
                 "[LogAppender] Ready to delete expired log files : logFileMaxLife = ${
-                    LoggerConfig.logFileMaxLife
+                    ScaffoldConfig.Logger.logFileMaxLife
                 }, result = $it"
             )
         }

@@ -8,8 +8,8 @@ import android.widget.FrameLayout
 import androidx.annotation.*
 import androidx.fragment.app.FragmentActivity
 import com.yullg.android.scaffold.R
+import com.yullg.android.scaffold.app.ScaffoldConfig
 import com.yullg.android.scaffold.internal.ScaffoldLogger
-import com.yullg.android.scaffold.ui.UIConfig
 import java.lang.ref.WeakReference
 
 data class CustomDialogMetadata(
@@ -30,7 +30,7 @@ class CustomDialog(handler: BaseDialogHandler<CustomDialogMetadata>) :
     private var viewBinder: ((View) -> Unit)? = null
 
     constructor(activity: FragmentActivity) :
-            this(UIConfig.defaultCustomDialogHandlerCreator(activity))
+            this(ScaffoldConfig.UI.defaultCustomDialogHandlerCreator(activity))
 
     fun setView(view: View?): CustomDialog {
         this.view = view
@@ -53,8 +53,8 @@ class CustomDialog(handler: BaseDialogHandler<CustomDialogMetadata>) :
         view = view,
         viewLayoutResId = viewLayoutResId,
         viewBinder = viewBinder,
-        cancelable = cancelable ?: UIConfig.defaultCustomDialogCancelable,
-        showDuration = showDuration ?: UIConfig.defaultCustomDialogShowDuration,
+        cancelable = cancelable ?: ScaffoldConfig.UI.defaultCustomDialogCancelable,
+        showDuration = showDuration ?: ScaffoldConfig.UI.defaultCustomDialogShowDuration,
         onShowListener = onShowListener,
         onDismissListener = onDismissListener,
     )

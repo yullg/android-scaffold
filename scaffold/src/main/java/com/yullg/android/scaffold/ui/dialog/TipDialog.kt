@@ -8,8 +8,8 @@ import android.view.ViewGroup
 import androidx.annotation.*
 import androidx.fragment.app.FragmentActivity
 import com.yullg.android.scaffold.R
+import com.yullg.android.scaffold.app.ScaffoldConfig
 import com.yullg.android.scaffold.databinding.YgDialogTipBinding
-import com.yullg.android.scaffold.ui.UIConfig
 import java.lang.ref.WeakReference
 
 data class TipDialogMetadata(
@@ -32,7 +32,7 @@ class TipDialog(handler: BaseDialogHandler<TipDialogMetadata>) :
     private var message: CharSequence? = null
 
     constructor(activity: FragmentActivity) :
-            this(UIConfig.defaultTipDialogHandlerCreator(activity))
+            this(ScaffoldConfig.UI.defaultTipDialogHandlerCreator(activity))
 
     fun setIconResource(@DrawableRes resId: Int?): TipDialog {
         this.iconResId = resId
@@ -59,8 +59,8 @@ class TipDialog(handler: BaseDialogHandler<TipDialogMetadata>) :
         icon = icon,
         messageResId = messageResId,
         message = message,
-        cancelable = cancelable ?: UIConfig.defaultTipDialogCancelable,
-        showDuration = showDuration ?: UIConfig.defaultTipDialogShowDuration,
+        cancelable = cancelable ?: ScaffoldConfig.UI.defaultTipDialogCancelable,
+        showDuration = showDuration ?: ScaffoldConfig.UI.defaultTipDialogShowDuration,
         onShowListener = onShowListener,
         onDismissListener = onDismissListener,
     )
