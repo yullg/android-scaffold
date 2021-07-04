@@ -51,6 +51,7 @@ dependencies {
     compileOnly 'androidx.camera:camera-view:1.1.0-rc02'
     compileOnly 'androidx.camera:camera-lifecycle:1.1.0-rc02'
 //    compileOnly 'androidx.camera:camera-video:1.1.0-rc02'
+    compileOnly 'com.squareup.okhttp3:okhttp:4.10.0'
 }
 
 apply from: 'publish-signing.gradle'
