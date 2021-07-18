@@ -1,4 +1,4 @@
-package com.yullg.android.scaffold.support.camera
+package com.yullg.android.scaffold.support.media
 
 import android.content.Context
 import androidx.annotation.UiThread

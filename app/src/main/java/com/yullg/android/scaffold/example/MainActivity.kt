@@ -11,7 +11,7 @@ import androidx.camera.core.Preview
 import com.yullg.android.scaffold.framework.BaseActivity
 import com.yullg.android.scaffold.framework.BaseViewModel
 import com.yullg.android.scaffold.framework.EmptyAC
-import com.yullg.android.scaffold.support.camera.CameraXWrapper
+import com.yullg.android.scaffold.support.media.CameraXWrapper
 import com.yullg.android.scaffold.ui.dialog.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope

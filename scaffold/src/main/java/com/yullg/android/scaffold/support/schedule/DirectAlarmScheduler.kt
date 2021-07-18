@@ -9,10 +9,10 @@ import android.os.Build
 import androidx.annotation.CallSuper
 import com.yullg.android.scaffold.app.Scaffold
 
-open class DirectAlarmScheduler(private val name: String, private val listener: () -> Unit) :
+open class DirectAlarmScheduler(private val uniqueName: String, private val listener: () -> Unit) :
     AutoCloseable {
 
-    private val intentAction = "${Scaffold.context.packageName}.action.yg.$name"
+    private val intentAction = "${Scaffold.context.packageName}.action.yg.$uniqueName"
     private val broadcastReceiver: BroadcastReceiver
     private val alarmScheduler: AlarmScheduler
 

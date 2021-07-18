@@ -2,19 +2,19 @@ package com.yullg.android.scaffold.support.schedule
 
 import android.os.*
 
-open class HandlerScheduler(protected val handler: Handler, protected val runnable: Runnable) {
+open class HandlerScheduler(private val handler: Handler, private val runnable: Runnable) {
 
     constructor(looper: Looper, runnable: Runnable) : this(Handler(looper), runnable)
 
-    open fun schedule() = handler.sendMessage(Message.obtain(handler, runnable))
+    fun schedule() = handler.sendMessage(Message.obtain(handler, runnable))
 
-    open fun scheduleAtTime(uptimeMillis: Long) =
+    fun scheduleAtTime(uptimeMillis: Long) =
         handler.sendMessageAtTime(Message.obtain(handler, runnable), uptimeMillis)
 
-    open fun scheduleDelayed(delayMillis: Long) =
+    fun scheduleDelayed(delayMillis: Long) =
         handler.sendMessageDelayed(Message.obtain(handler, runnable), delayMillis)
 
-    open fun cancel() = handler.removeCallbacks(runnable)
+    fun cancel() = handler.removeCallbacks(runnable)
 
 }
 
