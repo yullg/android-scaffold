@@ -9,7 +9,7 @@ import android.os.Build
 import androidx.annotation.CallSuper
 import com.yullg.android.scaffold.app.Scaffold
 
-open class DirectAlarmScheduler(private val uniqueName: String, private val listener: () -> Unit) :
+open class DirectAlarmScheduler(private val uniqueName: String, private val runnable: Runnable) :
     AutoCloseable {
 
     private val intentAction = "${Scaffold.context.packageName}.action.yg.$uniqueName"
@@ -19,7 +19,7 @@ open class DirectAlarmScheduler(private val uniqueName: String, private val list
     init {
         broadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                listener()
+                runnable.run()
             }
         }
         Scaffold.context.registerReceiver(broadcastReceiver, IntentFilter(intentAction))
