@@ -144,13 +144,13 @@ class OkHttpLoggingInterceptor(
                             }"
                         )
                         if (gzippedLength != null) {
-                            messageBuilder.append("\n--> END HTTP (${buffer.size}-byte body, $gzippedLength-gzipped-byte body)")
+                            messageBuilder.append("\n<-- END HTTP (${buffer.size}-byte body, $gzippedLength-gzipped-byte body)")
                         } else {
-                            messageBuilder.append("\n--> END HTTP (${buffer.size}-byte body)")
+                            messageBuilder.append("\n<-- END HTTP (${buffer.size}-byte body)")
                         }
                     } else {
                         messageBuilder.append(
-                            "\n--> END HTTP (binary ${buffer.size}-byte body omitted)"
+                            "\n<-- END HTTP (binary ${buffer.size}-byte body omitted)"
                         )
                     }
                 }
