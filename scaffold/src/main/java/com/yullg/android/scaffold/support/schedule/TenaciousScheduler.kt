@@ -176,26 +176,28 @@ open class TenaciousScheduler(
             }
             try {
                 val nowTime = SystemClock.elapsedRealtime()
+                val logMessage = StringBuilder()
                 if (lastScheduleTime > 0) {
                     val scheduleInterval = nowTime - lastScheduleTime
                     if (scheduleInterval > maxScheduleInterval) {
                         if (ScaffoldLogger.isDebugEnabled()) {
-                            ScaffoldLogger.debug("[TenaciousScheduler] HSR will update 'maxScheduleInterval' : scheduleInterval = $scheduleInterval, maxScheduleInterval = $maxScheduleInterval")
+                            logMessage.append("[TenaciousScheduler] HSR start delivery : scheduleInterval = $scheduleInterval, maxScheduleInterval = $maxScheduleInterval")
                         }
                         maxScheduleInterval = scheduleInterval
                     } else {
                         if (ScaffoldLogger.isDebugEnabled()) {
-                            ScaffoldLogger.debug("[TenaciousScheduler] HSR did not update 'maxScheduleInterval' : scheduleInterval = $scheduleInterval, maxScheduleInterval = $maxScheduleInterval")
+                            logMessage.append("[TenaciousScheduler] HSR start delivery : scheduleInterval = $scheduleInterval, maxScheduleInterval = $maxScheduleInterval")
                         }
                     }
                 } else {
                     if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[TenaciousScheduler] HSR first run")
+                        logMessage.append("[TenaciousScheduler] HSR start delivery : first run")
                     }
                 }
                 (SCHEDULER_HANDLER == scheduler).let {
                     if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[TenaciousScheduler] HSR start delivery : $it")
+                        logMessage.append(", $it")
+                        ScaffoldLogger.debug(logMessage.toString())
                     }
                     if (it) {
                         runnable.run()
@@ -204,9 +206,6 @@ open class TenaciousScheduler(
             } finally {
                 lastScheduleTime = SystemClock.elapsedRealtime()
                 handlerScheduler.scheduleDelayed(handlerScheduleInterval)
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[TenaciousScheduler] HSR finished running at $lastScheduleTime and will rerun after ${handlerScheduleInterval / 1000} seconds")
-                }
             }
         }
 
@@ -250,38 +249,63 @@ open class TenaciousScheduler(
                 }
                 return
             }
+            val nowTime = SystemClock.elapsedRealtime()
             val handlerLastScheduleTime = handlerSchedulerRunnable.lastScheduleTime
             val handlerMaxScheduleInterval = handlerSchedulerRunnable.maxScheduleInterval
             if (alarmToHandler) {
-                if (handlerLastScheduleTime <= 0 || handlerMaxScheduleInterval > maxHandlerScheduleIdleDuration) {
+                if (shouldSwitchToAlarmScheduler(
+                        nowTime,
+                        handlerLastScheduleTime,
+                        handlerMaxScheduleInterval
+                    )
+                ) {
                     switchScheduler(SCHEDULER_ALARM)
                     handlerSchedulerRunnable.reset()
                     handlerScheduler.scheduleDelayed(handlerScheduleInterval)
                     val switcherInterval = scheduleSwitchScheduler(false)
                     if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[TenaciousScheduler] SSR has performed switchover ($handlerLastScheduleTime, $handlerMaxScheduleInterval) and will rerun after ${switcherInterval / 1000} seconds : HS = OFF, AS = ON, SS = ON")
+                        ScaffoldLogger.debug("[TenaciousScheduler] SSR has performed switchover (nowTime = $nowTime, lastTime = $handlerLastScheduleTime, maxInterval = $handlerMaxScheduleInterval) and will rerun after ${switcherInterval / 1000} seconds : HS = ON, AS = ON, SS = ON")
                     }
                 } else {
                     switchScheduler(SCHEDULER_HANDLER)
                     val switcherInterval = scheduleSwitchScheduler(false)
                     if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[TenaciousScheduler] SSR has performed switchover ($handlerLastScheduleTime, $handlerMaxScheduleInterval) and will rerun after ${switcherInterval / 1000} seconds : HS = ON, AS = OFF, SS = ON")
+                        ScaffoldLogger.debug("[TenaciousScheduler] SSR has performed switchover (nowTime = $nowTime, lastTime = $handlerLastScheduleTime, maxInterval = $handlerMaxScheduleInterval) and will rerun after ${switcherInterval / 1000} seconds : HS = ON, AS = OFF, SS = ON")
                     }
                 }
             } else {
-                if (handlerLastScheduleTime <= 0 || handlerMaxScheduleInterval > maxHandlerScheduleIdleDuration) {
+                if (shouldSwitchToAlarmScheduler(
+                        nowTime,
+                        handlerLastScheduleTime,
+                        handlerMaxScheduleInterval
+                    )
+                ) {
                     switchScheduler(SCHEDULER_ALARM)
                     if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[TenaciousScheduler] SSR has performed switchover ($handlerLastScheduleTime, $handlerMaxScheduleInterval) : HS = OFF, AS = ON, SS = OFF")
+                        ScaffoldLogger.debug("[TenaciousScheduler] SSR has performed switchover (nowTime = $nowTime, lastTime = $handlerLastScheduleTime, maxInterval = $handlerMaxScheduleInterval) : HS = OFF, AS = ON, SS = OFF")
                     }
                 } else {
                     handlerSchedulerRunnable.reset()
                     val switcherInterval = scheduleSwitchScheduler(false)
                     if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[TenaciousScheduler] SSR did not perform switchover ($handlerLastScheduleTime, $handlerMaxScheduleInterval) and will rerun after ${switcherInterval / 1000} seconds : HS = ON, AS = OFF, SS = ON")
+                        ScaffoldLogger.debug("[TenaciousScheduler] SSR did not perform switchover (nowTime = $nowTime, lastTime = $handlerLastScheduleTime, maxInterval = $handlerMaxScheduleInterval) and will rerun after ${switcherInterval / 1000} seconds : HS = ON, AS = OFF, SS = ON")
                     }
                 }
             }
+        }
+
+        private fun shouldSwitchToAlarmScheduler(
+            nowTime: Long,
+            handlerLastScheduleTime: Long,
+            handlerMaxScheduleInterval: Long
+        ): Boolean {
+            if (handlerLastScheduleTime <= 0 || handlerMaxScheduleInterval > maxHandlerScheduleIdleDuration) {
+                return true
+            }
+            if (nowTime - handlerLastScheduleTime > maxHandlerScheduleIdleDuration) {
+                return true
+            }
+            return false
         }
 
     }
