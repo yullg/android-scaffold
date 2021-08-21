@@ -12,11 +12,10 @@ import androidx.annotation.MainThread
 import com.yullg.android.scaffold.app.Scaffold
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 import java.util.concurrent.atomic.AtomicLong
+import kotlin.math.max
 import kotlin.math.min
 
-private const val SCHEDULER_NONE: Int = 0
-private const val SCHEDULER_HANDLER: Int = 1
-private const val SCHEDULER_ALARM: Int = 2
+private enum class ScheduleMode { NONE, HANDLER, ALARM, ALARM_AND_HANDLER }
 
 @MainThread
 open class TenaciousScheduler(
@@ -30,19 +29,21 @@ open class TenaciousScheduler(
     private val runnable: Runnable
 ) : AutoCloseable {
 
-    private val screenBroadcastReceiver: ScreenBroadcastReceiver
     private val handlerSchedulerRunnable: HandlerSchedulerRunnable
     private val alarmSchedulerRunnable: AlarmSchedulerRunnable
     private val switcherSchedulerRunnable: SwitcherSchedulerRunnable
+    private val screenBroadcastReceiver: ScreenBroadcastReceiver
     private val handlerScheduler: MainHandlerScheduler
     private val alarmScheduler: DirectAlarmScheduler
     private val switcherScheduler: DirectAlarmScheduler
 
+    private var scheduleMode: ScheduleMode = ScheduleMode.NONE
+
     init {
-        screenBroadcastReceiver = ScreenBroadcastReceiver()
         handlerSchedulerRunnable = HandlerSchedulerRunnable()
         alarmSchedulerRunnable = AlarmSchedulerRunnable()
         switcherSchedulerRunnable = SwitcherSchedulerRunnable()
+        screenBroadcastReceiver = ScreenBroadcastReceiver()
         handlerScheduler = MainHandlerScheduler(handlerSchedulerRunnable)
         alarmScheduler = DirectAlarmScheduler(uniqueName, alarmSchedulerRunnable)
         switcherScheduler = DirectAlarmScheduler(
@@ -51,13 +52,45 @@ open class TenaciousScheduler(
         )
     }
 
-    private var scheduling: Boolean = false
-    private var scheduler: Int = SCHEDULER_NONE
+    private fun switchScheduleMode(scheduleMode: ScheduleMode) {
+        this.scheduleMode = scheduleMode
+        when (scheduleMode) {
+            ScheduleMode.HANDLER -> {
+                alarmScheduler.cancel()
+                handlerScheduler.cancel()
+                handlerSchedulerRunnable.reset()
+                handlerScheduler.scheduleDelayed(handlerScheduleInterval)
+            }
+            ScheduleMode.ALARM -> {
+                handlerScheduler.cancel()
+                handlerSchedulerRunnable.reset()
+                alarmScheduler.scheduleRepeating(
+                    AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    SystemClock.elapsedRealtime() + alarmScheduleInterval,
+                    alarmScheduleInterval
+                )
+            }
+            ScheduleMode.ALARM_AND_HANDLER -> {
+                alarmScheduler.scheduleRepeating(
+                    AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    SystemClock.elapsedRealtime() + alarmScheduleInterval,
+                    alarmScheduleInterval
+                )
+                handlerScheduler.cancel()
+                handlerSchedulerRunnable.reset()
+                handlerScheduler.scheduleDelayed(handlerScheduleInterval)
+            }
+            ScheduleMode.NONE -> {
+                alarmScheduler.cancel()
+                handlerScheduler.cancel()
+                handlerSchedulerRunnable.reset()
+            }
+        }
+    }
 
     fun schedule() {
-        if (!scheduling) {
-            scheduling = true
-            switchScheduler(SCHEDULER_HANDLER)
+        if (ScheduleMode.NONE == scheduleMode) {
+            switchScheduleMode(ScheduleMode.HANDLER)
             val switcherInterval = startSwitchScheduler(true)
             startScreenScheduler()
             if (ScaffoldLogger.isDebugEnabled()) {
@@ -71,11 +104,8 @@ open class TenaciousScheduler(
     }
 
     fun cancel() {
-        if (scheduling) {
-            scheduling = false
-            scheduler = SCHEDULER_NONE
-            handlerScheduler.cancel()
-            alarmScheduler.cancel()
+        if (ScheduleMode.NONE != scheduleMode) {
+            switchScheduleMode(ScheduleMode.NONE)
             stopSwitchScheduler()
             stopScreenScheduler()
             if (ScaffoldLogger.isDebugEnabled()) {
@@ -98,33 +128,6 @@ open class TenaciousScheduler(
         }
     }
 
-    private fun switchScheduler(targetScheduler: Int) {
-        if (SCHEDULER_HANDLER == targetScheduler) {
-            scheduler = SCHEDULER_HANDLER
-            startHandlerScheduler()
-            stopAlarmScheduler()
-        } else if (SCHEDULER_ALARM == targetScheduler) {
-            scheduler = SCHEDULER_ALARM
-            startAlarmScheduler()
-            stopHandlerScheduler()
-        } else {
-            if (ScaffoldLogger.isWarnEnabled()) {
-                ScaffoldLogger.warn("[TenaciousScheduler] Scheduler is not supported : $targetScheduler")
-            }
-        }
-    }
-
-    private fun startScreenScheduler() {
-        Scaffold.context.registerReceiver(screenBroadcastReceiver, IntentFilter().apply {
-            addAction(Intent.ACTION_SCREEN_ON)
-            addAction(Intent.ACTION_SCREEN_OFF)
-        })
-    }
-
-    private fun stopScreenScheduler() {
-        Scaffold.context.unregisterReceiver(screenBroadcastReceiver)
-    }
-
     private fun startSwitchScheduler(resetSupplier: Boolean): Long {
         if (resetSupplier) {
             switcherIntervalSupplier.reset()
@@ -141,92 +144,51 @@ open class TenaciousScheduler(
         switcherScheduler.cancel()
     }
 
-    private fun startHandlerScheduler() {
-        handlerScheduler.cancel()
-        handlerSchedulerRunnable.reset()
-        handlerScheduler.scheduleDelayed(handlerScheduleInterval)
+    private fun startScreenScheduler() {
+        Scaffold.context.registerReceiver(screenBroadcastReceiver, IntentFilter().apply {
+            addAction(Intent.ACTION_SCREEN_ON)
+            addAction(Intent.ACTION_SCREEN_OFF)
+        })
     }
 
-    private fun stopHandlerScheduler() {
-        handlerScheduler.cancel()
-        handlerSchedulerRunnable.reset()
-    }
-
-    private fun startAlarmScheduler() {
-        alarmScheduler.cancel()
-        alarmScheduler.scheduleRepeating(
-            AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            SystemClock.elapsedRealtime() + alarmScheduleInterval,
-            alarmScheduleInterval
-        )
-    }
-
-    private fun stopAlarmScheduler() {
-        alarmScheduler.cancel()
-    }
-
-    private inner class ScreenBroadcastReceiver : BroadcastReceiver() {
-
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (context == null || intent == null) return
-            if (!scheduling) {
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[TenaciousScheduler] SBR execution was interrupted because the schedule was not started")
-                }
-                return
-            }
-            switchScheduler(SCHEDULER_HANDLER)
-            if (Intent.ACTION_SCREEN_ON == intent.action) {
-                stopSwitchScheduler()
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[TenaciousScheduler] SBR received ON and has performed switchover : HS = ON, AS = OFF, SS = OFF")
-                }
-            } else if (Intent.ACTION_SCREEN_OFF == intent.action) {
-                val switcherInterval = startSwitchScheduler(true)
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[TenaciousScheduler] SBR received OFF and has started SS, SS will run after ${switcherInterval / 1000} seconds : HS = ON, AS = OFF, SS = ON")
-                }
-            }
-        }
-
+    private fun stopScreenScheduler() {
+        Scaffold.context.unregisterReceiver(screenBroadcastReceiver)
     }
 
     private inner class HandlerSchedulerRunnable : Runnable {
 
-        var lastScheduleTime: Long = -1
-        var maxScheduleInterval: Long = Long.MIN_VALUE
+        var lastScheduleTime: Long? = null
+        var maxScheduleInterval: Long? = null
 
         override fun run() {
-            if (!scheduling) {
+            if (ScheduleMode.NONE == scheduleMode) {
                 if (ScaffoldLogger.isDebugEnabled()) {
                     ScaffoldLogger.debug("[TenaciousScheduler] HSR deliver was interrupted because the schedule was not started")
                 }
                 return
             }
             try {
+                val logMessageBuilder = StringBuilder()
                 val nowTime = SystemClock.elapsedRealtime()
-                val logMessage = StringBuilder()
-                if (lastScheduleTime > 0) {
-                    val scheduleInterval = nowTime - lastScheduleTime
-                    if (scheduleInterval > maxScheduleInterval) {
-                        if (ScaffoldLogger.isDebugEnabled()) {
-                            logMessage.append("[TenaciousScheduler] HSR start deliver : scheduleInterval = $scheduleInterval, maxScheduleInterval = $maxScheduleInterval")
+                if (ScaffoldLogger.isDebugEnabled()) {
+                    lastScheduleTime.let { lst ->
+                        if (lst == null) {
+                            logMessageBuilder.append("[TenaciousScheduler] HSR start deliver : first run")
+                        } else {
+                            logMessageBuilder.append("[TenaciousScheduler] HSR start deliver : scheduleInterval = ${nowTime - lst}, maxScheduleInterval = $maxScheduleInterval")
                         }
-                        maxScheduleInterval = scheduleInterval
-                    } else {
-                        if (ScaffoldLogger.isDebugEnabled()) {
-                            logMessage.append("[TenaciousScheduler] HSR start deliver : scheduleInterval = $scheduleInterval, maxScheduleInterval = $maxScheduleInterval")
-                        }
-                    }
-                } else {
-                    if (ScaffoldLogger.isDebugEnabled()) {
-                        logMessage.append("[TenaciousScheduler] HSR start deliver : first run")
                     }
                 }
-                (SCHEDULER_HANDLER == scheduler).let {
+                lastScheduleTime?.let { lst ->
+                    val scheduleInterval = nowTime - lst
+                    maxScheduleInterval = maxScheduleInterval?.let { msi ->
+                        max(scheduleInterval, msi)
+                    } ?: scheduleInterval
+                }
+                (ScheduleMode.HANDLER == scheduleMode).let {
                     if (ScaffoldLogger.isDebugEnabled()) {
-                        logMessage.append(", $it")
-                        ScaffoldLogger.debug(logMessage.toString())
+                        logMessageBuilder.append(", $it")
+                        ScaffoldLogger.debug(logMessageBuilder.toString())
                     }
                     if (it) {
                         runnable.run()
@@ -239,8 +201,8 @@ open class TenaciousScheduler(
         }
 
         fun reset() {
-            lastScheduleTime = -1
-            maxScheduleInterval = Long.MIN_VALUE
+            lastScheduleTime = null
+            maxScheduleInterval = null
             if (ScaffoldLogger.isDebugEnabled()) {
                 ScaffoldLogger.debug("[TenaciousScheduler] HSR has been reset")
             }
@@ -251,13 +213,13 @@ open class TenaciousScheduler(
     private inner class AlarmSchedulerRunnable : Runnable {
 
         override fun run() {
-            if (!scheduling) {
+            if (ScheduleMode.NONE == scheduleMode) {
                 if (ScaffoldLogger.isDebugEnabled()) {
                     ScaffoldLogger.debug("[TenaciousScheduler] ASR deliver was interrupted because the schedule was not started")
                 }
                 return
             }
-            (SCHEDULER_ALARM == scheduler).let {
+            (ScheduleMode.ALARM == scheduleMode || ScheduleMode.ALARM_AND_HANDLER == scheduleMode).let {
                 if (ScaffoldLogger.isDebugEnabled()) {
                     ScaffoldLogger.debug("[TenaciousScheduler] ASR start deliver : $it")
                 }
@@ -272,7 +234,7 @@ open class TenaciousScheduler(
     private inner class SwitcherSchedulerRunnable : Runnable {
 
         override fun run() {
-            if (!scheduling) {
+            if (ScheduleMode.NONE == scheduleMode) {
                 if (ScaffoldLogger.isDebugEnabled()) {
                     ScaffoldLogger.debug("[TenaciousScheduler] SSR execution was interrupted because the schedule was not started")
                 }
@@ -288,15 +250,21 @@ open class TenaciousScheduler(
                         handlerMaxScheduleInterval
                     )
                 ) {
-                    switchScheduler(SCHEDULER_ALARM)
-                    handlerSchedulerRunnable.reset()
-                    handlerScheduler.scheduleDelayed(handlerScheduleInterval)
+                    if (ScheduleMode.ALARM_AND_HANDLER != scheduleMode) {
+                        switchScheduleMode(ScheduleMode.ALARM_AND_HANDLER)
+                    } else {
+                        handlerSchedulerRunnable.reset()
+                    }
                     val switcherInterval = startSwitchScheduler(false)
                     if (ScaffoldLogger.isDebugEnabled()) {
                         ScaffoldLogger.debug("[TenaciousScheduler] SSR has performed switchover (nowTime = $nowTime, lastTime = $handlerLastScheduleTime, maxInterval = $handlerMaxScheduleInterval) and will rerun after ${switcherInterval / 1000} seconds : HS = ON, AS = ON, SS = ON")
                     }
                 } else {
-                    switchScheduler(SCHEDULER_HANDLER)
+                    if (ScheduleMode.HANDLER != scheduleMode) {
+                        switchScheduleMode(ScheduleMode.HANDLER)
+                    } else {
+                        handlerSchedulerRunnable.reset()
+                    }
                     val switcherInterval = startSwitchScheduler(false)
                     if (ScaffoldLogger.isDebugEnabled()) {
                         ScaffoldLogger.debug("[TenaciousScheduler] SSR has performed switchover (nowTime = $nowTime, lastTime = $handlerLastScheduleTime, maxInterval = $handlerMaxScheduleInterval) and will rerun after ${switcherInterval / 1000} seconds : HS = ON, AS = OFF, SS = ON")
@@ -309,7 +277,9 @@ open class TenaciousScheduler(
                         handlerMaxScheduleInterval
                     )
                 ) {
-                    switchScheduler(SCHEDULER_ALARM)
+                    if (ScheduleMode.ALARM != scheduleMode) {
+                        switchScheduleMode(ScheduleMode.ALARM)
+                    }
                     if (ScaffoldLogger.isDebugEnabled()) {
                         ScaffoldLogger.debug("[TenaciousScheduler] SSR has performed switchover (nowTime = $nowTime, lastTime = $handlerLastScheduleTime, maxInterval = $handlerMaxScheduleInterval) : HS = OFF, AS = ON, SS = OFF")
                     }
@@ -325,16 +295,44 @@ open class TenaciousScheduler(
 
         private fun shouldSwitchToAlarmScheduler(
             nowTime: Long,
-            handlerLastScheduleTime: Long,
-            handlerMaxScheduleInterval: Long
+            handlerLastScheduleTime: Long?,
+            handlerMaxScheduleInterval: Long?
         ): Boolean {
-            if (handlerLastScheduleTime <= 0 || handlerMaxScheduleInterval > maxHandlerScheduleIdleDuration) {
-                return true
+            return if (handlerLastScheduleTime == null) {
+                true
+            } else if (handlerMaxScheduleInterval == null) {
+                nowTime - handlerLastScheduleTime > maxHandlerScheduleIdleDuration
+            } else {
+                handlerMaxScheduleInterval > maxHandlerScheduleIdleDuration
             }
-            if (nowTime - handlerLastScheduleTime > maxHandlerScheduleIdleDuration) {
-                return true
+        }
+
+    }
+
+    private inner class ScreenBroadcastReceiver : BroadcastReceiver() {
+
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (context == null || intent == null) return
+            if (ScheduleMode.NONE == scheduleMode) {
+                if (ScaffoldLogger.isDebugEnabled()) {
+                    ScaffoldLogger.debug("[TenaciousScheduler] SBR execution was interrupted because the schedule was not started")
+                }
+                return
             }
-            return false
+            if (ScheduleMode.HANDLER != scheduleMode) {
+                switchScheduleMode(ScheduleMode.HANDLER)
+            }
+            if (Intent.ACTION_SCREEN_ON == intent.action) {
+                stopSwitchScheduler()
+                if (ScaffoldLogger.isDebugEnabled()) {
+                    ScaffoldLogger.debug("[TenaciousScheduler] SBR received ON and has performed switchover : HS = ON, AS = OFF, SS = OFF")
+                }
+            } else if (Intent.ACTION_SCREEN_OFF == intent.action) {
+                val switcherInterval = startSwitchScheduler(true)
+                if (ScaffoldLogger.isDebugEnabled()) {
+                    ScaffoldLogger.debug("[TenaciousScheduler] SBR received OFF and has started SS, SS will run after ${switcherInterval / 1000} seconds : HS = ON, AS = OFF, SS = ON")
+                }
+            }
         }
 
     }
