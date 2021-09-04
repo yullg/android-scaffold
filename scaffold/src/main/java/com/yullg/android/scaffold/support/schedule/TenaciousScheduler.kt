@@ -5,10 +5,12 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.PowerManager
 import android.os.SystemClock
 import androidx.annotation.CallSuper
 import androidx.annotation.IntRange
 import androidx.annotation.MainThread
+import androidx.core.content.ContextCompat
 import com.yullg.android.scaffold.app.Scaffold
 import com.yullg.android.scaffold.core.ExponentialIncreaseNumberSupplier
 import com.yullg.android.scaffold.core.NumberSupplier
@@ -21,11 +23,13 @@ private enum class ScheduleMode { NONE, HANDLER, ALARM, ALARM_AND_HANDLER }
 open class TenaciousScheduler(
     private val uniqueName: String,
     @IntRange(from = 1) private val scheduleInterval: Long = 5_000,
-    @IntRange(from = 60000) private val standbyScheduleInterval: Long = 900_000,
     @IntRange(from = 1) private val maxScheduleHangDuration: Long = 300_000,
+    @IntRange(from = 60000) private val enhancedScheduleInterval: Long = 900_000,
     private val switcherIntervalSupplier: NumberSupplier =
-        ExponentialIncreaseNumberSupplier(600_000, 3600_000),
-    private val autoExitStandby: Boolean = false,
+        ExponentialIncreaseNumberSupplier(600_000, 9600_000),
+    private val enhancedSchedulerPunctuality: Boolean = true,
+    private val switcherSchedulerPunctuality: Boolean = true,
+    private val autoExitEnhance: Boolean = false,
     private val runnable: Runnable
 ) : AutoCloseable {
 
@@ -58,32 +62,28 @@ open class TenaciousScheduler(
             ScheduleMode.HANDLER -> {
                 alarmScheduler.cancel()
                 handlerScheduler.cancel()
-                handlerSchedulerRunnable.reset()
                 handlerScheduler.scheduleDelayed(scheduleInterval)
             }
             ScheduleMode.ALARM -> {
                 handlerScheduler.cancel()
-                handlerSchedulerRunnable.reset()
                 alarmScheduler.scheduleRepeating(
-                    AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    SystemClock.elapsedRealtime() + standbyScheduleInterval,
-                    standbyScheduleInterval
+                    if (enhancedSchedulerPunctuality) AlarmManager.ELAPSED_REALTIME_WAKEUP else AlarmManager.ELAPSED_REALTIME,
+                    SystemClock.elapsedRealtime() + enhancedScheduleInterval,
+                    enhancedScheduleInterval
                 )
             }
             ScheduleMode.ALARM_AND_HANDLER -> {
                 alarmScheduler.scheduleRepeating(
-                    AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    SystemClock.elapsedRealtime() + standbyScheduleInterval,
-                    standbyScheduleInterval
+                    if (enhancedSchedulerPunctuality) AlarmManager.ELAPSED_REALTIME_WAKEUP else AlarmManager.ELAPSED_REALTIME,
+                    SystemClock.elapsedRealtime() + enhancedScheduleInterval,
+                    enhancedScheduleInterval
                 )
                 handlerScheduler.cancel()
-                handlerSchedulerRunnable.reset()
                 handlerScheduler.scheduleDelayed(scheduleInterval)
             }
             ScheduleMode.NONE -> {
                 alarmScheduler.cancel()
                 handlerScheduler.cancel()
-                handlerSchedulerRunnable.reset()
             }
         }
     }
@@ -91,11 +91,23 @@ open class TenaciousScheduler(
     fun schedule() {
         if (ScheduleMode.NONE == scheduleMode) {
             switchScheduleMode(ScheduleMode.HANDLER)
-            val switcherInterval = startSwitchScheduler(true)
-            startScreenScheduler()
             if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[TenaciousScheduler] Scheduler scheduled, SS will arrive after ${switcherInterval / 1000} seconds")
+                ScaffoldLogger.debug("[TenaciousScheduler] Scheduler scheduled")
             }
+            startScreenScheduler()
+            ContextCompat.getSystemService(Scaffold.context, PowerManager::class.java)
+                ?.isInteractive?.let {
+                    if (it) {
+                        if (ScaffoldLogger.isDebugEnabled()) {
+                            ScaffoldLogger.debug("[TenaciousScheduler] Scheduler-SS unscheduled")
+                        }
+                    } else {
+                        val switcherInterval = startSwitchScheduler(true)
+                        if (ScaffoldLogger.isDebugEnabled()) {
+                            ScaffoldLogger.debug("[TenaciousScheduler] Scheduler-SS scheduled : nextScheduleInterval = ${switcherInterval / 1000}")
+                        }
+                    }
+                }
         } else {
             if (ScaffoldLogger.isWarnEnabled()) {
                 ScaffoldLogger.warn("[TenaciousScheduler] Repetitive schedule")
@@ -106,8 +118,8 @@ open class TenaciousScheduler(
     fun cancel() {
         if (ScheduleMode.NONE != scheduleMode) {
             switchScheduleMode(ScheduleMode.NONE)
-            stopSwitchScheduler()
             stopScreenScheduler()
+            stopSwitchScheduler()
             if (ScaffoldLogger.isDebugEnabled()) {
                 ScaffoldLogger.debug("[TenaciousScheduler] Scheduler canceled")
             }
@@ -133,8 +145,9 @@ open class TenaciousScheduler(
             switcherIntervalSupplier.reset()
         }
         val switcherInterval = switcherIntervalSupplier.get()
+        handlerSchedulerRunnable.reset()
         switcherScheduler.scheduleAndAllowWhileIdle(
-            AlarmManager.ELAPSED_REALTIME_WAKEUP,
+            if (switcherSchedulerPunctuality) AlarmManager.ELAPSED_REALTIME_WAKEUP else AlarmManager.ELAPSED_REALTIME,
             SystemClock.elapsedRealtime() + switcherInterval
         )
         return switcherInterval
@@ -241,7 +254,7 @@ open class TenaciousScheduler(
             val nowTime = SystemClock.elapsedRealtime()
             val handlerLastScheduleTime = handlerSchedulerRunnable.lastScheduleTime
             val handlerMaxScheduleInterval = handlerSchedulerRunnable.maxScheduleInterval
-            if (autoExitStandby) {
+            if (autoExitEnhance) {
                 if (shouldSwitchToAlarmScheduler(
                         nowTime,
                         handlerLastScheduleTime,
@@ -250,8 +263,6 @@ open class TenaciousScheduler(
                 ) {
                     if (ScheduleMode.ALARM_AND_HANDLER != scheduleMode) {
                         switchScheduleMode(ScheduleMode.ALARM_AND_HANDLER)
-                    } else {
-                        handlerSchedulerRunnable.reset()
                     }
                     val switcherInterval = startSwitchScheduler(false)
                     if (ScaffoldLogger.isDebugEnabled()) {
@@ -260,8 +271,6 @@ open class TenaciousScheduler(
                 } else {
                     if (ScheduleMode.HANDLER != scheduleMode) {
                         switchScheduleMode(ScheduleMode.HANDLER)
-                    } else {
-                        handlerSchedulerRunnable.reset()
                     }
                     val switcherInterval = startSwitchScheduler(false)
                     if (ScaffoldLogger.isDebugEnabled()) {
@@ -277,14 +286,11 @@ open class TenaciousScheduler(
                 ) {
                     if (ScheduleMode.ALARM != scheduleMode) {
                         switchScheduleMode(ScheduleMode.ALARM)
-                    } else {
-                        handlerSchedulerRunnable.reset()
                     }
                     if (ScaffoldLogger.isDebugEnabled()) {
                         ScaffoldLogger.debug("[TenaciousScheduler] SSR schedule : nowTime = $nowTime, HSR_lastTime = $handlerLastScheduleTime, HSR_maxInterval = $handlerMaxScheduleInterval : HS = OFF, AS = ON, SS = OFF")
                     }
                 } else {
-                    handlerSchedulerRunnable.reset()
                     val switcherInterval = startSwitchScheduler(false)
                     if (ScaffoldLogger.isDebugEnabled()) {
                         ScaffoldLogger.debug("[TenaciousScheduler] SSR schedule : nowTime = $nowTime, nextScheduleInterval = ${switcherInterval / 1000}, HSR_lastTime = $handlerLastScheduleTime, HSR_maxInterval = $handlerMaxScheduleInterval : HS = ON, AS = OFF, SS = ON")

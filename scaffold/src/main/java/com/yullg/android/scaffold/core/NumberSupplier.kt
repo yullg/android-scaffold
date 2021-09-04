@@ -1,5 +1,6 @@
 package com.yullg.android.scaffold.core
 
+import kotlin.math.max
 import kotlin.math.min
 
 interface NumberSupplier {
@@ -18,6 +19,59 @@ class FixedNumberSupplier(
 ) : NumberSupplier {
 
     override fun get(): Long = value
+
+}
+
+/**
+ * Example : array element
+ */
+class ArrayNumberSupplier(
+    private val values: Array<Long>,
+    @ArrayNumberSupplierMode private val mode: Int = ArrayNumberSupplierMode.CLAMP
+) : NumberSupplier {
+
+    private var nextIndex: Int = 0
+    private var inverse: Boolean = false
+
+    override fun get(): Long = synchronized(this) {
+        val result = values[nextIndex]
+        when (mode) {
+            ArrayNumberSupplierMode.CLAMP -> {
+                if (nextIndex < values.size - 1) {
+                    nextIndex += 1
+                }
+            }
+            ArrayNumberSupplierMode.MIRROR -> {
+                if (inverse) {
+                    if (nextIndex > 0) {
+                        nextIndex -= 1
+                    } else {
+                        nextIndex = min(1, values.size - 1)
+                        inverse = false
+                    }
+                } else {
+                    if (nextIndex < values.size - 1) {
+                        nextIndex += 1
+                    } else {
+                        nextIndex = max(0, values.size - 2)
+                        inverse = true
+                    }
+                }
+            }
+            ArrayNumberSupplierMode.REPEAT -> {
+                if (nextIndex < values.size - 1) {
+                    nextIndex += 1
+                } else {
+                    nextIndex = 0
+                }
+            }
+        }
+        return result
+    }
+
+    override fun reset() = synchronized(this) {
+        nextIndex = 0
+    }
 
 }
 
