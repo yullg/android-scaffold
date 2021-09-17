@@ -23,7 +23,7 @@ class MusicKeepAlive(
     private var screenBroadcastReceiver: ScreenBroadcastReceiver? = null
     private var mediaPlayer: MediaPlayer? = null
 
-    fun keepAlive() {
+    fun start() {
         try {
             if (onlyScreenOff) {
                 startScreenScheduler()
@@ -47,16 +47,16 @@ class MusicKeepAlive(
                 }
             }
             if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[MusicKeepAlive] Keep-alive succeeded")
+                ScaffoldLogger.debug("[MusicKeepAlive] Start succeeded")
             }
         } catch (e: Exception) {
             if (ScaffoldLogger.isErrorEnabled()) {
-                ScaffoldLogger.error("[MusicKeepAlive] Keep-alive failed", e)
+                ScaffoldLogger.error("[MusicKeepAlive] Start failed", e)
             }
         }
     }
 
-    fun release() {
+    fun stop() {
         try {
             try {
                 stopScreenScheduler()
@@ -64,11 +64,11 @@ class MusicKeepAlive(
                 unloadMediaPlayer()
             }
             if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[MusicKeepAlive] Release succeeded")
+                ScaffoldLogger.debug("[MusicKeepAlive] Stop succeeded")
             }
         } catch (e: Exception) {
             if (ScaffoldLogger.isErrorEnabled()) {
-                ScaffoldLogger.error("[MusicKeepAlive] Release failed", e)
+                ScaffoldLogger.error("[MusicKeepAlive] Stop failed", e)
             }
         }
     }
@@ -115,11 +115,11 @@ class MusicKeepAlive(
                 try {
                     mp.start()
                     if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[MusicKeepAlive] Player start succeeded")
+                        ScaffoldLogger.debug("[MusicKeepAlive] Player play succeeded")
                     }
                 } catch (e: Exception) {
                     if (ScaffoldLogger.isErrorEnabled()) {
-                        ScaffoldLogger.error("[MusicKeepAlive] Player start failed", e)
+                        ScaffoldLogger.error("[MusicKeepAlive] Player play failed", e)
                     }
                 }
             }
@@ -148,20 +148,26 @@ class MusicKeepAlive(
     private inner class ScreenBroadcastReceiver : BroadcastReceiver() {
 
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (context == null || intent == null) return
-            if (Intent.ACTION_SCREEN_ON == intent.action) {
-                unloadMediaPlayer()
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[MusicKeepAlive] SBR schedule : Screen = ON : MP = OFF")
+            try {
+                if (context == null || intent == null) return
+                if (Intent.ACTION_SCREEN_ON == intent.action) {
+                    unloadMediaPlayer()
+                    if (ScaffoldLogger.isDebugEnabled()) {
+                        ScaffoldLogger.debug("[MusicKeepAlive] SBR schedule : Screen = ON : MP = OFF")
+                    }
+                } else if (Intent.ACTION_SCREEN_OFF == intent.action) {
+                    loadMediaPlayer()
+                    if (ScaffoldLogger.isDebugEnabled()) {
+                        ScaffoldLogger.debug("[MusicKeepAlive] SBR schedule : Screen = OFF : MP = ON")
+                    }
+                } else {
+                    if (ScaffoldLogger.isWarnEnabled()) {
+                        ScaffoldLogger.warn("[MusicKeepAlive] SBR schedule : Illegal action : ${intent.action}")
+                    }
                 }
-            } else if (Intent.ACTION_SCREEN_OFF == intent.action) {
-                loadMediaPlayer()
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[MusicKeepAlive] SBR schedule : Screen = OFF : MP = ON")
-                }
-            } else {
-                if (ScaffoldLogger.isWarnEnabled()) {
-                    ScaffoldLogger.warn("[MusicKeepAlive] SBR schedule : Illegal action : ${intent.action}")
+            } catch (e: Exception) {
+                if (ScaffoldLogger.isErrorEnabled()) {
+                    ScaffoldLogger.error("[MusicKeepAlive] SBR catch error", e)
                 }
             }
         }
