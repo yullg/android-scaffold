@@ -31,19 +31,19 @@ class MusicKeepAlive(
                     ?.isInteractive?.let {
                         if (it) {
                             if (ScaffoldLogger.isDebugEnabled()) {
-                                ScaffoldLogger.debug("[MusicKeepAlive] Player load delay until the screen off")
+                                ScaffoldLogger.debug("[MusicKeepAlive] MP load delay until the screen off")
                             }
                         } else {
                             loadMediaPlayer()
                             if (ScaffoldLogger.isDebugEnabled()) {
-                                ScaffoldLogger.debug("[MusicKeepAlive] Player loaded")
+                                ScaffoldLogger.debug("[MusicKeepAlive] MP loaded")
                             }
                         }
                     }
             } else {
                 loadMediaPlayer()
                 if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[MusicKeepAlive] Player loaded")
+                    ScaffoldLogger.debug("[MusicKeepAlive] MP loaded")
                 }
             }
             if (ScaffoldLogger.isDebugEnabled()) {
@@ -107,7 +107,7 @@ class MusicKeepAlive(
             })
             setOnErrorListener { _, what, extra ->
                 if (ScaffoldLogger.isErrorEnabled()) {
-                    ScaffoldLogger.error("[MusicKeepAlive] Player error : what = $what, extra = $extra")
+                    ScaffoldLogger.error("[MusicKeepAlive] MP error : what = $what, extra = $extra")
                 }
                 false
             }
@@ -115,11 +115,11 @@ class MusicKeepAlive(
                 try {
                     mp.start()
                     if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[MusicKeepAlive] Player play succeeded")
+                        ScaffoldLogger.debug("[MusicKeepAlive] MP play succeeded")
                     }
                 } catch (e: Exception) {
                     if (ScaffoldLogger.isErrorEnabled()) {
-                        ScaffoldLogger.error("[MusicKeepAlive] Player play failed", e)
+                        ScaffoldLogger.error("[MusicKeepAlive] MP play failed", e)
                     }
                 }
             }

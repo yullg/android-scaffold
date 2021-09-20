@@ -1,2 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.yullg.android.scaffold" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.yullg.android.scaffold">
+
+    <application>
+
+        <activity
+            android:name=".core.OnePixelKeepAliveActivity"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
+            android:directBootAware="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:noHistory="true" />
+
+    </application>
+
+</manifest>
