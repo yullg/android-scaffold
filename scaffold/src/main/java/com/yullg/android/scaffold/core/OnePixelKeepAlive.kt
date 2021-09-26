@@ -150,11 +150,11 @@ class OnePixelKeepAliveActivity : AppCompatActivity() {
                 height = 1
             }
             if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[OnePixelKeepAlive] Activity create succeeded")
+                ScaffoldLogger.debug("[OnePixelKeepAlive] OPA create succeeded")
             }
         } catch (e: Exception) {
             if (ScaffoldLogger.isErrorEnabled()) {
-                ScaffoldLogger.error("[OnePixelKeepAlive] Activity create failed", e)
+                ScaffoldLogger.error("[OnePixelKeepAlive] OPA create failed", e)
             }
         }
     }
@@ -163,11 +163,11 @@ class OnePixelKeepAliveActivity : AppCompatActivity() {
         try {
             OnePixelKeepAlive.activityRef = null
             if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[OnePixelKeepAlive] Activity destroy succeeded")
+                ScaffoldLogger.debug("[OnePixelKeepAlive] OPA destroy succeeded")
             }
         } catch (e: Exception) {
             if (ScaffoldLogger.isErrorEnabled()) {
-                ScaffoldLogger.error("[OnePixelKeepAlive] Activity destroy failed", e)
+                ScaffoldLogger.error("[OnePixelKeepAlive] OPA destroy failed", e)
             }
         }
         super.onDestroy()
