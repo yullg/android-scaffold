@@ -6,7 +6,6 @@ import android.media.RemoteController
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.view.KeyEvent
-import androidx.annotation.MainThread
 import androidx.core.content.ContextCompat
 import com.yullg.android.scaffold.app.Scaffold
 import com.yullg.android.scaffold.internal.ScaffoldLogger
@@ -15,10 +14,15 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * 提供对音乐播放器的监听和控制
  *
- * 优先使用[MediaController]监听和控制音乐播放器，由于[MediaController]会在播放器暂停一段时间后自动关闭，
- * 为了避免[MediaController]关闭后功能失效，[MusicClient]会在这时挂载一个[RemoteController]接管操作，直到[MediaController]再次可用。
+ * 该类主要负责在[MediaController]和[RemoteController]之间自动切换，通过各自的`Callback`通知音乐状态的变化，
+ * 通过[handle]属性暴露内部状态用以实现音乐控制，伴生对象基于[handle]提供播放、暂停、上一首、下一首、音量调节等部分常用功能。
+ *
+ * Android平台目前监听第三方音乐播放器可以基于[MediaController]实现，也可以基于[RemoteController]实现，后一种方式从API 21开始被弃用。
+ * [MediaController]比[RemoteController]提供更完整的功能，例如：歌词、音量监听等，但是[MediaController]会在媒体会话暂停一段时间后断开连接，
+ * 这将导致[MediaController]功能不可用，并且也无法保证[MediaController]一定能连接（或再次连接）到媒体会话，因此需要在[MediaController]无法使用时切换到[RemoteController]。
+ *
+ * 注意：[RemoteController]要求其注册的状态回调(即[remoteControllerCallback])也必须是已启用的通知监听器(参见[android.service.notification.NotificationListenerService])。
  */
-@MainThread
 class MusicClient(
     private val notificationListener: ComponentName,
     private val mediaControllerCallback: MediaController.Callback,
@@ -89,7 +93,7 @@ class MusicClient(
             audioManager.registerRemoteController(localRemoteController)
             remoteController = localRemoteController
             // 将监听器触发放在remoteController赋值之后，保证从此刻开始MusicClient已处于完全挂载状态
-            // 避免如果在监听器中使用MusicClient，而MusicClient未完成挂载操作可能出现的不一致问题
+            // 避免如果在监听器中使用MusicClient，而MusicClient还未结束挂载操作时可能出现的不一致问题
             musicClientListener?.onRemoteControllerMounted(localRemoteController)
             if (ScaffoldLogger.isDebugEnabled()) {
                 ScaffoldLogger.debug("[MusicClient] RemoteController has been mounted")
@@ -192,10 +196,6 @@ class MusicClient(
 
     companion object {
 
-        /**
-         * @see MediaController.TransportControls.play
-         * @see AudioManager.dispatchMediaKeyEvent
-         */
         fun play(handle: Handle) {
             try {
                 handle.mediaController?.apply {
@@ -216,10 +216,6 @@ class MusicClient(
             }
         }
 
-        /**
-         * @see MediaController.TransportControls.pause
-         * @see AudioManager.dispatchMediaKeyEvent
-         */
         fun pause(handle: Handle) {
             try {
                 handle.mediaController?.apply {
@@ -240,10 +236,6 @@ class MusicClient(
             }
         }
 
-        /**
-         * @see MediaController.TransportControls.skipToNext
-         * @see AudioManager.dispatchMediaKeyEvent
-         */
         fun skipToNext(handle: Handle) {
             try {
                 handle.mediaController?.apply {
@@ -264,10 +256,6 @@ class MusicClient(
             }
         }
 
-        /**
-         * @see MediaController.TransportControls.skipToPrevious
-         * @see AudioManager.dispatchMediaKeyEvent
-         */
         fun skipToPrevious(handle: Handle) {
             try {
                 handle.mediaController?.apply {
@@ -288,10 +276,6 @@ class MusicClient(
             }
         }
 
-        /**
-         * @see MediaController.adjustVolume
-         * @see AudioManager.adjustVolume
-         */
         fun adjustVolume(handle: Handle, direction: Int, flags: Int) {
             try {
                 handle.mediaController?.apply {
@@ -315,10 +299,6 @@ class MusicClient(
             }
         }
 
-        /**
-         * @see MediaController.setVolumeTo
-         * @see AudioManager.setStreamVolume
-         */
         fun setVolumeTo(handle: Handle, value: Int, flags: Int) {
             try {
                 handle.mediaController?.apply {
