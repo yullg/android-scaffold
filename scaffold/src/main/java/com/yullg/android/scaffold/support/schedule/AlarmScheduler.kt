@@ -11,6 +11,9 @@ import androidx.core.app.AlarmManagerCompat
 import androidx.core.content.ContextCompat
 import com.yullg.android.scaffold.app.Scaffold
 
+/**
+ * 提供基于[AlarmManager]的任务调度功能。在实例构造时将要执行的任务[PendingIntent]固定下来，实例仅控制何时执行任务。
+ */
 open class AlarmScheduler(private val operation: PendingIntent) {
 
     private val alarmManager: AlarmManager by lazy {
@@ -51,33 +54,54 @@ open class AlarmScheduler(private val operation: PendingIntent) {
 
 }
 
-open class BroadcastAlarmScheduler(cls: Class<out BroadcastReceiver>) :
+/**
+ * [BroadcastReceiver]版本的[AlarmScheduler]
+ */
+open class BroadcastAlarmScheduler(intent: Intent) :
     AlarmScheduler(
         PendingIntent.getBroadcast(
             Scaffold.context,
             0,
-            Intent(Scaffold.context, cls),
+            intent,
             if (Build.VERSION.SDK_INT >= 31) PendingIntent.FLAG_MUTABLE else 0
         )
-    )
+    ) {
 
-open class ServiceAlarmScheduler(cls: Class<out Service>) :
+    constructor(cls: Class<out BroadcastReceiver>) : this(Intent(Scaffold.context, cls))
+
+}
+
+/**
+ * [Service]版本的[AlarmScheduler]
+ */
+open class ServiceAlarmScheduler(intent: Intent) :
     AlarmScheduler(
         PendingIntent.getService(
             Scaffold.context,
             0,
-            Intent(Scaffold.context, cls),
+            intent,
             if (Build.VERSION.SDK_INT >= 31) PendingIntent.FLAG_MUTABLE else 0
         )
-    )
+    ) {
 
+    constructor(cls: Class<out Service>) : this(Intent(Scaffold.context, cls))
+
+}
+
+/**
+ * 前台[Service]版本的[AlarmScheduler]
+ */
 @RequiresApi(26)
-open class ForegroundServiceAlarmScheduler(cls: Class<out Service>) :
+open class ForegroundServiceAlarmScheduler(intent: Intent) :
     AlarmScheduler(
         PendingIntent.getForegroundService(
             Scaffold.context,
             0,
-            Intent(Scaffold.context, cls),
+            intent,
             if (Build.VERSION.SDK_INT >= 31) PendingIntent.FLAG_MUTABLE else 0
         )
-    )
+    ) {
+
+    constructor(cls: Class<out Service>) : this(Intent(Scaffold.context, cls))
+
+}

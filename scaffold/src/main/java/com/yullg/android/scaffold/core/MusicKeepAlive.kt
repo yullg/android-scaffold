@@ -1,96 +1,81 @@
 package com.yullg.android.scaffold.core
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.PowerManager
-import androidx.annotation.MainThread
-import androidx.core.content.ContextCompat
 import com.yullg.android.scaffold.R
 import com.yullg.android.scaffold.app.Scaffold
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 
-@MainThread
+/**
+ * 通过播放音频实现应用保活和防止系统休眠（无限循环播放）
+ *
+ * 如果[onlyNotInteractive]设置为true（默认为true）：
+ * 当[mount()]方法被调用后，开始监听设备的交互状态。如果设备是不可交互的，那么就开始播放音频，否则就停止播放音频。
+ * 当[unmount()]方法被调用后，取消监听并停止播放音频。
+ * 如果[onlyNotInteractive]设置为false：
+ * 当[mount()]方法被调用后，立即开始播放音频。当[unmount()]方法被调用后，立即停止播放音频。不关心设备的交互状态。
+ *
+ * 如果[enhance]设置为true（默认为false）,那么会尝试在音频播放期间保持设备唤醒状态，开启此功能必须先获取[android.Manifest.permission.WAKE_LOCK]权限。
+ */
 class MusicKeepAlive(
-    private val onlyScreenOff: Boolean = true,
+    private val onlyNotInteractive: Boolean = true,
     private val enhance: Boolean = false
 ) {
 
-    private var screenBroadcastReceiver: ScreenBroadcastReceiver? = null
-    private var mediaPlayer: MediaPlayer? = null
-
-    fun start() {
+    private val deviceInteractiveStateObserver = DeviceInteractiveStateObserver { isInteractive ->
         try {
-            if (onlyScreenOff) {
-                startScreenScheduler()
-                ContextCompat.getSystemService(Scaffold.context, PowerManager::class.java)
-                    ?.isInteractive?.let {
-                        if (it) {
-                            if (ScaffoldLogger.isDebugEnabled()) {
-                                ScaffoldLogger.debug("[MusicKeepAlive] MP load delay until the screen off")
-                            }
-                        } else {
-                            loadMediaPlayer()
-                            if (ScaffoldLogger.isDebugEnabled()) {
-                                ScaffoldLogger.debug("[MusicKeepAlive] MP loaded")
-                            }
-                        }
-                    }
+            if (isInteractive) {
+                unloadMediaPlayer()
+                if (ScaffoldLogger.isDebugEnabled()) {
+                    ScaffoldLogger.debug("[MusicKeepAlive] Interactive state changed : Interactive = ON, Player = OFF")
+                }
             } else {
                 loadMediaPlayer()
                 if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[MusicKeepAlive] MP loaded")
+                    ScaffoldLogger.debug("[MusicKeepAlive] Interactive state changed : Interactive = OFF, Player = ON")
                 }
-            }
-            if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[MusicKeepAlive] Start succeeded")
             }
         } catch (e: Exception) {
             if (ScaffoldLogger.isErrorEnabled()) {
-                ScaffoldLogger.error("[MusicKeepAlive] Start failed", e)
+                ScaffoldLogger.error("[MusicKeepAlive] Interactive state changed : Error", e)
+            }
+        }
+    }
+    private var mediaPlayer: MediaPlayer? = null
+
+    fun mount() {
+        try {
+            if (onlyNotInteractive) {
+                deviceInteractiveStateObserver.mount()
+            } else {
+                loadMediaPlayer()
+            }
+            if (ScaffoldLogger.isDebugEnabled()) {
+                ScaffoldLogger.debug("[MusicKeepAlive] Mount succeeded")
+            }
+        } catch (e: Exception) {
+            if (ScaffoldLogger.isErrorEnabled()) {
+                ScaffoldLogger.error("[MusicKeepAlive] Mount failed", e)
             }
         }
     }
 
-    fun stop() {
+    fun unmount() {
         try {
             try {
-                stopScreenScheduler()
+                deviceInteractiveStateObserver.unmount()
             } finally {
                 unloadMediaPlayer()
             }
             if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[MusicKeepAlive] Stop succeeded")
+                ScaffoldLogger.debug("[MusicKeepAlive] Unmount succeeded")
             }
         } catch (e: Exception) {
             if (ScaffoldLogger.isErrorEnabled()) {
-                ScaffoldLogger.error("[MusicKeepAlive] Stop failed", e)
+                ScaffoldLogger.error("[MusicKeepAlive] Unmount failed", e)
             }
-        }
-    }
-
-    private fun startScreenScheduler() {
-        if (screenBroadcastReceiver != null) return
-        screenBroadcastReceiver = ScreenBroadcastReceiver().also {
-            Scaffold.context.registerReceiver(it, IntentFilter().apply {
-                addAction(Intent.ACTION_SCREEN_ON)
-                addAction(Intent.ACTION_SCREEN_OFF)
-            })
-        }
-    }
-
-    private fun stopScreenScheduler() {
-        if (screenBroadcastReceiver == null) return
-        try {
-            screenBroadcastReceiver?.let {
-                Scaffold.context.unregisterReceiver(it)
-            }
-        } finally {
-            screenBroadcastReceiver = null
         }
     }
 
@@ -107,7 +92,7 @@ class MusicKeepAlive(
             })
             setOnErrorListener { _, what, extra ->
                 if (ScaffoldLogger.isErrorEnabled()) {
-                    ScaffoldLogger.error("[MusicKeepAlive] MP error : what = $what, extra = $extra")
+                    ScaffoldLogger.error("[MusicKeepAlive] Player error : what = $what, extra = $extra")
                 }
                 false
             }
@@ -115,11 +100,11 @@ class MusicKeepAlive(
                 try {
                     mp.start()
                     if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[MusicKeepAlive] MP play succeeded")
+                        ScaffoldLogger.debug("[MusicKeepAlive] Player start succeeded")
                     }
                 } catch (e: Exception) {
                     if (ScaffoldLogger.isErrorEnabled()) {
-                        ScaffoldLogger.error("[MusicKeepAlive] MP play failed", e)
+                        ScaffoldLogger.error("[MusicKeepAlive] Player start failed", e)
                     }
                 }
             }
@@ -137,41 +122,11 @@ class MusicKeepAlive(
     }
 
     private fun unloadMediaPlayer() {
-        if (mediaPlayer == null) return
         try {
             mediaPlayer?.release()
         } finally {
             mediaPlayer = null
         }
-    }
-
-    private inner class ScreenBroadcastReceiver : BroadcastReceiver() {
-
-        override fun onReceive(context: Context?, intent: Intent?) {
-            try {
-                if (context == null || intent == null) return
-                if (Intent.ACTION_SCREEN_ON == intent.action) {
-                    unloadMediaPlayer()
-                    if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[MusicKeepAlive] SBR schedule : Screen = ON : MP = OFF")
-                    }
-                } else if (Intent.ACTION_SCREEN_OFF == intent.action) {
-                    loadMediaPlayer()
-                    if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[MusicKeepAlive] SBR schedule : Screen = OFF : MP = ON")
-                    }
-                } else {
-                    if (ScaffoldLogger.isWarnEnabled()) {
-                        ScaffoldLogger.warn("[MusicKeepAlive] SBR schedule : Illegal action : ${intent.action}")
-                    }
-                }
-            } catch (e: Exception) {
-                if (ScaffoldLogger.isErrorEnabled()) {
-                    ScaffoldLogger.error("[MusicKeepAlive] SBR catch error", e)
-                }
-            }
-        }
-
     }
 
 }
