@@ -9,7 +9,7 @@ import java.util.regex.Pattern
 
 internal object LogFileUtil {
 
-    private val fileNameDateFormat = SimpleDateFormat("yyMMdd")
+    private val fileNameDateFormat = SimpleDateFormat("yyMMdd", Locale.US)
     private val fileNamePattern = Pattern.compile("^.*-(\\d{6}).log$")
 
     private val logDirectory: File by lazy {

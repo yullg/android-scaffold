@@ -7,33 +7,45 @@ import com.yullg.android.scaffold.core.Constants
 import com.yullg.android.scaffold.helper.ExceptionHelper
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 import java.text.SimpleDateFormat
+import java.util.*
 
 internal object Appender {
 
-    private const val WHAT_LOG = 1
-    private const val WHAT_DEL = 2
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ")
+    private const val WHAT_DEL = 1
+    private const val WHAT_WRT_CONS = 2
+    private const val WHAT_WRT_FILE = 3
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ", Locale.US)
     private val handler: Handler
 
     init {
         val handlerThread = HandlerThread("scaffold_logger_thread")
         handlerThread.start()
         handler = Handler(handlerThread.looper) {
-            if (WHAT_LOG == it.what) {
-                try {
-                    doWriteLog(it.obj as Log)
-                } catch (error: Exception) {
-                    android.util.Log.e(
-                        Constants.Logger.TAG_SCAFFOLD,
-                        "[LogAppender] Failed to write log",
-                        error
-                    )
-                }
-            } else if (WHAT_DEL == it.what) {
+            if (WHAT_DEL == it.what) {
                 try {
                     LogFileUtil.deleteLogFiles(it.arg1)
                 } catch (error: Exception) {
                     ScaffoldLogger.error("[LogAppender] Failed to delete log file", error)
+                }
+            } else if (WHAT_WRT_CONS == it.what) {
+                try {
+                    doWriteConsoleLog(it.obj as Log)
+                } catch (error: Exception) {
+                    android.util.Log.e(
+                        Constants.Logger.TAG_SCAFFOLD,
+                        "[LogAppender] Failed to write console-log",
+                        error
+                    )
+                }
+            } else if (WHAT_WRT_FILE == it.what) {
+                try {
+                    doWriteFileLog(it.obj as Log)
+                } catch (error: Exception) {
+                    android.util.Log.e(
+                        Constants.Logger.TAG_SCAFFOLD,
+                        "[LogAppender] Failed to write file-log",
+                        error
+                    )
                 }
             }
             true
@@ -43,19 +55,16 @@ internal object Appender {
     fun deleteLog(logFileMaxLife: Int) =
         handler.sendMessage(handler.obtainMessage(WHAT_DEL, logFileMaxLife, 0))
 
-    fun writeLog(log: Log) =
-        handler.sendMessage(handler.obtainMessage(WHAT_LOG, log))
-
-    private fun doWriteLog(log: Log) {
+    fun writeLog(log: Log) {
         if (ScaffoldConfig.Logger.findConsoleAppenderEnabled(log.name)
             && ScaffoldConfig.Logger.findConsoleAppenderLevel(log.name) <= log.logLevel
         ) {
-            doWriteConsoleLog(log)
+            handler.sendMessage(handler.obtainMessage(WHAT_WRT_CONS, log))
         }
         if (ScaffoldConfig.Logger.findFileAppenderEnabled(log.name)
             && ScaffoldConfig.Logger.findFileAppenderLevel(log.name) <= log.logLevel
         ) {
-            doWriteFileLog(log)
+            handler.sendMessage(handler.obtainMessage(WHAT_WRT_FILE, log))
         }
     }
 
