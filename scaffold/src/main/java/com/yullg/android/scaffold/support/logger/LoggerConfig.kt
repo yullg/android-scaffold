@@ -1,5 +1,7 @@
 package com.yullg.android.scaffold.support.logger
 
+import com.yullg.android.scaffold.core.Constants
+
 interface LoggerConfig {
 
     val consoleAppenderEnabled: Boolean
@@ -40,6 +42,15 @@ open class MutableLoggerConfig private constructor() : LoggerConfig {
 
     private val loggerConfigOptionMap = HashMap<String, LoggerConfigOption>()
 
+    init {
+        logger(Constants.Logger.NAME_CRASH) {
+            consoleAppenderEnabled = true
+            consoleAppenderLevel = LogLevel.TRACE
+            fileAppenderEnabled = true
+            fileAppenderLevel = LogLevel.TRACE
+        }
+    }
+
     fun logger(name: String, block: LoggerConfigOption.() -> Unit) {
         val mutableLoggerConfigOption = loggerConfigOptionMap[name] ?: LoggerConfigOption()
         mutableLoggerConfigOption.block()
@@ -47,13 +58,21 @@ open class MutableLoggerConfig private constructor() : LoggerConfig {
     }
 
     override fun findConsoleAppenderEnabled(name: String): Boolean =
-        consoleAppenderEnabled && (loggerConfigOptionMap[name]?.consoleAppenderEnabled ?: true)
+        if (Constants.Logger.NAME_CRASH != name) {
+            consoleAppenderEnabled && (loggerConfigOptionMap[name]?.consoleAppenderEnabled ?: true)
+        } else {
+            loggerConfigOptionMap[name]?.consoleAppenderEnabled ?: consoleAppenderEnabled
+        }
 
     override fun findConsoleAppenderLevel(name: String): LogLevel =
         loggerConfigOptionMap[name]?.consoleAppenderLevel ?: consoleAppenderLevel
 
     override fun findFileAppenderEnabled(name: String): Boolean =
-        fileAppenderEnabled && (loggerConfigOptionMap[name]?.fileAppenderEnabled ?: true)
+        if (Constants.Logger.NAME_CRASH != name) {
+            fileAppenderEnabled && (loggerConfigOptionMap[name]?.fileAppenderEnabled ?: true)
+        } else {
+            loggerConfigOptionMap[name]?.fileAppenderEnabled ?: fileAppenderEnabled
+        }
 
     override fun findFileAppenderLevel(name: String): LogLevel =
         loggerConfigOptionMap[name]?.fileAppenderLevel ?: fileAppenderLevel

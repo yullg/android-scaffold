@@ -1,5 +1,6 @@
 package com.yullg.android.scaffold.support.logger
 
+import android.os.Process
 import java.util.*
 
 enum class LogLevel {
@@ -7,12 +8,12 @@ enum class LogLevel {
 }
 
 data class Log(
-    val processId: Int,
-    val threadId: Long,
-    val threadName: String,
     val name: String,
     val logLevel: LogLevel,
-    val time: Date,
     val message: Any?,
-    val error: Throwable?
+    val error: Throwable? = null,
+    val processId: Int = Process.myPid(),
+    val threadId: Long = Thread.currentThread().id,
+    val threadName: String = Thread.currentThread().name,
+    val time: Date = Date(),
 )

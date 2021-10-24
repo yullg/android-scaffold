@@ -45,7 +45,7 @@ class SPHelper(name: String) : ISharedPreferences {
 
     override fun remove(key: String) = sp.edit().remove(key).apply()
 
-    companion object : ISharedPreferences by SPHelper(Constants.SP.KEY_DEFAULT)
+    companion object : ISharedPreferences by SPHelper(Constants.SP.NAME_DEFAULT)
 
 }
 

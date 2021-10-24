@@ -6,4 +6,4 @@ import com.yullg.android.scaffold.helper.ISharedPreferences
 import com.yullg.android.scaffold.helper.SPHelper
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
-object ScaffoldSPHelper : ISharedPreferences by SPHelper(Constants.SP.KEY_SCAFFOLD)
+object ScaffoldSPHelper : ISharedPreferences by SPHelper(Constants.SP.NAME_SCAFFOLD)
