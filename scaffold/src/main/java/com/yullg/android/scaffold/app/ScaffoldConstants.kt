@@ -1,6 +1,6 @@
-package com.yullg.android.scaffold.core
+package com.yullg.android.scaffold.app
 
-object Constants {
+object ScaffoldConstants {
 
     object SP {
 

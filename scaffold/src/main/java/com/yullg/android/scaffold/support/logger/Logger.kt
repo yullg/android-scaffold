@@ -1,7 +1,7 @@
 package com.yullg.android.scaffold.support.logger
 
 import com.yullg.android.scaffold.app.ScaffoldConfig
-import com.yullg.android.scaffold.core.Constants
+import com.yullg.android.scaffold.app.ScaffoldConstants
 
 class Logger(override val name: String, private val synchronized: Boolean = false) : ILogger {
 
@@ -15,7 +15,7 @@ class Logger(override val name: String, private val synchronized: Boolean = fals
                 || (ScaffoldConfig.Logger.findFileAppenderEnabled(name)
                 && ScaffoldConfig.Logger.findFileAppenderLevel(name) <= logLevel)
 
-    companion object : ILogger by Logger(Constants.Logger.NAME_DEFAULT)
+    companion object : ILogger by Logger(ScaffoldConstants.Logger.NAME_DEFAULT)
 
 }
 

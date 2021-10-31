@@ -3,7 +3,7 @@ package com.yullg.android.scaffold.support.logger
 import android.os.Handler
 import android.os.HandlerThread
 import com.yullg.android.scaffold.app.ScaffoldConfig
-import com.yullg.android.scaffold.core.Constants
+import com.yullg.android.scaffold.app.ScaffoldConstants
 import com.yullg.android.scaffold.helper.ExceptionHelper
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 import java.text.SimpleDateFormat
@@ -79,7 +79,7 @@ internal object Appender {
             }
         } catch (error: Exception) {
             android.util.Log.e(
-                Constants.Logger.TAG_SCAFFOLD,
+                ScaffoldConstants.Logger.TAG_SCAFFOLD,
                 "[LogAppender] Failed to write console-log",
                 error
             )
@@ -100,7 +100,7 @@ internal object Appender {
             LogFileUtil.writeLog(log.name, log.time, stringifyLog.toString())
         } catch (error: Exception) {
             android.util.Log.e(
-                Constants.Logger.TAG_SCAFFOLD,
+                ScaffoldConstants.Logger.TAG_SCAFFOLD,
                 "[LogAppender] Failed to write file-log",
                 error
             )

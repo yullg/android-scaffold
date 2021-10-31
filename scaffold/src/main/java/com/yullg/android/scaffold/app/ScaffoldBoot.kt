@@ -1,7 +1,6 @@
 package com.yullg.android.scaffold.app
 
 import androidx.work.*
-import com.yullg.android.scaffold.core.Constants
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 import com.yullg.android.scaffold.support.logger.Appender
 import com.yullg.android.scaffold.support.logger.LogUploadWorker
@@ -30,7 +29,7 @@ object ScaffoldBoot {
             ).setConstraints(constraints)
                 .build()
             WorkManager.getInstance(Scaffold.context).enqueueUniquePeriodicWork(
-                Constants.Logger.WORKER_NAME_UPLOADER,
+                ScaffoldConstants.Logger.WORKER_NAME_UPLOADER,
                 ExistingPeriodicWorkPolicy.REPLACE,
                 workRequest
             )
@@ -38,7 +37,7 @@ object ScaffoldBoot {
         } else {
             ScaffoldLogger.info("[LogUpload] LogUploader not provided, cancel worker")
             WorkManager.getInstance(Scaffold.context)
-                .cancelUniqueWork(Constants.Logger.WORKER_NAME_UPLOADER)
+                .cancelUniqueWork(ScaffoldConstants.Logger.WORKER_NAME_UPLOADER)
             ScaffoldLogger.info("[LogUpload] Worker cancelled")
         }
     }

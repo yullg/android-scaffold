@@ -3,7 +3,7 @@ package com.yullg.android.scaffold.helper
 import android.content.Context
 import android.content.SharedPreferences
 import com.yullg.android.scaffold.app.Scaffold
-import com.yullg.android.scaffold.core.Constants
+import com.yullg.android.scaffold.app.ScaffoldConstants
 
 class SPHelper(name: String) : ISharedPreferences {
 
@@ -45,7 +45,7 @@ class SPHelper(name: String) : ISharedPreferences {
 
     override fun remove(key: String) = sp.edit().remove(key).apply()
 
-    companion object : ISharedPreferences by SPHelper(Constants.SP.NAME_DEFAULT)
+    companion object : ISharedPreferences by SPHelper(ScaffoldConstants.SP.NAME_DEFAULT)
 
 }
 

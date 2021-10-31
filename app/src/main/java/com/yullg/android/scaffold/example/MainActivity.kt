@@ -1,21 +1,26 @@
 package com.yullg.android.scaffold.example
 
-import android.app.Application
+import android.annotation.SuppressLint
+import android.app.job.JobInfo
+import android.app.job.JobParameters
+import android.app.job.JobScheduler
+import android.content.ComponentName
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.widget.TextView
-import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
+import androidx.core.content.ContextCompat
 import com.yullg.android.scaffold.framework.BaseActivity
-import com.yullg.android.scaffold.framework.BaseViewModel
 import com.yullg.android.scaffold.framework.EmptyAC
+import com.yullg.android.scaffold.helper.DateHelper
+import com.yullg.android.scaffold.support.logger.Logger
 import com.yullg.android.scaffold.support.media.CameraXWrapper
+import com.yullg.android.scaffold.support.schedule.CoroutineJobService
 import com.yullg.android.scaffold.ui.dialog.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlin.coroutines.coroutineContext
 
 // 28256, 28257, 282931, 38356, 38357, 383941
 
@@ -45,9 +50,10 @@ class MainActivity : BaseActivity<EmptyAC>() {
         setContentView(R.layout.activity_main)
         val textView: TextView = findViewById(R.id.text_view)
         textView.setOnClickListener {
-            cameraXWrapper.setCameraSelectorBuilder(
-                CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_FRONT)
-            )
+            testCoroutineJobService()
+//            cameraXWrapper.setCameraSelectorBuilder(
+//                CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_FRONT)
+//            )
         }
         cameraXWrapper = CameraXWrapper(this, this)
         cameraXWrapper.enablePreview(findViewById(R.id.preview_view), Preview.Builder())
@@ -143,6 +149,26 @@ class MainActivity : BaseActivity<EmptyAC>() {
             .show()
     }
 
+    private fun testCoroutineJobService() {
+        val jobScheduler = ContextCompat.getSystemService(this, JobScheduler::class.java)
+        val jobInfo = JobInfo.Builder(
+            (System.currentTimeMillis() / 1000).toInt(),
+            ComponentName(this, DeviceReConnectJobScheduler::class.java)
+        ).setOverrideDeadline(0)
+            .build()
+        jobScheduler!!.schedule(jobInfo)
+    }
+
 }
 
-class MyBaseViewModel(application: Application) : BaseViewModel(application)
+@SuppressLint("SpecifyJobSchedulerIdRange")
+class DeviceReConnectJobScheduler : CoroutineJobService() {
+
+    override suspend fun doWork(params: JobParameters) {
+        Logger.info("[CoroutineJobService] doWork begin: ${coroutineContext.job.hashCode()}:${Thread.currentThread().name}")
+        delay(DateHelper.MILLIS_PER_SECOND * 3)
+        Logger.info("[CoroutineJobService] doWork end: ${coroutineContext.job.hashCode()}")
+        jobFinished(params, false)
+    }
+
+}

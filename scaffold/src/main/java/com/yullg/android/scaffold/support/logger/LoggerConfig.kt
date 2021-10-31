@@ -1,6 +1,6 @@
 package com.yullg.android.scaffold.support.logger
 
-import com.yullg.android.scaffold.core.Constants
+import com.yullg.android.scaffold.app.ScaffoldConstants
 
 interface LoggerConfig {
 
@@ -43,7 +43,7 @@ open class MutableLoggerConfig private constructor() : LoggerConfig {
     private val loggerConfigOptionMap = HashMap<String, LoggerConfigOption>()
 
     init {
-        logger(Constants.Logger.NAME_CRASH) {
+        logger(ScaffoldConstants.Logger.NAME_CRASH) {
             consoleAppenderEnabled = true
             consoleAppenderLevel = LogLevel.TRACE
             fileAppenderEnabled = true
@@ -58,7 +58,7 @@ open class MutableLoggerConfig private constructor() : LoggerConfig {
     }
 
     override fun findConsoleAppenderEnabled(name: String): Boolean =
-        if (Constants.Logger.NAME_CRASH != name) {
+        if (ScaffoldConstants.Logger.NAME_CRASH != name) {
             consoleAppenderEnabled && (loggerConfigOptionMap[name]?.consoleAppenderEnabled ?: true)
         } else {
             loggerConfigOptionMap[name]?.consoleAppenderEnabled ?: consoleAppenderEnabled
@@ -68,7 +68,7 @@ open class MutableLoggerConfig private constructor() : LoggerConfig {
         loggerConfigOptionMap[name]?.consoleAppenderLevel ?: consoleAppenderLevel
 
     override fun findFileAppenderEnabled(name: String): Boolean =
-        if (Constants.Logger.NAME_CRASH != name) {
+        if (ScaffoldConstants.Logger.NAME_CRASH != name) {
             fileAppenderEnabled && (loggerConfigOptionMap[name]?.fileAppenderEnabled ?: true)
         } else {
             loggerConfigOptionMap[name]?.fileAppenderEnabled ?: fileAppenderEnabled

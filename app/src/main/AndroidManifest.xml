@@ -48,6 +48,10 @@
 
         </provider>
 
+        <service
+            android:name=".DeviceReConnectJobScheduler"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
     </application>
 
 </manifest>
