@@ -1,6 +1,8 @@
 package com.yullg.android.scaffold.support.logger
 
+import androidx.work.NetworkType
 import com.yullg.android.scaffold.app.ScaffoldConstants
+import com.yullg.android.scaffold.helper.DateHelper
 
 interface LoggerConfig {
 
@@ -15,6 +17,8 @@ interface LoggerConfig {
     val logFileMaxLife: Int
 
     val uploader: LogUploader?
+
+    val logUploadWorkerOption: LogUploadWorkerOption
 
     fun findConsoleAppenderEnabled(name: String): Boolean
 
@@ -40,9 +44,14 @@ open class MutableLoggerConfig private constructor() : LoggerConfig {
 
     override var uploader: LogUploader? = null
 
+    override var logUploadWorkerOption: LogUploadWorkerOption = OneTimeLogUploadWorkerOption(
+        initialDelay = 5 * DateHelper.MILLIS_PER_MINUTE,
+    )
+
     private val loggerConfigOptionMap = HashMap<String, LoggerConfigOption>()
 
     init {
+        // 单独定义CRASH日志配置，让它不受全局配置影响
         logger(ScaffoldConstants.Logger.NAME_CRASH) {
             consoleAppenderEnabled = true
             consoleAppenderLevel = LogLevel.TRACE
@@ -87,3 +96,22 @@ data class LoggerConfigOption(
     var fileAppenderEnabled: Boolean? = null,
     var fileAppenderLevel: LogLevel? = null
 )
+
+sealed interface LogUploadWorkerOption
+
+/**
+ * 定义周期性日志上传工作的配置选项
+ */
+data class PeriodicLogUploadWorkerOption(
+    val repeatInterval: Long,
+    val initialDelay: Long,
+    val requiredNetworkType: NetworkType = NetworkType.CONNECTED
+) : LogUploadWorkerOption
+
+/**
+ * 定义一次性日志上传工作的配置选项
+ */
+data class OneTimeLogUploadWorkerOption(
+    val initialDelay: Long,
+    val requiredNetworkType: NetworkType = NetworkType.CONNECTED
+) : LogUploadWorkerOption

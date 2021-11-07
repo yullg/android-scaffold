@@ -3,13 +3,12 @@ package com.yullg.android.scaffold.support.logger
 import android.os.Handler
 import android.os.HandlerThread
 import com.yullg.android.scaffold.app.ScaffoldConfig
-import com.yullg.android.scaffold.app.ScaffoldConstants
 import com.yullg.android.scaffold.helper.ExceptionHelper
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 import java.text.SimpleDateFormat
 import java.util.*
 
-internal object Appender {
+internal object LogManager {
 
     private const val WHAT_DEL = 1
     private const val WHAT_WRT_CONS = 2
@@ -60,7 +59,10 @@ internal object Appender {
         try {
             LogFileUtil.deleteLogFiles(logFileMaxLife)
         } catch (error: Exception) {
-            ScaffoldLogger.error("[LogAppender] Failed to delete log file", error)
+            ScaffoldLogger.error(
+                "[Logger] Failed to delete the expired log file: logFileMaxLife = $logFileMaxLife",
+                error
+            )
         }
     }
 
@@ -78,11 +80,7 @@ internal object Appender {
                 )
             }
         } catch (error: Exception) {
-            android.util.Log.e(
-                ScaffoldConstants.Logger.TAG_SCAFFOLD,
-                "[LogAppender] Failed to write console-log",
-                error
-            )
+            // 这个异常已经无处可去，再次记录可能导致死循环
         }
     }
 
@@ -99,11 +97,7 @@ internal object Appender {
             }
             LogFileUtil.writeLog(log.name, log.time, stringifyLog.toString())
         } catch (error: Exception) {
-            android.util.Log.e(
-                ScaffoldConstants.Logger.TAG_SCAFFOLD,
-                "[LogAppender] Failed to write file-log",
-                error
-            )
+            // 这个异常已经无处可去，再次记录可能导致死循环
         }
     }
 

@@ -18,9 +18,13 @@ object ScaffoldConstants {
 
         const val NAME_CRASH = "yg_logger_crash"
 
-        const val TAG_SCAFFOLD = "yg_log_scaffold"
+        const val WORKER_NAME_UPLOADER_PERIODIC = "YG_LogUploadPeriodicWorker"
 
-        const val WORKER_NAME_UPLOADER = "YG_LogUploadWorker"
+        const val WORKER_NAME_UPLOADER_ONE_TIME = "YG_LogUploadOneTimeWorker"
+
+        const val DIR_LOG = "/yg/log"
+
+        const val DIR_LOG_UPLOAD = "/yg/log/upload"
 
     }
 

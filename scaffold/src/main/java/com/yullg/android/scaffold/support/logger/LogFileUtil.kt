@@ -1,6 +1,7 @@
 package com.yullg.android.scaffold.support.logger
 
 import com.yullg.android.scaffold.app.Scaffold
+import com.yullg.android.scaffold.app.ScaffoldConstants
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 import java.io.File
 import java.text.SimpleDateFormat
@@ -12,13 +13,23 @@ internal object LogFileUtil {
     private val fileNameDateFormat = SimpleDateFormat("yyMMdd", Locale.US)
     private val fileNamePattern = Pattern.compile("^.*-(\\d{6}).log$")
 
+    /**
+     * 日志的输出目录
+     */
     private val logDirectory: File by lazy {
-        File(Scaffold.context.cacheDir, "/yg/log")
-    }
-    private val uploadLogDirectory: File by lazy {
-        File(Scaffold.context.cacheDir, "/yg/log/upload")
+        File(Scaffold.context.cacheDir, ScaffoldConstants.Logger.DIR_LOG)
     }
 
+    /**
+     * 日志在上传前的暂存目录，所有日志文件在上传前都会先从输出目录移动到此目录下。
+     */
+    private val uploadLogDirectory: File by lazy {
+        File(Scaffold.context.cacheDir, ScaffoldConstants.Logger.DIR_LOG_UPLOAD)
+    }
+
+    /**
+     * 写入日志
+     */
     fun writeLog(name: String, time: Date, content: String) {
         synchronized(this) {
             val logFile = File(logDirectory, "$name-${fileNameDateFormat.format(time)}.log")
@@ -27,6 +38,9 @@ internal object LogFileUtil {
         }
     }
 
+    /**
+     * 删除日志目录下每个[logFileMaxLife]天之前的日志文件
+     */
     fun deleteLogFiles(logFileMaxLife: Int) {
         synchronized(this) {
             val logContent = StringBuilder()
@@ -37,7 +51,7 @@ internal object LogFileUtil {
             }
             if (logEnabled) {
                 logContent.append(
-                    "[LogFileUtil] Delete expired log file : thresholdDate = ${
+                    "[Logger] Delete the expired log file: thresholdDate = ${
                         fileNameDateFormat.format(thresholdDate)
                     }\n"
                 )
@@ -61,11 +75,16 @@ internal object LogFileUtil {
         }
     }
 
+    /**
+     * 首先遍历上传目录下的每个日志文件，调用[block]去执行上传操作，如果上传成功（[block]返回`true`）那么就删除这个日志文件；
+     * 然后获取同步锁，阻塞日志文件写入和删除操作，移动日志目录下的每个日志文件到上传目录，如果上传目录下已经有同名文件，那么忽略等待下次移动。
+     * 最后释放同步锁后再执行一次上传操作。
+     */
     fun uploadEachLogFile(block: (File) -> Boolean) {
         val logContent = StringBuilder()
         val logEnabled = ScaffoldLogger.isDebugEnabled()
         if (logEnabled) {
-            logContent.append("[LogFileUtil] Delete uploaded log file\n")
+            logContent.append("[Logger - upload] Delete the uploaded log file\n")
         }
         eachUploadLogFile { file ->
             if (block(file)) {
@@ -82,7 +101,7 @@ internal object LogFileUtil {
         }
         logContent.clear()
         if (logEnabled) {
-            logContent.append("[LogFileUtil] Mark the file to upload\n")
+            logContent.append("[Logger - upload] Mark the file to upload\n")
         }
         synchronized(this) {
             eachLogFile { file ->
@@ -107,7 +126,7 @@ internal object LogFileUtil {
         }
         logContent.clear()
         if (logEnabled) {
-            logContent.append("[LogFileUtil] Delete uploaded log file\n")
+            logContent.append("[Logger - upload] Delete the uploaded log file\n")
         }
         eachUploadLogFile { file ->
             if (block(file)) {
@@ -124,6 +143,9 @@ internal object LogFileUtil {
         }
     }
 
+    /**
+     * 遍历日志目录下的每一个日志文件，忽略所有无关的文件
+     */
     private fun eachLogFile(block: (File) -> Unit) {
         if (logDirectory.exists() && logDirectory.isDirectory) {
             logDirectory.listFiles()?.let { files ->
@@ -136,6 +158,9 @@ internal object LogFileUtil {
         }
     }
 
+    /**
+     * 遍历日志上传目录下的每一个日志文件，忽略所有无关的文件
+     */
     private fun eachUploadLogFile(block: (File) -> Unit) {
         if (uploadLogDirectory.exists() && uploadLogDirectory.isDirectory) {
             uploadLogDirectory.listFiles()?.let { files ->
