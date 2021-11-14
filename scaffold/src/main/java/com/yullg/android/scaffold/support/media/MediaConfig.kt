@@ -1,12 +1,14 @@
 package com.yullg.android.scaffold.support.media
 
-interface MediaConfig
+interface MediaConfig {
+
+    val globalSoundPoolOption: GlobalSoundPoolOption
+
+}
 
 open class MutableMediaConfig private constructor() : MediaConfig {
 
-    fun globalSoundPool(block: GlobalSoundPoolConfig.() -> Unit) {
-        GlobalSoundPoolConfig.block()
-    }
+    override var globalSoundPoolOption: GlobalSoundPoolOption = GlobalSoundPoolOption()
 
     internal companion object : MutableMediaConfig()
 

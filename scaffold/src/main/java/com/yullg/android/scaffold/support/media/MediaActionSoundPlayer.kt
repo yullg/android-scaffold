@@ -1,8 +1,11 @@
-package com.yullg.android.scaffold.helper
+package com.yullg.android.scaffold.support.media
 
 import android.media.MediaActionSound
 
-object MediaActionSoundHelper {
+/**
+ * 一个[MediaActionSound]实例，提供便捷的方式播放与相机的各种操作相匹配的声音。
+ */
+object MediaActionSoundPlayer {
 
     private val mediaActionSound: MediaActionSound by lazy {
         MediaActionSound()
