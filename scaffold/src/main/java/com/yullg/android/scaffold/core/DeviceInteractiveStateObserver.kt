@@ -69,9 +69,7 @@ class DeviceInteractiveStateObserver(
             } else if (Intent.ACTION_SCREEN_OFF == intent.action) {
                 consumer(false)
             } else {
-                if (ScaffoldLogger.isWarnEnabled()) {
-                    ScaffoldLogger.warn("[DeviceInteractiveStateObserver] ScreenBroadcastReceiver onReceive : Illegal Action = ${intent.action}")
-                }
+                ScaffoldLogger.warn("[DeviceInteractiveStateObserver] ScreenBroadcastReceiver onReceive : Illegal Action = ${intent.action}")
             }
         }
 

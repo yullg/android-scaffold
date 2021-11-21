@@ -69,9 +69,7 @@ open class TenaciousScheduler(
                     // 如果当前调度器未开始或已取消，那么忽略设备的交互状态改变事件。正常情况下不太可能出现这种情况，
                     // 因为只有在调度器开始时才监听设备的交互状态，并且在调度器取消时同时取消监听。但还是有必要预防
                     // 一下监听器触发导致A、B调度器意外启动。
-                    if (ScaffoldLogger.isWarnEnabled()) {
-                        ScaffoldLogger.warn("[TenaciousScheduler] Interactive state changed : ignored")
-                    }
+                    ScaffoldLogger.warn("[TenaciousScheduler] Interactive state changed : ignored")
                     return@DeviceInteractiveStateObserver
                 }
                 if (ScheduleMode.HANDLER != scheduleMode) {
@@ -81,24 +79,18 @@ open class TenaciousScheduler(
                 if (isInteractive) {
                     // 如果设备是可交互的，那么A调度器应该可以稳定运行，不需要启动C调度器
                     cancelSwitcher()
-                    if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[TenaciousScheduler] Interactive state changed : Interactive = ON, HS = ON, AS = OFF, SS = OFF")
-                    }
+                    ScaffoldLogger.debug("[TenaciousScheduler] Interactive state changed : Interactive = ON, HS = ON, AS = OFF, SS = OFF")
                 } else {
                     // 如果设备是不可交互的，那么A调度器可能被挂起，需要启动C调度器执行切换任务
                     // 这是C调度器在设备变更为不可交互状态后第一次安排任务，需要重置C调度器的执行间隔
                     val switcherInterval = scheduleSwitcher(true)
-                    if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[TenaciousScheduler] Interactive state changed : Interactive = OFF, SwitcherInterval = ${switcherInterval / 1000}, HS = ON, AS = OFF, SS = ON")
-                    }
+                    ScaffoldLogger.debug("[TenaciousScheduler] Interactive state changed : Interactive = OFF, SwitcherInterval = ${switcherInterval / 1000}, HS = ON, AS = OFF, SS = ON")
                 }
             } catch (e: Exception) {
-                if (ScaffoldLogger.isErrorEnabled()) {
-                    ScaffoldLogger.error(
-                        "[TenaciousScheduler] Interactive state changed : Error",
-                        e
-                    )
-                }
+                ScaffoldLogger.error(
+                    "[TenaciousScheduler] Interactive state changed : Error",
+                    e
+                )
             }
         }
     }
@@ -107,13 +99,9 @@ open class TenaciousScheduler(
         if (ScheduleMode.NONE == scheduleMode) {
             switchScheduleMode(ScheduleMode.HANDLER)
             deviceInteractiveStateObserver.mount()
-            if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[TenaciousScheduler] Schedule succeeded")
-            }
+            ScaffoldLogger.debug("[TenaciousScheduler] Schedule succeeded")
         } else {
-            if (ScaffoldLogger.isWarnEnabled()) {
-                ScaffoldLogger.warn("[TenaciousScheduler] Schedule ignored")
-            }
+            ScaffoldLogger.warn("[TenaciousScheduler] Schedule ignored")
         }
     }
 
@@ -122,13 +110,9 @@ open class TenaciousScheduler(
             deviceInteractiveStateObserver.unmount()
             cancelSwitcher()
             switchScheduleMode(ScheduleMode.NONE)
-            if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[TenaciousScheduler] Cancel succeeded")
-            }
+            ScaffoldLogger.debug("[TenaciousScheduler] Cancel succeeded")
         } else {
-            if (ScaffoldLogger.isWarnEnabled()) {
-                ScaffoldLogger.warn("[TenaciousScheduler] Cancel ignored")
-            }
+            ScaffoldLogger.warn("[TenaciousScheduler] Cancel ignored")
         }
     }
 
@@ -137,9 +121,7 @@ open class TenaciousScheduler(
         cancel()
         alarmScheduler.close()
         switcherScheduler.close()
-        if (ScaffoldLogger.isDebugEnabled()) {
-            ScaffoldLogger.debug("[TenaciousScheduler] Close succeeded")
-        }
+        ScaffoldLogger.debug("[TenaciousScheduler] Close succeeded")
     }
 
     /**
@@ -216,9 +198,7 @@ open class TenaciousScheduler(
 
         override fun run() {
             if (ScheduleMode.NONE == scheduleMode) {
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[TenaciousScheduler] HSR schedule : ignored")
-                }
+                ScaffoldLogger.debug("[TenaciousScheduler] HSR schedule : ignored")
                 return
             }
             try {
@@ -256,9 +236,7 @@ open class TenaciousScheduler(
         fun reset() {
             lastScheduleTime = null
             maxScheduleInterval = null
-            if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[TenaciousScheduler] HSR reset")
-            }
+            ScaffoldLogger.debug("[TenaciousScheduler] HSR reset")
         }
 
     }
@@ -267,15 +245,11 @@ open class TenaciousScheduler(
 
         override fun run() {
             if (ScheduleMode.NONE == scheduleMode) {
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[TenaciousScheduler] ASR schedule : ignored")
-                }
+                ScaffoldLogger.debug("[TenaciousScheduler] ASR schedule : ignored")
                 return
             }
             (ScheduleMode.ALARM == scheduleMode || ScheduleMode.ALARM_AND_HANDLER == scheduleMode).let {
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[TenaciousScheduler] ASR schedule : $it")
-                }
+                ScaffoldLogger.debug("[TenaciousScheduler] ASR schedule : $it")
                 if (it) {
                     runnable.run()
                 }
@@ -288,9 +262,7 @@ open class TenaciousScheduler(
 
         override fun run() {
             if (ScheduleMode.NONE == scheduleMode) {
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[TenaciousScheduler] SSR schedule : ignored")
-                }
+                ScaffoldLogger.debug("[TenaciousScheduler] SSR schedule : ignored")
                 return
             }
             val nowTime = SystemClock.elapsedRealtime()
@@ -309,9 +281,7 @@ open class TenaciousScheduler(
                     }
                     // 安排C调度器下次的任务，不需要重置执行间隔
                     val switcherInterval = scheduleSwitcher(false)
-                    if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[TenaciousScheduler] SSR schedule : nowTime = $nowTime, nextScheduleInterval = ${switcherInterval / 1000}, HSR_lastTime = $handlerLastScheduleTime, HSR_maxInterval = $handlerMaxScheduleInterval : HS = ON, AS = ON, SS = ON")
-                    }
+                    ScaffoldLogger.debug("[TenaciousScheduler] SSR schedule : nowTime = $nowTime, nextScheduleInterval = ${switcherInterval / 1000}, HSR_lastTime = $handlerLastScheduleTime, HSR_maxInterval = $handlerMaxScheduleInterval : HS = ON, AS = ON, SS = ON")
                 } else {
                     if (ScheduleMode.HANDLER != scheduleMode) {
                         // A调度器又可用了，切换回去...
@@ -319,9 +289,7 @@ open class TenaciousScheduler(
                     }
                     // 安排C调度器下次的任务，不需要重置执行间隔
                     val switcherInterval = scheduleSwitcher(false)
-                    if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[TenaciousScheduler] SSR schedule : nowTime = $nowTime, nextScheduleInterval = ${switcherInterval / 1000}, HSR_lastTime = $handlerLastScheduleTime, HSR_maxInterval = $handlerMaxScheduleInterval : HS = ON, AS = OFF, SS = ON")
-                    }
+                    ScaffoldLogger.debug("[TenaciousScheduler] SSR schedule : nowTime = $nowTime, nextScheduleInterval = ${switcherInterval / 1000}, HSR_lastTime = $handlerLastScheduleTime, HSR_maxInterval = $handlerMaxScheduleInterval : HS = ON, AS = OFF, SS = ON")
                 }
             } else {
                 if (shouldSwitchToAlarmScheduler(
@@ -335,15 +303,11 @@ open class TenaciousScheduler(
                         switchScheduleMode(ScheduleMode.ALARM)
                     }
                     // 也不需要安排C调度器再执行了，当前设备交互状态下C调度器的生命周期已终止
-                    if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[TenaciousScheduler] SSR schedule : nowTime = $nowTime, HSR_lastTime = $handlerLastScheduleTime, HSR_maxInterval = $handlerMaxScheduleInterval : HS = OFF, AS = ON, SS = OFF")
-                    }
+                    ScaffoldLogger.debug("[TenaciousScheduler] SSR schedule : nowTime = $nowTime, HSR_lastTime = $handlerLastScheduleTime, HSR_maxInterval = $handlerMaxScheduleInterval : HS = OFF, AS = ON, SS = OFF")
                 } else {
                     // 此次检查A调度器正常运行，没有切换操作，安排C调度器下次的任务，不需要重置执行间隔
                     val switcherInterval = scheduleSwitcher(false)
-                    if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[TenaciousScheduler] SSR schedule : nowTime = $nowTime, nextScheduleInterval = ${switcherInterval / 1000}, HSR_lastTime = $handlerLastScheduleTime, HSR_maxInterval = $handlerMaxScheduleInterval : HS = ON, AS = OFF, SS = ON")
-                    }
+                    ScaffoldLogger.debug("[TenaciousScheduler] SSR schedule : nowTime = $nowTime, nextScheduleInterval = ${switcherInterval / 1000}, HSR_lastTime = $handlerLastScheduleTime, HSR_maxInterval = $handlerMaxScheduleInterval : HS = ON, AS = OFF, SS = ON")
                 }
             }
         }

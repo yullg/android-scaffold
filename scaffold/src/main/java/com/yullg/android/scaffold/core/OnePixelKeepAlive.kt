@@ -25,32 +25,22 @@ class OnePixelKeepAlive {
         try {
             if (isInteractive) {
                 unloadOnePixelActivity()
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[OnePixelKeepAlive] Interactive state changed : Interactive = ON, Activity = OFF")
-                }
+                ScaffoldLogger.debug("[OnePixelKeepAlive] Interactive state changed : Interactive = ON, Activity = OFF")
             } else {
                 loadOnePixelActivity()
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[OnePixelKeepAlive] Interactive state changed : Interactive = OFF, Activity = ON")
-                }
+                ScaffoldLogger.debug("[OnePixelKeepAlive] Interactive state changed : Interactive = OFF, Activity = ON")
             }
         } catch (e: Exception) {
-            if (ScaffoldLogger.isErrorEnabled()) {
-                ScaffoldLogger.error("[OnePixelKeepAlive] Interactive state changed : Error", e)
-            }
+            ScaffoldLogger.error("[OnePixelKeepAlive] Interactive state changed : Error", e)
         }
     }
 
     fun mount() {
         try {
             deviceInteractiveStateObserver.mount()
-            if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[OnePixelKeepAlive] Mount succeeded")
-            }
+            ScaffoldLogger.debug("[OnePixelKeepAlive] Mount succeeded")
         } catch (e: Exception) {
-            if (ScaffoldLogger.isErrorEnabled()) {
-                ScaffoldLogger.error("[OnePixelKeepAlive] Mount failed", e)
-            }
+            ScaffoldLogger.error("[OnePixelKeepAlive] Mount failed", e)
         }
     }
 
@@ -63,22 +53,16 @@ class OnePixelKeepAlive {
                     try {
                         unloadOnePixelActivity()
                     } catch (e: Exception) {
-                        if (ScaffoldLogger.isErrorEnabled()) {
-                            ScaffoldLogger.error(
-                                "[OnePixelKeepAlive] Error unloading activity during unmount",
-                                e
-                            )
-                        }
+                        ScaffoldLogger.error(
+                            "[OnePixelKeepAlive] Error unloading activity during unmount",
+                            e
+                        )
                     }
                 }
             }
-            if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[OnePixelKeepAlive] Unmount succeeded")
-            }
+            ScaffoldLogger.debug("[OnePixelKeepAlive] Unmount succeeded")
         } catch (e: Exception) {
-            if (ScaffoldLogger.isErrorEnabled()) {
-                ScaffoldLogger.error("[OnePixelKeepAlive] Unmount failed", e)
-            }
+            ScaffoldLogger.error("[OnePixelKeepAlive] Unmount failed", e)
         }
     }
 
@@ -126,26 +110,18 @@ class OnePixelKeepAliveActivity : AppCompatActivity() {
                 width = 1
                 height = 1
             }
-            if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[OnePixelKeepAlive] Activity create succeeded")
-            }
+            ScaffoldLogger.debug("[OnePixelKeepAlive] Activity create succeeded")
         } catch (e: Exception) {
-            if (ScaffoldLogger.isErrorEnabled()) {
-                ScaffoldLogger.error("[OnePixelKeepAlive] Activity create failed", e)
-            }
+            ScaffoldLogger.error("[OnePixelKeepAlive] Activity create failed", e)
         }
     }
 
     override fun onDestroy() {
         try {
             OnePixelKeepAlive.activityRef = null
-            if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[OnePixelKeepAlive] Activity destroy succeeded")
-            }
+            ScaffoldLogger.debug("[OnePixelKeepAlive] Activity destroy succeeded")
         } catch (e: Exception) {
-            if (ScaffoldLogger.isErrorEnabled()) {
-                ScaffoldLogger.error("[OnePixelKeepAlive] Activity destroy failed", e)
-            }
+            ScaffoldLogger.error("[OnePixelKeepAlive] Activity destroy failed", e)
         }
         super.onDestroy()
     }

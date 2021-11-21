@@ -121,9 +121,7 @@ class CustomDialogTemplate(@UiContext context: Context) :
 
     @RestrictTo(RestrictTo.Scope.LIBRARY, RestrictTo.Scope.SUBCLASSES)
     override fun onUpdateView(metadata: CustomDialogMetadata) {
-        if (ScaffoldLogger.isWarnEnabled()) {
-            ScaffoldLogger.warn("CustomDialog does not support updates")
-        }
+        ScaffoldLogger.warn("CustomDialog does not support updates")
     }
 
 }

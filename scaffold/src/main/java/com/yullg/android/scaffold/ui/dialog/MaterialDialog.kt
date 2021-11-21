@@ -103,12 +103,10 @@ abstract class MaterialDialogHandler<M : MaterialDialogMetadata>(
                                                 delay(metadata.showDuration)
                                                 dialogShell.dismissAllowingStateLoss()
                                             } catch (e: Exception) {
-                                                if (ScaffoldLogger.isErrorEnabled()) {
-                                                    ScaffoldLogger.error(
-                                                        "Cannot dismiss this dialog [ $dialogShell ]",
-                                                        e
-                                                    )
-                                                }
+                                                ScaffoldLogger.error(
+                                                    "Cannot dismiss this dialog [ $dialogShell ]",
+                                                    e
+                                                )
                                             }
                                         }
                                     }

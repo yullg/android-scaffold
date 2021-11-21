@@ -28,19 +28,13 @@ class MusicKeepAlive(
         try {
             if (isInteractive) {
                 unloadMediaPlayer()
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[MusicKeepAlive] Interactive state changed : Interactive = ON, Player = OFF")
-                }
+                ScaffoldLogger.debug("[MusicKeepAlive] Interactive state changed : Interactive = ON, Player = OFF")
             } else {
                 loadMediaPlayer()
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[MusicKeepAlive] Interactive state changed : Interactive = OFF, Player = ON")
-                }
+                ScaffoldLogger.debug("[MusicKeepAlive] Interactive state changed : Interactive = OFF, Player = ON")
             }
         } catch (e: Exception) {
-            if (ScaffoldLogger.isErrorEnabled()) {
-                ScaffoldLogger.error("[MusicKeepAlive] Interactive state changed : Error", e)
-            }
+            ScaffoldLogger.error("[MusicKeepAlive] Interactive state changed : Error", e)
         }
     }
     private var mediaPlayer: MediaPlayer? = null
@@ -52,13 +46,9 @@ class MusicKeepAlive(
             } else {
                 loadMediaPlayer()
             }
-            if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[MusicKeepAlive] Mount succeeded")
-            }
+            ScaffoldLogger.debug("[MusicKeepAlive] Mount succeeded")
         } catch (e: Exception) {
-            if (ScaffoldLogger.isErrorEnabled()) {
-                ScaffoldLogger.error("[MusicKeepAlive] Mount failed", e)
-            }
+            ScaffoldLogger.error("[MusicKeepAlive] Mount failed", e)
         }
     }
 
@@ -69,13 +59,9 @@ class MusicKeepAlive(
             } finally {
                 unloadMediaPlayer()
             }
-            if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[MusicKeepAlive] Unmount succeeded")
-            }
+            ScaffoldLogger.debug("[MusicKeepAlive] Unmount succeeded")
         } catch (e: Exception) {
-            if (ScaffoldLogger.isErrorEnabled()) {
-                ScaffoldLogger.error("[MusicKeepAlive] Unmount failed", e)
-            }
+            ScaffoldLogger.error("[MusicKeepAlive] Unmount failed", e)
         }
     }
 
@@ -91,21 +77,15 @@ class MusicKeepAlive(
                 build()
             })
             setOnErrorListener { _, what, extra ->
-                if (ScaffoldLogger.isErrorEnabled()) {
-                    ScaffoldLogger.error("[MusicKeepAlive] Player error : what = $what, extra = $extra")
-                }
+                ScaffoldLogger.error("[MusicKeepAlive] Player error : what = $what, extra = $extra")
                 false
             }
             setOnPreparedListener { mp ->
                 try {
                     mp.start()
-                    if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[MusicKeepAlive] Player start succeeded")
-                    }
+                    ScaffoldLogger.debug("[MusicKeepAlive] Player start succeeded")
                 } catch (e: Exception) {
-                    if (ScaffoldLogger.isErrorEnabled()) {
-                        ScaffoldLogger.error("[MusicKeepAlive] Player start failed", e)
-                    }
+                    ScaffoldLogger.error("[MusicKeepAlive] Player start failed", e)
                 }
             }
             if (enhance) {

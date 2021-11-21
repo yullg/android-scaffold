@@ -50,13 +50,9 @@ class MusicClient(
         try {
             mountRemoteController()
             mountMediaSession()
-            if (ScaffoldLogger.isInfoEnabled()) {
-                ScaffoldLogger.info("[MusicClient] Mount succeeded")
-            }
+            ScaffoldLogger.info("[MusicClient] Mount succeeded")
         } catch (e: Exception) {
-            if (ScaffoldLogger.isErrorEnabled()) {
-                ScaffoldLogger.error("[MusicClient] Mount failed", e)
-            }
+            ScaffoldLogger.error("[MusicClient] Mount failed", e)
         }
     }
 
@@ -64,13 +60,9 @@ class MusicClient(
         try {
             unmountMediaSession()
             unmountRemoteController()
-            if (ScaffoldLogger.isInfoEnabled()) {
-                ScaffoldLogger.info("[MusicClient] Unmount succeeded")
-            }
+            ScaffoldLogger.info("[MusicClient] Unmount succeeded")
         } catch (e: Exception) {
-            if (ScaffoldLogger.isErrorEnabled()) {
-                ScaffoldLogger.error("[MusicClient] Unmount failed", e)
-            }
+            ScaffoldLogger.error("[MusicClient] Unmount failed", e)
         }
     }
 
@@ -81,9 +73,7 @@ class MusicClient(
                 notificationListener
             )
             musicClientListener?.onMediaSessionMounted()
-            if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[MusicClient] MediaSession has been mounted")
-            }
+            ScaffoldLogger.debug("[MusicClient] MediaSession has been mounted")
         }
     }
 
@@ -95,9 +85,7 @@ class MusicClient(
             // 将监听器触发放在remoteController赋值之后，保证从此刻开始MusicClient已处于完全挂载状态
             // 避免如果在监听器中使用MusicClient，而MusicClient还未结束挂载操作时可能出现的不一致问题
             musicClientListener?.onRemoteControllerMounted(localRemoteController)
-            if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[MusicClient] RemoteController has been mounted")
-            }
+            ScaffoldLogger.debug("[MusicClient] RemoteController has been mounted")
         }
     }
 
@@ -105,9 +93,7 @@ class MusicClient(
         if (mediaSessionMounted.compareAndSet(true, false)) {
             mediaSessionManager.removeOnActiveSessionsChangedListener(activeSessionsChangedListener)
             musicClientListener?.onMediaSessionUnmounted()
-            if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[MusicClient] MediaSession has been unmounted")
-            }
+            ScaffoldLogger.debug("[MusicClient] MediaSession has been unmounted")
         }
     }
 
@@ -122,9 +108,7 @@ class MusicClient(
                 // 将监听器触发放在remoteController赋值之后，保证从此刻开始MusicClient已处于完全卸载状态
                 musicClientListener?.onRemoteControllerUnmounted(localRemoteController)
             }
-            if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[MusicClient] RemoteController has been unmounted")
-            }
+            ScaffoldLogger.debug("[MusicClient] RemoteController has been unmounted")
         }
     }
 
@@ -166,13 +150,9 @@ class MusicClient(
         override fun onActiveSessionsChanged(controllers: MutableList<MediaController>?) {
             try {
                 checkMediaSession()
-                if (ScaffoldLogger.isInfoEnabled()) {
-                    ScaffoldLogger.info("[MusicClient] Active media session has been updated")
-                }
+                ScaffoldLogger.info("[MusicClient] Active media session has been updated")
             } catch (e: Exception) {
-                if (ScaffoldLogger.isErrorEnabled()) {
-                    ScaffoldLogger.error("[MusicClient] Failed to update active media session", e)
-                }
+                ScaffoldLogger.error("[MusicClient] Failed to update active media session", e)
             }
         }
 
@@ -200,19 +180,13 @@ class MusicClient(
             try {
                 handle.mediaController?.apply {
                     transportControls.play()
-                    if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[MusicClient] Play has been handled by MediaController")
-                    }
+                    ScaffoldLogger.debug("[MusicClient] Play has been handled by MediaController")
                     return
                 }
                 dispatchMediaKeyEvent(handle, KeyEvent.KEYCODE_MEDIA_PLAY)
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[MusicClient] Play has been handled by AudioManager")
-                }
+                ScaffoldLogger.debug("[MusicClient] Play has been handled by AudioManager")
             } catch (e: Exception) {
-                if (ScaffoldLogger.isErrorEnabled()) {
-                    ScaffoldLogger.error("[MusicClient] Play failed", e)
-                }
+                ScaffoldLogger.error("[MusicClient] Play failed", e)
             }
         }
 
@@ -220,19 +194,13 @@ class MusicClient(
             try {
                 handle.mediaController?.apply {
                     transportControls.pause()
-                    if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[MusicClient] Pause has been handled by MediaController")
-                    }
+                    ScaffoldLogger.debug("[MusicClient] Pause has been handled by MediaController")
                     return
                 }
                 dispatchMediaKeyEvent(handle, KeyEvent.KEYCODE_MEDIA_PAUSE)
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[MusicClient] Pause has been handled by AudioManager")
-                }
+                ScaffoldLogger.debug("[MusicClient] Pause has been handled by AudioManager")
             } catch (e: Exception) {
-                if (ScaffoldLogger.isErrorEnabled()) {
-                    ScaffoldLogger.error("[MusicClient] Pause failed", e)
-                }
+                ScaffoldLogger.error("[MusicClient] Pause failed", e)
             }
         }
 
@@ -240,19 +208,13 @@ class MusicClient(
             try {
                 handle.mediaController?.apply {
                     transportControls.skipToNext()
-                    if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[MusicClient] SkipToNext has been handled by MediaController")
-                    }
+                    ScaffoldLogger.debug("[MusicClient] SkipToNext has been handled by MediaController")
                     return
                 }
                 dispatchMediaKeyEvent(handle, KeyEvent.KEYCODE_MEDIA_NEXT)
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[MusicClient] SkipToNext has been handled by AudioManager")
-                }
+                ScaffoldLogger.debug("[MusicClient] SkipToNext has been handled by AudioManager")
             } catch (e: Exception) {
-                if (ScaffoldLogger.isErrorEnabled()) {
-                    ScaffoldLogger.error("[MusicClient] SkipToNext failed", e)
-                }
+                ScaffoldLogger.error("[MusicClient] SkipToNext failed", e)
             }
         }
 
@@ -260,19 +222,13 @@ class MusicClient(
             try {
                 handle.mediaController?.apply {
                     transportControls.skipToPrevious()
-                    if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[MusicClient] SkipToPrevious has been handled by MediaController")
-                    }
+                    ScaffoldLogger.debug("[MusicClient] SkipToPrevious has been handled by MediaController")
                     return
                 }
                 dispatchMediaKeyEvent(handle, KeyEvent.KEYCODE_MEDIA_PREVIOUS)
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[MusicClient] SkipToPrevious has been handled by AudioManager")
-                }
+                ScaffoldLogger.debug("[MusicClient] SkipToPrevious has been handled by AudioManager")
             } catch (e: Exception) {
-                if (ScaffoldLogger.isErrorEnabled()) {
-                    ScaffoldLogger.error("[MusicClient] SkipToPrevious failed", e)
-                }
+                ScaffoldLogger.error("[MusicClient] SkipToPrevious failed", e)
             }
         }
 
@@ -280,22 +236,16 @@ class MusicClient(
             try {
                 handle.mediaController?.apply {
                     adjustVolume(direction, flags)
-                    if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[MusicClient] AdjustVolume has been handled by MediaController: direction = $direction, flags = $flags")
-                    }
+                    ScaffoldLogger.debug("[MusicClient] AdjustVolume has been handled by MediaController: direction = $direction, flags = $flags")
                     return
                 }
                 handle.audioManager.adjustVolume(direction, flags)
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[MusicClient] AdjustVolume has been handled by AudioManager: direction = $direction, flags = $flags")
-                }
+                ScaffoldLogger.debug("[MusicClient] AdjustVolume has been handled by AudioManager: direction = $direction, flags = $flags")
             } catch (e: Exception) {
-                if (ScaffoldLogger.isErrorEnabled()) {
-                    ScaffoldLogger.error(
-                        "[MusicClient] AdjustVolume failed: direction = $direction, flags = $flags",
-                        e
-                    )
-                }
+                ScaffoldLogger.error(
+                    "[MusicClient] AdjustVolume failed: direction = $direction, flags = $flags",
+                    e
+                )
             }
         }
 
@@ -303,22 +253,16 @@ class MusicClient(
             try {
                 handle.mediaController?.apply {
                     setVolumeTo(value, flags)
-                    if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[MusicClient] SetVolumeTo has been handled by MediaController: value = $value, flags = $flags")
-                    }
+                    ScaffoldLogger.debug("[MusicClient] SetVolumeTo has been handled by MediaController: value = $value, flags = $flags")
                     return
                 }
                 handle.audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, value, flags)
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("[MusicClient] SetVolumeTo has been handled by AudioManager: value = $value, flags = $flags")
-                }
+                ScaffoldLogger.debug("[MusicClient] SetVolumeTo has been handled by AudioManager: value = $value, flags = $flags")
             } catch (e: Exception) {
-                if (ScaffoldLogger.isErrorEnabled()) {
-                    ScaffoldLogger.error(
-                        "[MusicClient] SetVolumeTo failed: value = $value, flags = $flags",
-                        e
-                    )
-                }
+                ScaffoldLogger.error(
+                    "[MusicClient] SetVolumeTo failed: value = $value, flags = $flags",
+                    e
+                )
             }
         }
 

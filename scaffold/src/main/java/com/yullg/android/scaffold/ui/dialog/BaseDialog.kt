@@ -89,9 +89,7 @@ abstract class AbstractDialogHandler<M : DialogMetadata>(activity: FragmentActiv
     private fun afterDialogDismiss(dismissedDialog: DialogShell) {
         synchronized(this) {
             (dscs?.first === dismissedDialog).let {
-                if (ScaffoldLogger.isDebugEnabled()) {
-                    ScaffoldLogger.debug("Dialog dismiss [ ${dscs?.first.hashCode()}, ${dismissedDialog.hashCode()}, $it ]")
-                }
+                ScaffoldLogger.debug("Dialog dismiss [ ${dscs?.first.hashCode()}, ${dismissedDialog.hashCode()}, $it ]")
                 if (it) {
                     try {
                         try {

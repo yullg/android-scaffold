@@ -30,18 +30,14 @@ open class DurableDirectAlarmScheduler(
             val nowTime = SystemClock.elapsedRealtime()
             try {
                 if (lastDeliveredTime + minDeliverIntervalMillis > nowTime) {
-                    if (ScaffoldLogger.isDebugEnabled()) {
-                        ScaffoldLogger.debug("[DurableDirectAlarmScheduler] Schedule will be filtered because it is too frequent : lastTime = $lastDeliveredTime, nowTime = $nowTime, minDeliverIntervalMillis = $minDeliverIntervalMillis")
-                    }
+                    ScaffoldLogger.debug("[DurableDirectAlarmScheduler] Schedule will be filtered because it is too frequent : lastTime = $lastDeliveredTime, nowTime = $nowTime, minDeliverIntervalMillis = $minDeliverIntervalMillis")
                     return@DirectAlarmScheduler
                 }
             } catch (e: Exception) {
-                if (ScaffoldLogger.isErrorEnabled()) {
-                    ScaffoldLogger.error(
-                        "[DurableDirectAlarmScheduler] Schedule filtering failed",
-                        e
-                    )
-                }
+                ScaffoldLogger.error(
+                    "[DurableDirectAlarmScheduler] Schedule filtering failed",
+                    e
+                )
             }
             lastDeliveredTime = nowTime
             enqueueWork()

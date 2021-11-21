@@ -124,9 +124,7 @@ class CustomBottomDialogTemplate(@UiContext context: Context) :
 
     @RestrictTo(RestrictTo.Scope.LIBRARY, RestrictTo.Scope.SUBCLASSES)
     override fun onUpdateView(metadata: CustomBottomSheetDialogMetadata) {
-        if (ScaffoldLogger.isWarnEnabled()) {
-            ScaffoldLogger.warn("CustomBottomSheetDialog does not support updates")
-        }
+        ScaffoldLogger.warn("CustomBottomSheetDialog does not support updates")
     }
 
 }

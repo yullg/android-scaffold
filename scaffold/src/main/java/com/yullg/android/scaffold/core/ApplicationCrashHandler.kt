@@ -57,13 +57,9 @@ object ApplicationCrashHandler {
                     mOriginalHandler = originalHandler
                 )
             )
-            if (ScaffoldLogger.isDebugEnabled()) {
-                ScaffoldLogger.debug("[ApplicationCrashHandler] Install succeeded")
-            }
+            ScaffoldLogger.debug("[ApplicationCrashHandler] Install succeeded")
         } else {
-            if (ScaffoldLogger.isWarnEnabled()) {
-                ScaffoldLogger.warn("[ApplicationCrashHandler] Install ignored")
-            }
+            ScaffoldLogger.warn("[ApplicationCrashHandler] Install ignored")
         }
     }
 
