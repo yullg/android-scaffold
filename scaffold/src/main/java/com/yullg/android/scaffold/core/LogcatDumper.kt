@@ -21,10 +21,12 @@ object LogcatDumper {
     const val PRIORITY_S: String = "S"
 
     private val mounted = AtomicBoolean(false)
+
     private var mPriority: String = PRIORITY_I
     private var mCharset: Charset = Charsets.UTF_8
     private var mFile: File? = null
-    private var mDumpThread: Thread? = null
+
+    private var mDumpThread: LogcatDumpThread? = null
 
     fun priority(value: String): LogcatDumper {
         mPriority = when (value) {
@@ -52,12 +54,8 @@ object LogcatDumper {
 
     fun mount() {
         if (mounted.compareAndSet(false, true)) {
-            mDumpThread = Thread(
-                LogcatDumpRunnable(mPriority, mCharset, mFile),
-                "scaffold_logcat_dump_thread"
-            ).apply {
-                start()
-            }
+            mDumpThread = LogcatDumpThread(mPriority, mCharset, mFile)
+            mDumpThread?.start()
             ScaffoldLogger.debug("[LogcatDumper] Mount succeeded")
         } else {
             ScaffoldLogger.warn("[LogcatDumper] Mount ignored")
@@ -66,7 +64,7 @@ object LogcatDumper {
 
     fun unmount() {
         if (mounted.compareAndSet(true, false)) {
-            mDumpThread?.interrupt()
+            mDumpThread?.kill()
             mDumpThread = null
             ScaffoldLogger.debug("[LogcatDumper] Unmount succeeded")
         } else {
@@ -76,20 +74,21 @@ object LogcatDumper {
 
 }
 
-private class LogcatDumpRunnable(
+private class LogcatDumpThread(
     private val priority: String,
     private val charset: Charset,
     private val file: File?
-) : Runnable {
+) : Thread("scaffold_logcat_dump_thread") {
+
+    var process: Process? = null
 
     override fun run() {
         try {
             ScaffoldLogger.debug("[LogcatDumper] Dumping...")
-            var process: Process? = null
             try {
                 process = Runtime.getRuntime()
                     .exec("logcat --pid=${android.os.Process.myPid()} *:$priority")
-                process.inputStream.bufferedReader(charset).use { reader ->
+                process?.inputStream?.bufferedReader(charset)?.use { reader ->
                     if (file != null) {
                         file.bufferedWriter(charset).use { writer ->
                             reader.lineSequence().forEach { line ->
@@ -109,6 +108,12 @@ private class LogcatDumpRunnable(
         } catch (e: Exception) {
             ScaffoldLogger.error("[LogcatDumper] Dump failed", e)
         }
+    }
+
+    fun kill() {
+        process?.destroy()
+        process = null
+        interrupt()
     }
 
 }

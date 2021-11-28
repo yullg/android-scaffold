@@ -1,5 +1,5 @@
 group = 'com.yullg.android'
-version = '1.1.5.7-SNAPSHOT'
+version = '1.1.5.8-SNAPSHOT'
 
 afterEvaluate {
     publishing {
