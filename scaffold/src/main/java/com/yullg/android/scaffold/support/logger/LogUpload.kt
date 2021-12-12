@@ -5,7 +5,7 @@ import androidx.work.*
 import com.yullg.android.scaffold.app.Scaffold
 import com.yullg.android.scaffold.app.ScaffoldConfig
 import com.yullg.android.scaffold.app.ScaffoldConstants
-import com.yullg.android.scaffold.helper.SystemHelper
+import com.yullg.android.scaffold.helper.SettingsHelper
 import com.yullg.android.scaffold.internal.AliyunOSSClient
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 import kotlinx.coroutines.Dispatchers
@@ -139,7 +139,7 @@ class AliyunOSSLogUploader(
     accessKeyId: String,
     accessKeySecret: String,
     private val bucketName: String,
-    private val objectKeyGetter: (String) -> String = { "${SystemHelper.SSAID}/$it" }
+    private val objectKeyGetter: (String) -> String = { "${SettingsHelper.SSAID}/$it" }
 ) : LogUploader {
 
     private val ossClient = AliyunOSSClient(endpointURI, accessKeyId, accessKeySecret)

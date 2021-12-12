@@ -4,7 +4,7 @@ import android.os.Build
 import android.os.Process
 import androidx.core.content.pm.PackageInfoCompat
 import com.yullg.android.scaffold.helper.PackageHelper
-import com.yullg.android.scaffold.helper.SystemHelper
+import com.yullg.android.scaffold.helper.SettingsHelper
 import com.yullg.android.scaffold.internal.CrashLogger
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 import com.yullg.android.scaffold.support.logger.Log
@@ -106,7 +106,7 @@ private class DefaultUncaughtExceptionHandler(
 
     private fun generateMessage(): String {
         val json = JSONObject()
-        json.put("SSAID", SystemHelper.SSAID)
+        json.put("SSAID", SettingsHelper.SSAID)
         json.put("LOCALE", Locale.getDefault().toString())
         json.put("TIME_ZONE", TimeZone.getDefault().id)
         json.put("Package", JSONObject().apply {
