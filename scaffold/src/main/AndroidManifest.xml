@@ -7,10 +7,19 @@
         <activity
             android:name=".core.OnePixelKeepAliveActivity"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
-            android:directBootAware="true"
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
             android:noHistory="true" />
+
+        <provider
+            android:name=".internal.ScaffoldFileProvider"
+            android:authorities="${applicationId}.yg.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/yg_fileproviderpaths" />
+        </provider>
 
     </application>
 
