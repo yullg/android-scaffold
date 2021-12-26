@@ -1,9 +1,11 @@
 package com.yullg.android.scaffold.support.storage
 
+import android.net.Uri
 import androidx.annotation.WorkerThread
 import androidx.core.content.FileProvider
 import com.yullg.android.scaffold.app.Scaffold
 import java.io.File
+import java.io.InputStream
 import java.util.*
 
 /**
@@ -17,13 +19,33 @@ object FileProviderSupport {
      * 将给定[file]导入由[directory]表示的FileProvider共享目录中，使用UUID生成唯一的文件名。
      */
     @WorkerThread
-    fun importFile(file: File, directory: FileProviderDirectory): File {
-        val targetFile = newShareFile(
+    fun importFile(file: File, directory: StorageDirectory): File {
+        return StorageSupport.copyFrom(
+            file,
             directory,
-            UUID.randomUUID().toString().replace("-", "")
-                    + file.extension.let { if (it.isEmpty()) "" else ".$it" }
+            "yullg/share/${
+                UUID.randomUUID().toString().replace("-", "")
+                        + file.extension.let { if (it.isEmpty()) "" else ".$it" }
+            }")
+    }
+
+    /**
+     * 将给定[inputStream]导入由[directory]表示的FileProvider共享目录中，使用UUID生成唯一的文件名。
+     */
+    @WorkerThread
+    fun importFile(
+        inputStream: InputStream,
+        directory: StorageDirectory,
+        extension: String? = null
+    ): File {
+        return StorageSupport.copyFrom(
+            inputStream,
+            directory,
+            "yullg/share/${
+                UUID.randomUUID().toString().replace("-", "")
+                        + if (extension == null) "" else ".$extension"
+            }"
         )
-        return file.copyTo(targetFile)
     }
 
     /**
@@ -31,7 +53,7 @@ object FileProviderSupport {
      *
      * 注意：[file]必须是已经导入到FileProvider共享目录中的文件（通过[importFile]导入）。
      */
-    fun getUriForFile(file: File) =
+    fun getUriForFile(file: File): Uri =
         FileProvider.getUriForFile(
             Scaffold.context,
             "${Scaffold.context.packageName}.yg.fileprovider",
@@ -43,7 +65,7 @@ object FileProviderSupport {
      *
      * 注意：[file]必须是已经导入到FileProvider共享目录中的文件（通过[importFile]导入）。
      */
-    fun getUriForFile(file: File, displayName: String) =
+    fun getUriForFile(file: File, displayName: String): Uri =
         FileProvider.getUriForFile(
             Scaffold.context,
             "${Scaffold.context.packageName}.yg.fileprovider",
@@ -51,27 +73,4 @@ object FileProviderSupport {
             displayName
         )
 
-    /**
-     * 根据给定的FileProvider目录和文件名创建File实例
-     */
-    private fun newShareFile(fileProviderDirectory: FileProviderDirectory, filename: String): File {
-        return when (fileProviderDirectory) {
-            FileProviderDirectory.FILES -> File(Scaffold.context.filesDir, filename)
-            FileProviderDirectory.CACHE -> File(Scaffold.context.cacheDir, filename)
-            FileProviderDirectory.EXTERNAL_FILES -> File(
-                Scaffold.context.getExternalFilesDir(null),
-                filename
-            )
-            FileProviderDirectory.EXTERNAL_CACHE -> File(
-                Scaffold.context.externalCacheDir,
-                filename
-            )
-        }
-    }
-
 }
-
-/**
- * FileProvider共享文件的所属目录
- */
-enum class FileProviderDirectory { FILES, CACHE, EXTERNAL_FILES, EXTERNAL_CACHE }

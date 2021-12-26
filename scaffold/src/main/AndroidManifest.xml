@@ -13,7 +13,7 @@
 
         <provider
             android:name=".internal.ScaffoldFileProvider"
-            android:authorities="${applicationId}.yg.fileprovider"
+            android:authorities="${applicationId}.yullg.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

@@ -2,14 +2,14 @@
 <paths>
     <files-path
         name="files"
-        path="yg/share/" />
+        path="yullg/share/" />
     <cache-path
         name="cache"
-        path="yg/share/" />
+        path="yullg/share/" />
     <external-files-path
         name="external-files"
-        path="yg/share/" />
+        path="yullg/share/" />
     <external-cache-path
         name="external-cache"
-        path="yg/share/" />
+        path="yullg/share/" />
 </paths>
