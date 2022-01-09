@@ -9,7 +9,7 @@ import com.yullg.android.scaffold.app.Scaffold
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 
 /**
- * 提供系统设置相关助手功能
+ * 提供系统设置相关的辅助功能
  */
 object SettingsHelper {
 

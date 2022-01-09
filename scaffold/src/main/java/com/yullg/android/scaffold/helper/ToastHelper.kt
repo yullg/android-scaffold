@@ -3,6 +3,9 @@ package com.yullg.android.scaffold.helper
 import android.widget.Toast
 import com.yullg.android.scaffold.app.Scaffold
 
+/**
+ * 提供Toast弹窗相关的辅助功能
+ */
 object ToastHelper {
 
     fun showShort(resId: Int) = show(resId, Toast.LENGTH_SHORT)

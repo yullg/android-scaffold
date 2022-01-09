@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat
 import com.yullg.android.scaffold.app.Scaffold
 
 /**
- * 提供通知相关的助手功能
+ * 提供通知相关的辅助功能
  */
 object NotificationHelper {
 

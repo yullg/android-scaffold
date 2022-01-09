@@ -5,6 +5,9 @@ import android.content.SharedPreferences
 import com.yullg.android.scaffold.app.Scaffold
 import com.yullg.android.scaffold.app.ScaffoldConstants
 
+/**
+ * 提供键值存储相关的辅助功能
+ */
 class SPHelper(name: String) : ISharedPreferences {
 
     private val sp: SharedPreferences by lazy {

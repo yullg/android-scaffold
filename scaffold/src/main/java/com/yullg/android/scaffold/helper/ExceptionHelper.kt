@@ -3,6 +3,9 @@ package com.yullg.android.scaffold.helper
 import java.io.PrintWriter
 import java.io.StringWriter
 
+/**
+ * 提供异常相关的辅助功能
+ */
 object ExceptionHelper {
 
     fun getStackTraceString(throwable: Throwable): String {

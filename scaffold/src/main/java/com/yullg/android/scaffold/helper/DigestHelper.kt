@@ -6,6 +6,9 @@ import java.security.MessageDigest
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
+/**
+ * 提供消息摘要相关的辅助功能
+ */
 object DigestHelper {
 
     private val ALGORITHM_MD5 = "MD5"

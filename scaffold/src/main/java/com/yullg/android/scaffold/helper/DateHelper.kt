@@ -2,6 +2,9 @@ package com.yullg.android.scaffold.helper
 
 import java.util.*
 
+/**
+ * 提供日期相关的辅助功能
+ */
 object DateHelper {
 
     const val MILLIS_PER_SECOND: Long = 1000

@@ -22,9 +22,9 @@ object ScaffoldConstants {
 
         const val WORKER_NAME_UPLOADER_ONE_TIME = "YG_LogUploadOneTimeWorker"
 
-        const val DIR_LOG = "/yg/log"
+        const val DIR_LOG = "/yullg/log"
 
-        const val DIR_LOG_UPLOAD = "/yg/log/upload"
+        const val DIR_LOG_UPLOAD = "/yullg/log/upload"
 
     }
 
