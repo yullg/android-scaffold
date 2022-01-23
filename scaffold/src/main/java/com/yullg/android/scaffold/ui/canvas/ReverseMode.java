@@ -6,6 +6,9 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * 定义翻转方式
+ */
 @Documented
 @Retention(RetentionPolicy.CLASS)
 @IntDef(value = {ReverseMode.NONE, ReverseMode.HORIZONTAL, ReverseMode.VERTICAL}, flag = true)

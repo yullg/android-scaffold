@@ -12,6 +12,9 @@ import androidx.core.content.res.getDimensionOrThrow
 import androidx.core.content.res.getIntegerOrThrow
 import com.yullg.android.scaffold.R
 
+/**
+ * 为子类提供一个可配置的[Paint]和翻转方式
+ */
 abstract class CanvasView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -19,7 +22,7 @@ abstract class CanvasView @JvmOverloads constructor(
     defStyleRes: Int = 0
 ) : View(context, attrs, defStyleAttr, defStyleRes) {
 
-    protected var _cvPaint = Paint()
+    protected var _cvPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     protected var _cvPaintAlpha: Int? = null
     protected var _cvPaintAntiAlias: Boolean? = null
     protected var _cvPaintColor: Int? = null

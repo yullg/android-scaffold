@@ -8,6 +8,9 @@ import androidx.core.content.res.getFloatOrThrow
 import androidx.core.graphics.withScale
 import com.yullg.android.scaffold.R
 
+/**
+ * 一个执行单次[Canvas.drawArc]来绘制自身的View
+ */
 open class ArcCanvasView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

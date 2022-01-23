@@ -5,6 +5,9 @@ import android.graphics.Canvas
 import android.util.AttributeSet
 import androidx.core.graphics.withScale
 
+/**
+ * 一个执行单次[Canvas.drawOval]来绘制自身的View
+ */
 open class OvalCanvasView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

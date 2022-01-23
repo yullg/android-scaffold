@@ -16,7 +16,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 object SystemBarUtil {
 
     /**
-     * 设置decor view是否应该适配insets
+     * 设置decor view是否应该适配窗口insets
      *
      * @see WindowCompat.setDecorFitsSystemWindows
      */
@@ -191,7 +191,7 @@ object SystemBarUtil {
     }
 
     /**
-     * 获取系统栏行为
+     * 获取系统栏恢复方式
      *
      * @see WindowInsetsControllerCompat.getSystemBarsBehavior
      */
@@ -201,7 +201,7 @@ object SystemBarUtil {
             ?: SystemBarBehavior.BEHAVIOR_SHOW_BARS_BY_TOUCH
 
     /**
-     * 设置系统栏行为
+     * 设置系统栏恢复方式
      *
      * @see WindowInsetsControllerCompat.setSystemBarsBehavior
      */

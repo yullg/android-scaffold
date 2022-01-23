@@ -20,12 +20,6 @@
 
     <style name="yg_DialogCustomBottomSheetDefaultStyle" parent="ThemeOverlay.Material3.BottomSheetDialog" />
 
-    <style name="yg_WidgetSimpleCardDefaultStyle">
-        <item name="yg_cardFillColor">?attr/colorSurface</item>
-        <item name="yg_cardShadowColor">?attr/elevationOverlayColor</item>
-        <item name="yg_cardStrokeColor">?attr/colorOutline</item>
-    </style>
-
     <style name="yg_DialogAlertCupertinoButtonShapeStyle">
         <item name="cornerSize">0dp</item>
     </style>

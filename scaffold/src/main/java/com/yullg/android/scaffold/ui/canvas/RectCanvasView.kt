@@ -7,6 +7,9 @@ import androidx.core.content.res.getDimensionOrThrow
 import androidx.core.graphics.withScale
 import com.yullg.android.scaffold.R
 
+/**
+ * 一个执行单次[Canvas.drawRoundRect]来绘制自身的View
+ */
 open class RectCanvasView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

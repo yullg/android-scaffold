@@ -9,6 +9,9 @@ import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import com.yullg.android.scaffold.R
 
+/**
+ * 一个[FrameLayout]子类，它通过调整自身margin或者padding来适配窗口inserts。
+ */
 open class SafeAreaWidget @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -16,12 +19,33 @@ open class SafeAreaWidget @JvmOverloads constructor(
     defStyleRes: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr, defStyleRes) {
 
+    /**
+     * 是否消耗窗口inserts，如果设置为true那么inserts将不会继续向下传播到子`View`。(默认为true)
+     *
+     * @see WindowInsetsCompat.isConsumed
+     */
     var saConsumeInsets: Boolean
+
+    /**
+     * 是否忽略窗口inserts的可见性（默认为false）
+     *
+     * @see WindowInsetsCompat.getInsetsIgnoringVisibility
+     */
     var saIgnoringVisibility: Boolean
 
+    /**
+     * 如何调整布局来适配窗口inserts（默认为margin）
+     *
+     * @see SafeAreaApplyMode
+     */
     @SafeAreaApplyMode
     var saApplyMode: Int
 
+    /**
+     * 适配的窗口inserts的位掩码（默认为[WindowInsetsCompat.Type.statusBars]）
+     *
+     * @see WindowInsetsCompat.Type.InsetsType
+     */
     @WindowInsetsCompat.Type.InsetsType
     var saInsetsTypeMask: Int
 

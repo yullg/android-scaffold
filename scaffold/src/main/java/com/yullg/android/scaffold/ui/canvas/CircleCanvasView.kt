@@ -5,6 +5,9 @@ import android.graphics.Canvas
 import android.util.AttributeSet
 import androidx.core.graphics.withScale
 
+/**
+ * 一个执行单次[Canvas.drawCircle]来绘制自身的View
+ */
 open class CircleCanvasView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

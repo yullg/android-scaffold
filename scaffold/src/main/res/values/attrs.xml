@@ -8,8 +8,6 @@
         <attr name="yg_dialogAlertStyle" format="reference" />
         <attr name="yg_dialogCustomStyle" format="reference" />
         <attr name="yg_dialogCustomBottomSheetStyle" format="reference" />
-        <!-- widget -->
-        <attr name="yg_widgetSimpleCardStyle" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="CanvasView">

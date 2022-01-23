@@ -7,6 +7,9 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * 定义在隐藏系统栏后如何将其恢复
+ */
 @Documented
 @Retention(RetentionPolicy.CLASS)
 @IntDef(value = {SystemBarBehavior.BEHAVIOR_SHOW_BARS_BY_TOUCH, SystemBarBehavior.BEHAVIOR_SHOW_BARS_BY_SWIPE, SystemBarBehavior.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE})

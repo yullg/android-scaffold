@@ -15,11 +15,16 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.yullg.android.scaffold.R
 
+/**
+ * 一个[FrameLayout]子类，使用[MaterialShapeDrawable]作为背景来提供类似卡片的显示效果。
+ *
+ * @see MaterialShapeDrawable
+ */
 open class SimpleCardWidget @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.yg_widgetSimpleCardStyle,
-    defStyleRes: Int = R.style.yg_WidgetSimpleCardDefaultStyle
+    defStyleAttr: Int = 0,
+    defStyleRes: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr, defStyleRes) {
 
     protected val cardBackgroundDrawable = CardBackgroundDrawable()
