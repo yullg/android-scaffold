@@ -8,6 +8,8 @@ import androidx.core.graphics.withScale
 
 /**
  * 圆角View
+ *
+ * 通过将此View放在其他View的四个角上来模拟圆角效果，仅适用于背景色固定的情况下。
  */
 open class RoundCornerCanvasView @JvmOverloads constructor(
     context: Context,
