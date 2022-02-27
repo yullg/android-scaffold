@@ -31,7 +31,7 @@ object PermissionSupport {
     /**
      * 创建并注册可用于执行权限授权操作的[PermissionRequester]
      *
-     * 注意：必须在[activity]初始化过程中调用，通常是字段初始化。
+     * 注意：必须在[activity]到达STARTED之前调用，并且在到达CREATED之前不能使用创建的[PermissionRequester]。
      *
      * @see ComponentActivity.registerForActivityResult
      * @see ActivityResultContracts.RequestPermission
@@ -43,7 +43,7 @@ object PermissionSupport {
     /**
      * 创建并注册可用于执行权限授权操作的[PermissionRequester]
      *
-     * 注意：必须在[fragment]初始化过程中调用，通常是字段初始化。
+     * 注意：必须在[fragment]到达STARTED之前调用，并且在到达CREATED之前不能使用创建的[PermissionRequester]。
      *
      * @see ComponentActivity.registerForActivityResult
      * @see ActivityResultContracts.RequestPermission

@@ -8,10 +8,12 @@ data class SinglePermissionResult(
     val granted: Boolean,
     val shouldShowRequestPermissionRationale: Boolean
 ) {
+
     /**
      * 是否拒绝且不再响应授权请求
      */
     val deniedForever get() = !granted && !shouldShowRequestPermissionRationale
+
 }
 
 /**
@@ -27,6 +29,33 @@ data class MultiplePermissionResult(
      * 是否所有权限都已经授予
      */
     val allGranted get() = grantedArr.all { it }
+
+    /**
+     * 是否所有权限都已经拒绝且不再响应授权请求
+     */
+    val allDeniedForever: Boolean
+        get() {
+            if (grantedArr.isEmpty()) return false // 保证默认值为false
+            grantedArr.forEachIndexed { index, granted ->
+                if (granted || shouldShowRequestPermissionRationaleArr[index]) {
+                    return false
+                }
+            }
+            return true
+        }
+
+    /**
+     * 是否至少有一个权限拒绝且不再响应授权请求
+     */
+    val anyDeniedForever: Boolean
+        get() {
+            grantedArr.forEachIndexed { index, granted ->
+                if (!granted && !shouldShowRequestPermissionRationaleArr[index]) {
+                    return true
+                }
+            }
+            return false
+        }
 
     /**
      * 判断此实例中是否包含给定的权限
