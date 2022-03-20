@@ -5,6 +5,7 @@ import android.app.job.JobInfo
 import android.app.job.JobParameters
 import android.app.job.JobScheduler
 import android.content.ComponentName
+import android.location.LocationManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -12,9 +13,11 @@ import android.util.Log
 import android.widget.TextView
 import androidx.camera.core.Preview
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.yullg.android.scaffold.framework.BaseActivity
 import com.yullg.android.scaffold.framework.EmptyAC
 import com.yullg.android.scaffold.helper.DateHelper
+import com.yullg.android.scaffold.support.location.LocationSupport
 import com.yullg.android.scaffold.support.logger.Logger
 import com.yullg.android.scaffold.support.media.CameraXWrapper
 import com.yullg.android.scaffold.support.schedule.CoroutineJobService
@@ -39,6 +42,7 @@ class MainActivity : BaseActivity<EmptyAC>() {
 
     private lateinit var cameraXWrapper: CameraXWrapper
 
+    @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         waitDialog = WaitDialog(this)
@@ -50,7 +54,17 @@ class MainActivity : BaseActivity<EmptyAC>() {
         setContentView(R.layout.activity_main)
         val textView: TextView = findViewById(R.id.text_view)
         textView.setOnClickListener {
-            testCoroutineJobService()
+            lifecycleScope.launch {
+                LocationSupport.getCurrentLocation(
+                    arrayOf(
+                        LocationManager.GPS_PROVIDER,
+                        LocationManager.NETWORK_PROVIDER
+                    )
+                ).let {
+                    Logger.info("getCurrentLocation:$it")
+                }
+            }
+//            testCoroutineJobService()
 //            cameraXWrapper.setCameraSelectorBuilder(
 //                CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_FRONT)
 //            )

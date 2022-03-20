@@ -24,7 +24,7 @@ object LocationSupport {
     }
 
     /**
-     * 返回位置的当前启用/禁用状态
+     * 检查位置服务是否开启
      *
      * @see LocationManagerCompat.isLocationEnabled
      */
@@ -33,16 +33,30 @@ object LocationSupport {
     } ?: false
 
     /**
-     * 从给定的提供程序返回当前位置
+     * 从指定的提供程序获取当前位置
      *
      * @see LocationManagerCompat.getCurrentLocation
      */
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
-    suspend fun getCurrentLocation(provider: String): Location? =
-        suspendCancellableCoroutine { continuation ->
+    suspend fun getCurrentLocation(
+        provider: String,
+        @CacheUseMode cacheUseMode: Int = CacheUseMode.IGNORE
+    ): Location? {
+        val localLocationManager = locationManager ?: return null
+        if (!localLocationManager.isProviderEnabled(provider)) {
+            return null
+        }
+        if (CacheUseMode.ONLY == cacheUseMode) {
+            return localLocationManager.getLastKnownLocation(provider)
+        } else if (CacheUseMode.FIRST == cacheUseMode) {
+            localLocationManager.getLastKnownLocation(provider)?.let {
+                return it
+            }
+        }
+        return suspendCancellableCoroutine { continuation ->
             val cancellationSignal = CancellationSignal()
             LocationManagerCompat.getCurrentLocation(
-                locationManager!!,
+                localLocationManager,
                 provider,
                 cancellationSignal,
                 ContextCompat.getMainExecutor(Scaffold.context)
@@ -51,5 +65,26 @@ object LocationSupport {
                 cancellationSignal.cancel()
             }
         }
+    }
+
+    /**
+     * 从指定的提供程序获取当前位置
+     *
+     * 依次遍历所有指定的提供程序，直到获取到位置数据为止，如果所有提供程序都无法获取到位置数据，则返回NULL。
+     *
+     * @see LocationManagerCompat.getCurrentLocation
+     */
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
+    suspend fun getCurrentLocation(
+        providers: Array<String>,
+        @CacheUseMode cacheUseMode: Int = CacheUseMode.IGNORE
+    ): Location? {
+        for (provider in providers) {
+            getCurrentLocation(provider, cacheUseMode)?.let {
+                return it
+            }
+        }
+        return null
+    }
 
 }
