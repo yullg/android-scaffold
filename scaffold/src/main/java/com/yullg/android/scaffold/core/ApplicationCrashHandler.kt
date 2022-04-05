@@ -80,7 +80,7 @@ private class DefaultUncaughtExceptionHandler(
                     CrashLogger.log(
                         Log(
                             name = CrashLogger.name,
-                            logLevel = LogLevel.FATAL,
+                            level = LogLevel.FATAL,
                             message = "FATAL EXCEPTION >> ${generateMessage()}",
                             error = e,
                             threadId = t.id,

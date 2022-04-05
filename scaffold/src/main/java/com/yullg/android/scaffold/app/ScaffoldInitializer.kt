@@ -5,6 +5,9 @@ import androidx.startup.Initializer
 import androidx.work.WorkManagerInitializer
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 
+/**
+ * 框架初始化器
+ */
 open class ScaffoldInitializer : Initializer<Any> {
 
     final override fun create(context: Context): Any {
@@ -12,10 +15,10 @@ open class ScaffoldInitializer : Initializer<Any> {
             Scaffold.activate(context)
             configure(context, ScaffoldConfig())
             onInitialized(context)
-            ScaffoldLogger.info("[ScaffoldInitializer] Initialization succeeded")
+            ScaffoldLogger.info("[ScaffoldInitializer] Initialize succeeded")
             return Unit
         } catch (e: Throwable) {
-            ScaffoldLogger.fatal("[ScaffoldInitializer] Initialization failed", e)
+            ScaffoldLogger.fatal("[ScaffoldInitializer] Initialize failed", e)
             throw e
         }
     }

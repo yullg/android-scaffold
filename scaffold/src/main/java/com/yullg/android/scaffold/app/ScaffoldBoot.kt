@@ -1,8 +1,7 @@
 package com.yullg.android.scaffold.app
 
-import com.yullg.android.scaffold.internal.ScaffoldLogger
-import com.yullg.android.scaffold.support.logger.LogManager
-import com.yullg.android.scaffold.support.logger.LogUploadWorker
+import com.yullg.android.scaffold.support.logger.LogFileDeleteWorker
+import com.yullg.android.scaffold.support.logger.LogFileUploadWorker
 import com.yullg.android.scaffold.support.logger.OneTimeLogUploadWorkerOption
 import com.yullg.android.scaffold.support.logger.PeriodicLogUploadWorkerOption
 
@@ -18,24 +17,18 @@ object ScaffoldBoot {
         if (uploader != null) {
             ScaffoldConfig.Logger.logUploadWorkerOption.let {
                 when (it) {
-                    is PeriodicLogUploadWorkerOption -> LogUploadWorker.enqueuePeriodicWork(it)
-                    is OneTimeLogUploadWorkerOption -> LogUploadWorker.enqueueOneTimeWork(it)
+                    is PeriodicLogUploadWorkerOption -> LogFileUploadWorker.enqueuePeriodicWork(it)
+                    is OneTimeLogUploadWorkerOption -> LogFileUploadWorker.enqueueOneTimeWork(it)
                 }
             }
         } else {
-            LogUploadWorker.cancelPeriodicWork()
-            LogUploadWorker.cancelOneTimeWork()
+            LogFileUploadWorker.cancelPeriodicWork()
+            LogFileUploadWorker.cancelOneTimeWork()
         }
     }
 
     fun bootDeleteExpiredLog() {
-        LogManager.deleteLog(ScaffoldConfig.Logger.logFileMaxLife).let {
-            ScaffoldLogger.info(
-                "[Logger] Ready to delete expired log files : logFileMaxLife = ${
-                    ScaffoldConfig.Logger.logFileMaxLife
-                }, result = $it"
-            )
-        }
+        LogFileDeleteWorker.enqueueOneTimeWork()
     }
 
 }
