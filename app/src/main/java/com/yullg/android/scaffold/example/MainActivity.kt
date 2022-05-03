@@ -42,18 +42,15 @@ class MainActivity : BaseActivity<EmptyAC>() {
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        waitDialog = WaitDialog(this)
-        tipDialog = TipDialog(this)
-        alertDialog =
-            AlertDialog(DefaultAlertDialogHandler(this, CupertinoAlertDialogTemplate(this)))
-        customDialog = CustomDialog(this)
-        customBottomSheetDialog = CustomBottomSheetDialog(this)
+        waitDialog = WaitDialog(supportFragmentManager)
+        tipDialog = TipDialog(supportFragmentManager)
+        alertDialog = AlertDialog(DefaultCupertinoAlertDialogHandler(supportFragmentManager))
+        customDialog = CustomDialog(supportFragmentManager)
+        customBottomSheetDialog = CustomBottomSheetDialog(supportFragmentManager)
         setContentView(R.layout.activity_main)
         val textView: TextView = findViewById(R.id.text_view)
         textView.setOnClickListener {
-            for (index in 0..10) {
-                Log.i("MainActivity", "onCreate: $index")
-            }
+            test()
 //            lifecycleScope.launch {
 //                LocationSupport.getCurrentLocation(
 //                    arrayOf(
@@ -81,29 +78,47 @@ class MainActivity : BaseActivity<EmptyAC>() {
     }
 
     private fun test() {
+        testAlert()
     }
 
     private fun testWait() {
         waitDialog.dismiss()
-        waitDialog.setMessage(null).setProgress(null).show()
+        waitDialog.apply {
+            message = null
+            progress = null
+        }.show()
         handler.postDelayed({
-            waitDialog.setMessage("加载中...加载中...加载中...加载中...加载中...加载中...加载中...加载中...加载中...")
-                .setProgress(50).show()
+            waitDialog.apply {
+                message = "加载中...加载中...加载中...加载中...加载中...加载中...加载中...加载中...加载中..."
+                progress = 50
+            }.show()
         }, 2000);
         handler.postDelayed({
-            waitDialog.setMessage("加载中...").setProgress(80).show()
+            waitDialog.apply {
+                message = "加载中..."
+                progress = 80
+            }.show()
         }, 4000);
         handler.postDelayed({
-            waitDialog.setMessage("加载中...").setProgress(null).show()
+            waitDialog.apply {
+                message = "加载中..."
+                progress = null
+            }.show()
         }, 6000);
         handler.postDelayed({
-            waitDialog.setMessage(null as String?).setProgress(null).show()
+            waitDialog.apply {
+                message = null
+                progress = null
+            }.show()
         }, 8000);
         handler.postDelayed({
             waitDialog.dismiss()
         }, 10000);
         handler.postDelayed({
-            waitDialog.setMessage("第二次加载中...").setProgress(90).show()
+            waitDialog.apply {
+                message = "第二次加载中..."
+                progress = 90
+            }.show()
         }, 12000);
         handler.postDelayed({
             waitDialog.dismiss()
@@ -112,55 +127,73 @@ class MainActivity : BaseActivity<EmptyAC>() {
     }
 
     private fun testTip() {
-        tipDialog.resetMetadata().setIconResource(TipDialog.ICON_RESOURCE_SUCCESS)
-            .setMessage("SUCCESS")
-            .setOnDismissListener {
-                tipDialog.resetMetadata().setIconResource(R.drawable.yg_dialog_tip_done_black_40dp)
-                    .setShowDuration(5000)
-                    .setOnDismissListener(null)
-                    .setMessage(null)
-                    .setMessage("报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...")
-                    .show()
+        tipDialog.apply {
+            resetMetadata()
+            iconResId = TipDialog.ICON_RESOURCE_SUCCESS
+            message = "SUCCESS"
+            onDismissListener = {
+                tipDialog.apply {
+                    resetMetadata()
+                    iconResId = R.drawable.yg_dialog_tip_done_black_40dp
+                    showDuration = 5000
+                    message =
+                        "报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了..."
+                }.show()
             }
-            .show()
+        }.show()
         handler.postDelayed({
-            tipDialog.resetMetadata().setIconResource(TipDialog.ICON_RESOURCE_ERROR)
-                .setMessage("ERROR").show()
+            tipDialog.apply {
+                resetMetadata()
+                iconResId = TipDialog.ICON_RESOURCE_ERROR
+                message = "ERROR"
+            }.show()
         }, 3000);
         handler.postDelayed({
-            tipDialog.resetMetadata().setIconResource(TipDialog.ICON_RESOURCE_WARNING)
-                .setMessage("WARNING").show()
+            tipDialog.apply {
+                resetMetadata()
+                iconResId = TipDialog.ICON_RESOURCE_WARNING
+                message = "WARNING"
+            }.show()
         }, 6000);
         handler.postDelayed({
-            tipDialog.resetMetadata().setIconResource(TipDialog.ICON_RESOURCE_SUCCESS)
-                .setMessage("SUCCESS").show()
+            tipDialog.apply {
+                resetMetadata()
+                iconResId = TipDialog.ICON_RESOURCE_SUCCESS
+                message = "SUCCESS"
+            }.show()
         }, 7000);
     }
 
     private fun testAlert() {
-        alertDialog.resetMetadata()
-            .setTitle("退出登录")
-            .setCancelable(false)
-            .setMessage("您确定退出登录吗？")
-            .setNegativeButtonText("取消", null)
-            .setNeutralButtonText("2", null)
-            .setPositiveButtonText("确定", null)
-            .show()
+        alertDialog.apply {
+            resetMetadata()
+            title = "退出登录"
+            cancelable = false
+            negativeButtonText = "取消"
+            neutralButtonText = "2"
+            positiveButtonText = "确定"
+            positiveButtonClickListener = {
+                it.dismiss()
+                Log.i("TAG", "testAlert:($it)")
+            }
+        }.show()
     }
 
     private fun testCustom() {
-        customDialog.resetMetadata()
-            .setViewLayoutResId(R.layout.custom_dialog)
-            .setViewBinder { d, v -> Log.i("TAG", "testCustom: ($d ----- $v)") }
-            .show()
+        customDialog.apply {
+            resetMetadata()
+            viewLayoutResId = R.layout.custom_dialog
+            viewBinder = { d, v -> Log.i("TAG", "testCustom: ($d ----- $v)") }
+        }.show()
     }
 
     private fun testCustomBottomSheet() {
-        customBottomSheetDialog.resetMetadata()
-            .setViewLayoutResId(R.layout.custom_dialog)
-            .setOnShowListener { Log.i("TAG", "setOnShowListener: $it") }
-            .setOnDismissListener { Log.i("TAG", "setOnDismissListener: $it") }
-            .show()
+        customBottomSheetDialog.apply {
+            resetMetadata()
+            viewLayoutResId = R.layout.custom_dialog
+            onShowListener = { Log.i("TAG", "setOnShowListener: $it") }
+            onDismissListener = { Log.i("TAG", "setOnDismissListener: $it") }
+        }.show()
     }
 
     private fun testCoroutineJobService() {

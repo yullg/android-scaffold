@@ -1,16 +1,16 @@
 package com.yullg.android.scaffold.ui.dialog
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.*
-import androidx.fragment.app.FragmentActivity
+import androidx.annotation.StringRes
+import androidx.annotation.StyleRes
+import androidx.annotation.StyleableRes
+import androidx.fragment.app.FragmentManager
 import com.yullg.android.scaffold.R
 import com.yullg.android.scaffold.app.ScaffoldConfig
 import com.yullg.android.scaffold.databinding.YgDialogWaitCircularBinding
 import com.yullg.android.scaffold.databinding.YgDialogWaitLinearBinding
-import java.lang.ref.WeakReference
 
 data class WaitDialogMetadata(
     @StringRes val messageResId: Int?,
@@ -22,30 +22,16 @@ data class WaitDialogMetadata(
     override val onDismissListener: (() -> Unit)?,
 ) : MaterialDialogMetadata
 
-class WaitDialog(handler: BaseDialogHandler<WaitDialogMetadata>) :
-    MaterialDialog<WaitDialogMetadata, WaitDialog>(handler) {
+class WaitDialog(handler: DialogHandler<WaitDialogMetadata>) :
+    BaseDialog<WaitDialogMetadata, WaitDialog>(handler) {
 
-    private var messageResId: Int? = null
-    private var message: CharSequence? = null
-    private var progress: Int? = null
+    @StringRes
+    var messageResId: Int? = null
+    var message: CharSequence? = null
+    var progress: Int? = null
 
-    constructor(activity: FragmentActivity) :
-            this(ScaffoldConfig.UI.defaultWaitDialogHandlerCreator(activity))
-
-    fun setMessageResource(@StringRes resId: Int?): WaitDialog {
-        this.messageResId = resId
-        return this
-    }
-
-    fun setMessage(message: CharSequence?): WaitDialog {
-        this.message = message
-        return this
-    }
-
-    fun setProgress(progress: Int?): WaitDialog {
-        this.progress = progress
-        return this
-    }
+    constructor(fragmentManager: FragmentManager) :
+            this(ScaffoldConfig.UI.defaultWaitDialogHandlerCreator(fragmentManager))
 
     override fun buildMetadata() = WaitDialogMetadata(
         messageResId = messageResId,
@@ -53,74 +39,50 @@ class WaitDialog(handler: BaseDialogHandler<WaitDialogMetadata>) :
         progress = progress,
         cancelable = cancelable ?: ScaffoldConfig.UI.defaultWaitDialogCancelable,
         showDuration = showDuration ?: ScaffoldConfig.UI.defaultWaitDialogShowDuration,
-        onShowListener = onShowListener,
-        onDismissListener = onDismissListener,
+        onShowListener = convertOnShowOrDismissListener(this, onShowListener),
+        onDismissListener = convertOnShowOrDismissListener(this, onDismissListener),
     )
 
-    override fun resetMetadata(): WaitDialog {
+    override fun resetMetadata() {
+        super.resetMetadata()
         messageResId = null
         message = null
         progress = null
-        return super.resetMetadata()
     }
 
 }
 
-class DefaultWaitDialogHandler(
-    activity: FragmentActivity,
-    override val template: DialogTemplate<WaitDialogMetadata> =
-        CircularWaitDialogTemplate(activity),
+class DefaultCircularWaitDialogHandler(
+    fragmentManager: FragmentManager,
     @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogWaitStyle,
     @StyleRes defStyleRes: Int = R.style.yg_DialogWaitDefaultStyle
 ) : MaterialDialogHandler<WaitDialogMetadata>(
-    activity,
+    fragmentManager,
     defStyleAttr,
     defStyleRes,
-), DialogTemplateHandler<DialogTemplate<WaitDialogMetadata>> {
+) {
 
-    override fun createDialogView(context: Context, metadata: WaitDialogMetadata): View {
-        return template.onCreateView(metadata)
-    }
+    private var binding: YgDialogWaitCircularBinding? = null
 
-    override fun updateDialogView(context: Context, metadata: WaitDialogMetadata) {
-        template.onUpdateView(metadata)
-    }
-
-    override fun onDismiss() {
-        try {
-            template.onDestroyView()
-        } finally {
-            super.onDismiss()
-        }
-    }
-
-}
-
-class CircularWaitDialogTemplate(@UiContext context: Context) :
-    DialogTemplate<WaitDialogMetadata> {
-
-    private val contextRef = WeakReference(context)
-
-    val binding: YgDialogWaitCircularBinding by lazy {
-        val context =
-            contextRef.get() ?: throw IllegalStateException("Context has been reclaimed")
-        YgDialogWaitCircularBinding.inflate(LayoutInflater.from(context))
-    }
-
-    @RestrictTo(RestrictTo.Scope.LIBRARY, RestrictTo.Scope.SUBCLASSES)
-    override fun onCreateView(metadata: WaitDialogMetadata): View {
-        bindData(metadata)
-        return binding.root.apply {
+    override fun createDialogView(
+        dialogShell: NormalDialogShell,
+        metadata: WaitDialogMetadata
+    ): View {
+        val localBinding = binding ?: YgDialogWaitCircularBinding.inflate(
+            LayoutInflater.from(dialogShell.requireContext())
+        )
+        bindData(localBinding, metadata)
+        this.binding = localBinding
+        return localBinding.root.apply {
             (parent as? ViewGroup)?.removeView(this)
         }
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY, RestrictTo.Scope.SUBCLASSES)
-    override fun onUpdateView(metadata: WaitDialogMetadata) {
-        bindData(metadata)
+    override fun updateDialogView(dialogShell: NormalDialogShell, metadata: WaitDialogMetadata) {
+        binding?.let { bindData(it, metadata) }
     }
 
-    private fun bindData(metadata: WaitDialogMetadata) {
+    private fun bindData(binding: YgDialogWaitCircularBinding, metadata: WaitDialogMetadata) {
         if (metadata.progress != null) {
             binding.ygIndicator.setProgressCompat(metadata.progress, true)
         } else if (!binding.ygIndicator.isIndeterminate) {
@@ -141,31 +103,37 @@ class CircularWaitDialogTemplate(@UiContext context: Context) :
 
 }
 
-class LinearWaitDialogTemplate(@UiContext context: Context) :
-    DialogTemplate<WaitDialogMetadata> {
+class DefaultLinearWaitDialogHandler(
+    fragmentManager: FragmentManager,
+    @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogWaitStyle,
+    @StyleRes defStyleRes: Int = R.style.yg_DialogWaitDefaultStyle
+) : MaterialDialogHandler<WaitDialogMetadata>(
+    fragmentManager,
+    defStyleAttr,
+    defStyleRes,
+) {
 
-    private val contextRef = WeakReference(context)
+    private var binding: YgDialogWaitLinearBinding? = null
 
-    val binding: YgDialogWaitLinearBinding by lazy {
-        val context =
-            contextRef.get() ?: throw IllegalStateException("Context has been reclaimed")
-        YgDialogWaitLinearBinding.inflate(LayoutInflater.from(context))
-    }
-
-    @RestrictTo(RestrictTo.Scope.LIBRARY, RestrictTo.Scope.SUBCLASSES)
-    override fun onCreateView(metadata: WaitDialogMetadata): View {
-        bindData(metadata)
-        return binding.root.apply {
+    override fun createDialogView(
+        dialogShell: NormalDialogShell,
+        metadata: WaitDialogMetadata
+    ): View {
+        val localBinding = binding ?: YgDialogWaitLinearBinding.inflate(
+            LayoutInflater.from(dialogShell.requireContext())
+        )
+        bindData(localBinding, metadata)
+        this.binding = localBinding
+        return localBinding.root.apply {
             (parent as? ViewGroup)?.removeView(this)
         }
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY, RestrictTo.Scope.SUBCLASSES)
-    override fun onUpdateView(metadata: WaitDialogMetadata) {
-        bindData(metadata)
+    override fun updateDialogView(dialogShell: NormalDialogShell, metadata: WaitDialogMetadata) {
+        binding?.let { bindData(it, metadata) }
     }
 
-    private fun bindData(metadata: WaitDialogMetadata) {
+    private fun bindData(binding: YgDialogWaitLinearBinding, metadata: WaitDialogMetadata) {
         if (metadata.progress != null) {
             binding.ygIndicator.setProgressCompat(metadata.progress, true)
         } else if (!binding.ygIndicator.isIndeterminate) {

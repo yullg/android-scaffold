@@ -1,16 +1,17 @@
 package com.yullg.android.scaffold.ui.dialog
 
-import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.*
-import androidx.fragment.app.FragmentActivity
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.annotation.StyleRes
+import androidx.annotation.StyleableRes
+import androidx.fragment.app.FragmentManager
 import com.yullg.android.scaffold.R
 import com.yullg.android.scaffold.app.ScaffoldConfig
 import com.yullg.android.scaffold.databinding.YgDialogTipBinding
-import java.lang.ref.WeakReference
 
 data class TipDialogMetadata(
     @DrawableRes val iconResId: Int?,
@@ -23,36 +24,19 @@ data class TipDialogMetadata(
     override val onDismissListener: (() -> Unit)?,
 ) : MaterialDialogMetadata
 
-class TipDialog(handler: BaseDialogHandler<TipDialogMetadata>) :
-    MaterialDialog<TipDialogMetadata, TipDialog>(handler) {
+class TipDialog(handler: DialogHandler<TipDialogMetadata>) :
+    BaseDialog<TipDialogMetadata, TipDialog>(handler) {
 
-    private var iconResId: Int? = null
-    private var icon: Drawable? = null
-    private var messageResId: Int? = null
-    private var message: CharSequence? = null
+    @DrawableRes
+    var iconResId: Int? = null
+    var icon: Drawable? = null
 
-    constructor(activity: FragmentActivity) :
-            this(ScaffoldConfig.UI.defaultTipDialogHandlerCreator(activity))
+    @StringRes
+    var messageResId: Int? = null
+    var message: CharSequence? = null
 
-    fun setIconResource(@DrawableRes resId: Int?): TipDialog {
-        this.iconResId = resId
-        return this
-    }
-
-    fun setIcon(icon: Drawable?): TipDialog {
-        this.icon = icon
-        return this
-    }
-
-    fun setMessageResource(@StringRes resId: Int?): TipDialog {
-        this.messageResId = resId
-        return this
-    }
-
-    fun setMessage(message: CharSequence?): TipDialog {
-        this.message = message
-        return this
-    }
+    constructor(fragmentManager: FragmentManager) :
+            this(ScaffoldConfig.UI.defaultTipDialogHandlerCreator(fragmentManager))
 
     override fun buildMetadata() = TipDialogMetadata(
         iconResId = iconResId,
@@ -61,16 +45,16 @@ class TipDialog(handler: BaseDialogHandler<TipDialogMetadata>) :
         message = message,
         cancelable = cancelable ?: ScaffoldConfig.UI.defaultTipDialogCancelable,
         showDuration = showDuration ?: ScaffoldConfig.UI.defaultTipDialogShowDuration,
-        onShowListener = onShowListener,
-        onDismissListener = onDismissListener,
+        onShowListener = convertOnShowOrDismissListener(this, onShowListener),
+        onDismissListener = convertOnShowOrDismissListener(this, onDismissListener),
     )
 
-    override fun resetMetadata(): TipDialog {
+    override fun resetMetadata() {
+        super.resetMetadata()
         iconResId = null
         icon = null
         messageResId = null
         message = null
-        return super.resetMetadata()
     }
 
     companion object {
@@ -89,59 +73,36 @@ class TipDialog(handler: BaseDialogHandler<TipDialogMetadata>) :
 }
 
 class DefaultTipDialogHandler(
-    activity: FragmentActivity,
-    override val template: DialogTemplate<TipDialogMetadata> = TipDialogTemplate(activity),
+    fragmentManager: FragmentManager,
     @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogTipStyle,
     @StyleRes defStyleRes: Int = R.style.yg_DialogTipDefaultStyle,
 ) : MaterialDialogHandler<TipDialogMetadata>(
-    activity,
+    fragmentManager,
     defStyleAttr,
     defStyleRes,
-), DialogTemplateHandler<DialogTemplate<TipDialogMetadata>> {
+) {
 
-    override fun createDialogView(context: Context, metadata: TipDialogMetadata): View {
-        return template.onCreateView(metadata)
-    }
+    private var binding: YgDialogTipBinding? = null
 
-    override fun updateDialogView(context: Context, metadata: TipDialogMetadata) {
-        template.onUpdateView(metadata)
-    }
-
-    override fun onDismiss() {
-        try {
-            template.onDestroyView()
-        } finally {
-            super.onDismiss()
-        }
-    }
-
-}
-
-class TipDialogTemplate(@UiContext context: Context) :
-    DialogTemplate<TipDialogMetadata> {
-
-    private val contextRef = WeakReference(context)
-
-    val binding: YgDialogTipBinding by lazy {
-        val context =
-            contextRef.get() ?: throw IllegalStateException("Context has been reclaimed")
-        YgDialogTipBinding.inflate(LayoutInflater.from(context))
-    }
-
-    @RestrictTo(RestrictTo.Scope.LIBRARY, RestrictTo.Scope.SUBCLASSES)
-    override fun onCreateView(metadata: TipDialogMetadata): View {
-        bindData(metadata)
-        return binding.root.apply {
+    override fun createDialogView(
+        dialogShell: NormalDialogShell,
+        metadata: TipDialogMetadata
+    ): View {
+        val localBinding = binding ?: YgDialogTipBinding.inflate(
+            LayoutInflater.from(dialogShell.requireContext())
+        )
+        bindData(localBinding, metadata)
+        this.binding = localBinding
+        return localBinding.root.apply {
             (parent as? ViewGroup)?.removeView(this)
         }
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY, RestrictTo.Scope.SUBCLASSES)
-    override fun onUpdateView(metadata: TipDialogMetadata) {
-        bindData(metadata)
+    override fun updateDialogView(dialogShell: NormalDialogShell, metadata: TipDialogMetadata) {
+        binding?.let { bindData(it, metadata) }
     }
 
-    private fun bindData(metadata: TipDialogMetadata) {
+    private fun bindData(binding: YgDialogTipBinding, metadata: TipDialogMetadata) {
         if (metadata.iconResId != null) {
             binding.ygIcon.setImageResource(metadata.iconResId)
             binding.ygIcon.visibility = View.VISIBLE

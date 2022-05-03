@@ -1,16 +1,16 @@
 package com.yullg.android.scaffold.ui.dialog
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.*
-import androidx.fragment.app.FragmentActivity
+import androidx.annotation.StringRes
+import androidx.annotation.StyleRes
+import androidx.annotation.StyleableRes
+import androidx.fragment.app.FragmentManager
 import com.yullg.android.scaffold.R
 import com.yullg.android.scaffold.app.ScaffoldConfig
 import com.yullg.android.scaffold.databinding.YgDialogAlertCupertinoBinding
 import com.yullg.android.scaffold.databinding.YgDialogAlertMaterialBinding
-import java.lang.ref.WeakReference
 
 data class AlertDialogMetadata(
     @StringRes val titleResId: Int?,
@@ -32,111 +32,34 @@ data class AlertDialogMetadata(
     override val onDismissListener: (() -> Unit)?,
 ) : MaterialDialogMetadata
 
-class AlertDialog(handler: BaseDialogHandler<AlertDialogMetadata>) :
-    MaterialDialog<AlertDialogMetadata, AlertDialog>(handler) {
+class AlertDialog(handler: DialogHandler<AlertDialogMetadata>) :
+    BaseDialog<AlertDialogMetadata, AlertDialog>(handler) {
 
-    private var titleResId: Int? = null
-    private var title: CharSequence? = null
-    private var messageResId: Int? = null
-    private var message: CharSequence? = null
-    private var negativeButtonTextResId: Int? = null
-    private var negativeButtonText: CharSequence? = null
-    private var negativeButtonClickListener: View.OnClickListener? = null
-    private var neutralButtonTextResId: Int? = null
-    private var neutralButtonText: CharSequence? = null
-    private var neutralButtonClickListener: View.OnClickListener? = null
-    private var positiveButtonTextResId: Int? = null
-    private var positiveButtonText: CharSequence? = null
-    private var positiveButtonClickListener: View.OnClickListener? = null
+    @StringRes
+    var titleResId: Int? = null
+    var title: CharSequence? = null
 
-    constructor(activity: FragmentActivity) :
-            this(ScaffoldConfig.UI.defaultAlertDialogHandlerCreator(activity))
+    @StringRes
+    var messageResId: Int? = null
+    var message: CharSequence? = null
 
-    fun setTitleResource(@StringRes resId: Int?): AlertDialog {
-        this.titleResId = resId
-        return this
-    }
+    @StringRes
+    var negativeButtonTextResId: Int? = null
+    var negativeButtonText: CharSequence? = null
+    var negativeButtonClickListener: ((AlertDialog) -> Unit)? = null
 
-    fun setTitle(title: CharSequence?): AlertDialog {
-        this.title = title
-        return this
-    }
+    @StringRes
+    var neutralButtonTextResId: Int? = null
+    var neutralButtonText: CharSequence? = null
+    var neutralButtonClickListener: ((AlertDialog) -> Unit)? = null
 
-    fun setMessageResource(@StringRes resId: Int?): AlertDialog {
-        this.messageResId = resId
-        return this
-    }
+    @StringRes
+    var positiveButtonTextResId: Int? = null
+    var positiveButtonText: CharSequence? = null
+    var positiveButtonClickListener: ((AlertDialog) -> Unit)? = null
 
-    fun setMessage(message: CharSequence?): AlertDialog {
-        this.message = message
-        return this
-    }
-
-    fun setNegativeButtonTextResource(
-        @StringRes resId: Int?,
-        listener: ((AlertDialog) -> Unit)?
-    ): AlertDialog {
-        this.negativeButtonTextResId = resId
-        this.negativeButtonClickListener = listener?.let {
-            View.OnClickListener { _ -> it(this@AlertDialog) }
-        }
-        return this
-    }
-
-    fun setNegativeButtonText(
-        text: CharSequence?,
-        listener: ((AlertDialog) -> Unit)?
-    ): AlertDialog {
-        this.negativeButtonText = text
-        this.negativeButtonClickListener = listener?.let {
-            View.OnClickListener { _ -> it(this@AlertDialog) }
-        }
-        return this
-    }
-
-    fun setNeutralButtonTextResource(
-        @StringRes resId: Int?,
-        listener: ((AlertDialog) -> Unit)?
-    ): AlertDialog {
-        this.neutralButtonTextResId = resId
-        this.neutralButtonClickListener = listener?.let {
-            View.OnClickListener { _ -> it(this@AlertDialog) }
-        }
-        return this
-    }
-
-    fun setNeutralButtonText(
-        text: CharSequence?,
-        listener: ((AlertDialog) -> Unit)?
-    ): AlertDialog {
-        this.neutralButtonText = text
-        this.neutralButtonClickListener = listener?.let {
-            View.OnClickListener { _ -> it(this@AlertDialog) }
-        }
-        return this
-    }
-
-    fun setPositiveButtonTextResource(
-        @StringRes resId: Int?,
-        listener: ((AlertDialog) -> Unit)?
-    ): AlertDialog {
-        this.positiveButtonTextResId = resId
-        this.positiveButtonClickListener = listener?.let {
-            View.OnClickListener { _ -> it(this@AlertDialog) }
-        }
-        return this
-    }
-
-    fun setPositiveButtonText(
-        text: CharSequence?,
-        listener: ((AlertDialog) -> Unit)?
-    ): AlertDialog {
-        this.positiveButtonText = text
-        this.positiveButtonClickListener = listener?.let {
-            View.OnClickListener { _ -> it(this@AlertDialog) }
-        }
-        return this
-    }
+    constructor(fragmentManager: FragmentManager) :
+            this(ScaffoldConfig.UI.defaultAlertDialogHandlerCreator(fragmentManager))
 
     override fun buildMetadata() = AlertDialogMetadata(
         titleResId = titleResId,
@@ -145,20 +68,21 @@ class AlertDialog(handler: BaseDialogHandler<AlertDialogMetadata>) :
         message = message,
         negativeButtonTextResId = negativeButtonTextResId,
         negativeButtonText = negativeButtonText,
-        negativeButtonClickListener = negativeButtonClickListener,
+        negativeButtonClickListener = convertButtonClickListener(negativeButtonClickListener),
         neutralButtonTextResId = neutralButtonTextResId,
         neutralButtonText = neutralButtonText,
-        neutralButtonClickListener = neutralButtonClickListener,
+        neutralButtonClickListener = convertButtonClickListener(neutralButtonClickListener),
         positiveButtonTextResId = positiveButtonTextResId,
         positiveButtonText = positiveButtonText,
-        positiveButtonClickListener = positiveButtonClickListener,
+        positiveButtonClickListener = convertButtonClickListener(positiveButtonClickListener),
         cancelable = cancelable ?: ScaffoldConfig.UI.defaultAlertDialogCancelable,
         showDuration = showDuration ?: ScaffoldConfig.UI.defaultAlertDialogShowDuration,
-        onShowListener = onShowListener,
-        onDismissListener = onDismissListener,
+        onShowListener = convertOnShowOrDismissListener(this, onShowListener),
+        onDismissListener = convertOnShowOrDismissListener(this, onDismissListener),
     )
 
-    override fun resetMetadata(): AlertDialog {
+    override fun resetMetadata() {
+        super.resetMetadata()
         titleResId = null
         title = null
         messageResId = null
@@ -172,66 +96,47 @@ class AlertDialog(handler: BaseDialogHandler<AlertDialogMetadata>) :
         positiveButtonTextResId = null
         positiveButtonText = null
         positiveButtonClickListener = null
-        return super.resetMetadata()
     }
 
-}
-
-class DefaultAlertDialogHandler(
-    activity: FragmentActivity,
-    override val template: DialogTemplate<AlertDialogMetadata> =
-        MaterialAlertDialogTemplate(activity),
-    @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogAlertStyle,
-    @StyleRes defStyleRes: Int = R.style.yg_DialogAlertDefaultStyle
-) : MaterialDialogHandler<AlertDialogMetadata>(
-    activity,
-    defStyleAttr,
-    defStyleRes,
-), DialogTemplateHandler<DialogTemplate<AlertDialogMetadata>> {
-
-    override fun createDialogView(context: Context, metadata: AlertDialogMetadata): View {
-        return template.onCreateView(metadata)
-    }
-
-    override fun updateDialogView(context: Context, metadata: AlertDialogMetadata) {
-        template.onUpdateView(metadata)
-    }
-
-    override fun onDismiss() {
-        try {
-            template.onDestroyView()
-        } finally {
-            super.onDismiss()
+    private fun convertButtonClickListener(listener: ((AlertDialog) -> Unit)?): View.OnClickListener? {
+        return listener?.let { lr ->
+            View.OnClickListener { lr(this) }
         }
     }
 
 }
 
-class MaterialAlertDialogTemplate(@UiContext context: Context) :
-    DialogTemplate<AlertDialogMetadata> {
+class DefaultMaterialAlertDialogHandler(
+    fragmentManager: FragmentManager,
+    @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogAlertStyle,
+    @StyleRes defStyleRes: Int = R.style.yg_DialogAlertDefaultStyle
+) : MaterialDialogHandler<AlertDialogMetadata>(
+    fragmentManager,
+    defStyleAttr,
+    defStyleRes,
+) {
 
-    private val contextRef = WeakReference(context)
+    private var binding: YgDialogAlertMaterialBinding? = null
 
-    val binding: YgDialogAlertMaterialBinding by lazy {
-        val context =
-            contextRef.get() ?: throw IllegalStateException("Context has been reclaimed")
-        YgDialogAlertMaterialBinding.inflate(LayoutInflater.from(context))
-    }
-
-    @RestrictTo(RestrictTo.Scope.LIBRARY, RestrictTo.Scope.SUBCLASSES)
-    override fun onCreateView(metadata: AlertDialogMetadata): View {
-        bindData(metadata)
-        return binding.root.apply {
+    override fun createDialogView(
+        dialogShell: NormalDialogShell,
+        metadata: AlertDialogMetadata
+    ): View {
+        val localBinding = binding ?: YgDialogAlertMaterialBinding.inflate(
+            LayoutInflater.from(dialogShell.requireContext())
+        )
+        bindData(localBinding, metadata)
+        this.binding = localBinding
+        return localBinding.root.apply {
             (parent as? ViewGroup)?.removeView(this)
         }
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY, RestrictTo.Scope.SUBCLASSES)
-    override fun onUpdateView(metadata: AlertDialogMetadata) {
-        bindData(metadata)
+    override fun updateDialogView(dialogShell: NormalDialogShell, metadata: AlertDialogMetadata) {
+        binding?.let { bindData(it, metadata) }
     }
 
-    private fun bindData(metadata: AlertDialogMetadata) {
+    private fun bindData(binding: YgDialogAlertMaterialBinding, metadata: AlertDialogMetadata) {
         if (metadata.titleResId != null) {
             binding.ygTitle.setText(metadata.titleResId)
             binding.ygTitle.visibility = View.VISIBLE
@@ -284,31 +189,37 @@ class MaterialAlertDialogTemplate(@UiContext context: Context) :
 
 }
 
-class CupertinoAlertDialogTemplate(@UiContext context: Context) :
-    DialogTemplate<AlertDialogMetadata> {
+class DefaultCupertinoAlertDialogHandler(
+    fragmentManager: FragmentManager,
+    @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogAlertStyle,
+    @StyleRes defStyleRes: Int = R.style.yg_DialogAlertDefaultStyle
+) : MaterialDialogHandler<AlertDialogMetadata>(
+    fragmentManager,
+    defStyleAttr,
+    defStyleRes,
+) {
 
-    private val contextRef = WeakReference(context)
+    private var binding: YgDialogAlertCupertinoBinding? = null
 
-    val binding: YgDialogAlertCupertinoBinding by lazy {
-        val context =
-            contextRef.get() ?: throw IllegalStateException("Context has been reclaimed")
-        YgDialogAlertCupertinoBinding.inflate(LayoutInflater.from(context))
-    }
-
-    @RestrictTo(RestrictTo.Scope.LIBRARY, RestrictTo.Scope.SUBCLASSES)
-    override fun onCreateView(metadata: AlertDialogMetadata): View {
-        bindData(metadata)
-        return binding.root.apply {
+    override fun createDialogView(
+        dialogShell: NormalDialogShell,
+        metadata: AlertDialogMetadata
+    ): View {
+        val localBinding = binding ?: YgDialogAlertCupertinoBinding.inflate(
+            LayoutInflater.from(dialogShell.requireContext())
+        )
+        bindData(localBinding, metadata)
+        this.binding = localBinding
+        return localBinding.root.apply {
             (parent as? ViewGroup)?.removeView(this)
         }
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY, RestrictTo.Scope.SUBCLASSES)
-    override fun onUpdateView(metadata: AlertDialogMetadata) {
-        bindData(metadata)
+    override fun updateDialogView(dialogShell: NormalDialogShell, metadata: AlertDialogMetadata) {
+        binding?.let { bindData(it, metadata) }
     }
 
-    private fun bindData(metadata: AlertDialogMetadata) {
+    private fun bindData(binding: YgDialogAlertCupertinoBinding, metadata: AlertDialogMetadata) {
         if (metadata.titleResId != null) {
             binding.ygTitle.setText(metadata.titleResId)
             binding.ygTitle.visibility = View.VISIBLE
