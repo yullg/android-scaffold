@@ -4,8 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
-import androidx.annotation.StyleRes
-import androidx.annotation.StyleableRes
 import androidx.fragment.app.FragmentManager
 import com.yullg.android.scaffold.R
 import com.yullg.android.scaffold.app.ScaffoldConfig
@@ -52,15 +50,11 @@ class WaitDialog(handler: DialogHandler<WaitDialogMetadata>) :
 
 }
 
-class DefaultCircularWaitDialogHandler(
-    fragmentManager: FragmentManager,
-    @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogWaitStyle,
-    @StyleRes defStyleRes: Int = R.style.yg_DialogWaitDefaultStyle
-) : MaterialDialogHandler<WaitDialogMetadata>(
-    fragmentManager,
-    defStyleAttr,
-    defStyleRes,
-) {
+class DefaultCircularWaitDialogHandler(fragmentManager: FragmentManager) :
+    MaterialDialogHandler<WaitDialogMetadata>(
+        fragmentManager,
+        R.style.yg_DialogWaitDefaultStyle
+    ) {
 
     private var binding: YgDialogWaitCircularBinding? = null
 
@@ -103,15 +97,11 @@ class DefaultCircularWaitDialogHandler(
 
 }
 
-class DefaultLinearWaitDialogHandler(
-    fragmentManager: FragmentManager,
-    @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogWaitStyle,
-    @StyleRes defStyleRes: Int = R.style.yg_DialogWaitDefaultStyle
-) : MaterialDialogHandler<WaitDialogMetadata>(
-    fragmentManager,
-    defStyleAttr,
-    defStyleRes,
-) {
+class DefaultLinearWaitDialogHandler(fragmentManager: FragmentManager) :
+    MaterialDialogHandler<WaitDialogMetadata>(
+        fragmentManager,
+        R.style.yg_DialogWaitDefaultStyle
+    ) {
 
     private var binding: YgDialogWaitLinearBinding? = null
 

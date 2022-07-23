@@ -6,23 +6,27 @@ import com.yullg.android.scaffold.app.ScaffoldConfig
 import com.yullg.android.scaffold.core.ActionProxy
 
 open class ClickListenerProxy(
-    protected val actionProxy: ActionProxy<Unit>,
+    protected val actionProxy: ActionProxy<Unit, Unit?>,
     protected val listener: View.OnClickListener
 ) : View.OnClickListener {
 
-    override fun onClick(v: View?) = actionProxy.run {
-        listener.onClick(v)
+    override fun onClick(v: View?) {
+        actionProxy.run {
+            listener.onClick(v)
+        }
     }
 
 }
 
 open class ClickableSpanProxy(
-    protected val actionProxy: ActionProxy<Unit>,
+    protected val actionProxy: ActionProxy<Unit, Unit?>,
     protected val listener: (View) -> Unit
 ) : ClickableSpan() {
 
-    override fun onClick(widget: View) = actionProxy.run {
-        listener.invoke(widget)
+    override fun onClick(widget: View) {
+        actionProxy.run {
+            listener.invoke(widget)
+        }
     }
 
 }

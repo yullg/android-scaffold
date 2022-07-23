@@ -59,15 +59,11 @@ class CustomDialog(handler: DialogHandler<CustomDialogMetadata>) :
 
 }
 
-class DefaultCustomDialogHandler(
-    fragmentManager: FragmentManager,
-    @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogCustomStyle,
-    @StyleRes defStyleRes: Int = R.style.yg_DialogCustomDefaultStyle
-) : MaterialDialogHandler<CustomDialogMetadata>(
-    fragmentManager,
-    defStyleAttr,
-    defStyleRes,
-) {
+class DefaultCustomDialogHandler(fragmentManager: FragmentManager) :
+    MaterialDialogHandler<CustomDialogMetadata>(
+        fragmentManager,
+        R.style.yg_DialogCustomDefaultStyle
+    ) {
 
     override fun createDialogView(
         dialogShell: NormalDialogShell,

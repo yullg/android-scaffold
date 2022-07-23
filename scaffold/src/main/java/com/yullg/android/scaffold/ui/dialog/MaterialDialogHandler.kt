@@ -2,10 +2,8 @@ package com.yullg.android.scaffold.ui.dialog
 
 import android.view.View
 import androidx.annotation.StyleRes
-import androidx.annotation.StyleableRes
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.yullg.android.scaffold.R
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -30,8 +28,7 @@ interface MaterialDialogMetadata : DialogMetadata {
  */
 abstract class MaterialDialogHandler<M : MaterialDialogMetadata>(
     fragmentManager: FragmentManager,
-    @StyleableRes private val defStyleAttr: Int = 0,
-    @StyleRes private val defStyleRes: Int = 0
+    @StyleRes private val themeResId: Int = 0
 ) : AbstractDialogHandler<M, NormalDialogShell>(fragmentManager) {
 
     final override fun createDialogShell(
@@ -40,16 +37,7 @@ abstract class MaterialDialogHandler<M : MaterialDialogMetadata>(
     ): NormalDialogShell {
         return NormalDialogShell(
             createDialogCallback = { dialogShell ->
-                val dialogTheme = dialogShell.requireContext().theme
-                    .obtainStyledAttributes(R.styleable.yg_ThemeAttrDeclare)
-                    .run {
-                        try {
-                            getResourceId(defStyleAttr, defStyleRes)
-                        } finally {
-                            recycle()
-                        }
-                    }
-                MaterialAlertDialogBuilder(dialogShell.requireContext(), dialogTheme)
+                MaterialAlertDialogBuilder(dialogShell.requireContext(), themeResId)
                     .setView(createDialogView(dialogShell, metadata))
                     .create()
                     .apply {

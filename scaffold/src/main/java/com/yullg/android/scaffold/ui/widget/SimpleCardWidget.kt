@@ -170,7 +170,7 @@ open class SimpleCardWidget @JvmOverloads constructor(
         }
     }
 
-    protected inner class CardBackgroundDrawable : MaterialShapeDrawable() {
+    protected class CardBackgroundDrawable : MaterialShapeDrawable() {
 
         private var shadowColorBackup: Int = Color.BLACK
 
@@ -180,10 +180,10 @@ open class SimpleCardWidget @JvmOverloads constructor(
 
         override fun setBounds(left: Int, top: Int, right: Int, bottom: Int) {
             super.setBounds(
-                left + cardBackgroundDrawable.shadowRadius,
-                top + cardBackgroundDrawable.shadowRadius,
-                right - cardBackgroundDrawable.shadowRadius,
-                bottom - cardBackgroundDrawable.shadowRadius
+                left + shadowRadius,
+                top + shadowRadius,
+                right - shadowRadius,
+                bottom - shadowRadius
             )
         }
 

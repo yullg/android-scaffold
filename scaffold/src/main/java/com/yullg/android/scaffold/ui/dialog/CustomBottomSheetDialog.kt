@@ -5,8 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.LayoutRes
-import androidx.annotation.StyleRes
-import androidx.annotation.StyleableRes
 import androidx.fragment.app.FragmentManager
 import com.yullg.android.scaffold.R
 import com.yullg.android.scaffold.app.ScaffoldConfig
@@ -59,15 +57,11 @@ class CustomBottomSheetDialog(handler: DialogHandler<CustomBottomSheetDialogMeta
 
 }
 
-class DefaultCustomBottomSheetDialogHandler(
-    fragmentManager: FragmentManager,
-    @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogCustomBottomSheetStyle,
-    @StyleRes defStyleRes: Int = R.style.yg_DialogCustomBottomSheetDefaultStyle,
-) : BottomSheetDialogHandler<CustomBottomSheetDialogMetadata>(
-    fragmentManager,
-    defStyleAttr,
-    defStyleRes
-) {
+class DefaultCustomBottomSheetDialogHandler(fragmentManager: FragmentManager) :
+    BottomSheetDialogHandler<CustomBottomSheetDialogMetadata>(
+        fragmentManager,
+        R.style.yg_DialogCustomBottomSheetDefaultStyle
+    ) {
 
     override fun createDialogView(
         dialogShell: BottomSheetDialogShell,

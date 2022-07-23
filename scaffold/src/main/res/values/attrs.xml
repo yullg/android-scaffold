@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="yg_ThemeAttrDeclare">
-        <!-- dialog -->
-        <attr name="yg_dialogTipStyle" format="reference" />
-        <attr name="yg_dialogWaitStyle" format="reference" />
-        <attr name="yg_dialogAlertStyle" format="reference" />
-        <attr name="yg_dialogCustomStyle" format="reference" />
-        <attr name="yg_dialogCustomBottomSheetStyle" format="reference" />
-    </declare-styleable>
-
     <declare-styleable name="CanvasView">
         <attr name="yg_cvPaintAlpha" format="integer" />
         <attr name="yg_cvPaintAntiAlias" format="boolean" />

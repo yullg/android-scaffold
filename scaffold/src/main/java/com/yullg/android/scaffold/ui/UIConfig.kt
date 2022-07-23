@@ -7,7 +7,7 @@ import com.yullg.android.scaffold.ui.dialog.*
 
 interface UIConfig {
 
-    val clickThrottledActionProxyCreator: () -> ActionProxy<Unit>
+    val clickThrottledActionProxyCreator: () -> ActionProxy<Unit, Unit?>
 
     val defaultTipDialogHandlerCreator: (FragmentManager) -> DialogHandler<TipDialogMetadata>
 
@@ -43,8 +43,8 @@ interface UIConfig {
 
 open class MutableUIConfig private constructor() : UIConfig {
 
-    override var clickThrottledActionProxyCreator: () -> ActionProxy<Unit> =
-        { ThrottledActionProxy(1000) {} }
+    override var clickThrottledActionProxyCreator: () -> ActionProxy<Unit, Unit?> =
+        { ThrottledActionProxy(1000) }
 
     override var defaultTipDialogHandlerCreator: (FragmentManager) -> DialogHandler<TipDialogMetadata> =
         { DefaultTipDialogHandler(it) }

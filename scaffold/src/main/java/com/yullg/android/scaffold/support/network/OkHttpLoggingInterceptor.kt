@@ -12,11 +12,9 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
 /**
- * An OkHttp interceptor which logs request and response information. Can be applied as an
- * [application interceptor][OkHttpClient.interceptors] or as a [OkHttpClient.networkInterceptors].
+ * 记录请求和响应信息的OkHttp拦截器。
  *
- * The format of the logs created by this class should not be considered stable and may
- * change slightly between releases. If you need a stable logging format, use your own interceptor.
+ * 这个类创建的日志的格式不应该被认为是稳定的，在不同版本之间可能会有轻微的变化。如果需要稳定的日志格式，请使用自己的拦截器。
  */
 class OkHttpLoggingInterceptor(
     private val logger: (String) -> Unit,
@@ -174,13 +172,13 @@ class OkHttpLoggingInterceptor(
     }
 
     enum class Level {
-        /** No logs. */
+        /** 没有日志 */
         NONE,
 
         /**
-         * Logs request and response lines.
+         * 记录请求和响应行。
          *
-         * Example:
+         * 例如:
          * ```
          * --> POST /greeting http/1.1 (3-byte body)
          *
@@ -190,9 +188,9 @@ class OkHttpLoggingInterceptor(
         BASIC,
 
         /**
-         * Logs request and response lines and their respective headers.
+         * 记录请求和响应行及其各自的头信息。
          *
-         * Example:
+         * 例如:
          * ```
          * --> POST /greeting http/1.1
          * Host: example.com
@@ -209,9 +207,9 @@ class OkHttpLoggingInterceptor(
         HEADERS,
 
         /**
-         * Logs request and response lines and their respective headers and bodies (if present).
+         * 记录请求和响应行及其各自的头信息和主体(如果存在)。
          *
-         * Example:
+         * 例如:
          * ```
          * --> POST /greeting http/1.1
          * Host: example.com

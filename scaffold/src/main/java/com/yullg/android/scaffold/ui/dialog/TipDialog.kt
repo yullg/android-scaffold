@@ -72,15 +72,11 @@ class TipDialog(handler: DialogHandler<TipDialogMetadata>) :
 
 }
 
-class DefaultTipDialogHandler(
-    fragmentManager: FragmentManager,
-    @StyleableRes defStyleAttr: Int = R.styleable.yg_ThemeAttrDeclare_yg_dialogTipStyle,
-    @StyleRes defStyleRes: Int = R.style.yg_DialogTipDefaultStyle,
-) : MaterialDialogHandler<TipDialogMetadata>(
-    fragmentManager,
-    defStyleAttr,
-    defStyleRes,
-) {
+class DefaultTipDialogHandler(fragmentManager: FragmentManager) :
+    MaterialDialogHandler<TipDialogMetadata>(
+        fragmentManager,
+        R.style.yg_DialogTipDefaultStyle
+    ) {
 
     private var binding: YgDialogTipBinding? = null
 

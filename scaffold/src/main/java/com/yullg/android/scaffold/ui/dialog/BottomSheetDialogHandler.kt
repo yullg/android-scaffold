@@ -2,10 +2,8 @@ package com.yullg.android.scaffold.ui.dialog
 
 import android.view.View
 import androidx.annotation.StyleRes
-import androidx.annotation.StyleableRes
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.yullg.android.scaffold.R
 import com.yullg.android.scaffold.internal.ScaffoldLogger
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -30,8 +28,7 @@ interface BottomSheetDialogMetadata : DialogMetadata {
  */
 abstract class BottomSheetDialogHandler<M : BottomSheetDialogMetadata>(
     fragmentManager: FragmentManager,
-    @StyleableRes private val defStyleAttr: Int = 0,
-    @StyleRes private val defStyleRes: Int = 0
+    @StyleRes private val themeResId: Int = 0
 ) : AbstractDialogHandler<M, BottomSheetDialogShell>(fragmentManager) {
 
     final override fun createDialogShell(
@@ -40,16 +37,7 @@ abstract class BottomSheetDialogHandler<M : BottomSheetDialogMetadata>(
     ): BottomSheetDialogShell {
         return BottomSheetDialogShell(
             createDialogCallback = { dialogShell ->
-                val dialogTheme = dialogShell.requireContext().theme
-                    .obtainStyledAttributes(R.styleable.yg_ThemeAttrDeclare)
-                    .run {
-                        try {
-                            getResourceId(defStyleAttr, defStyleRes)
-                        } finally {
-                            recycle()
-                        }
-                    }
-                BottomSheetDialog(dialogShell.requireContext(), dialogTheme).apply {
+                BottomSheetDialog(dialogShell.requireContext(), themeResId).apply {
                     setContentView(createDialogView(dialogShell, metadata))
                     if (metadata.showDuration > 0 || metadata.onShowListener != null) {
                         setOnShowListener {
