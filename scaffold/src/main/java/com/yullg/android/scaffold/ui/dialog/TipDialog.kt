@@ -6,8 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.annotation.StyleRes
-import androidx.annotation.StyleableRes
 import androidx.fragment.app.FragmentManager
 import com.yullg.android.scaffold.R
 import com.yullg.android.scaffold.app.ScaffoldConfig
@@ -81,11 +79,11 @@ class DefaultTipDialogHandler(fragmentManager: FragmentManager) :
     private var binding: YgDialogTipBinding? = null
 
     override fun createDialogView(
-        dialogShell: NormalDialogShell,
+        platformDialogWrapper: NormalPlatformDialogWrapper,
         metadata: TipDialogMetadata
     ): View {
         val localBinding = binding ?: YgDialogTipBinding.inflate(
-            LayoutInflater.from(dialogShell.requireContext())
+            LayoutInflater.from(platformDialogWrapper.platformDialog.requireContext())
         )
         bindData(localBinding, metadata)
         this.binding = localBinding
@@ -94,7 +92,10 @@ class DefaultTipDialogHandler(fragmentManager: FragmentManager) :
         }
     }
 
-    override fun updateDialogView(dialogShell: NormalDialogShell, metadata: TipDialogMetadata) {
+    override fun updateDialogView(
+        platformDialogWrapper: NormalPlatformDialogWrapper,
+        metadata: TipDialogMetadata
+    ) {
         binding?.let { bindData(it, metadata) }
     }
 

@@ -59,11 +59,11 @@ class DefaultCircularWaitDialogHandler(fragmentManager: FragmentManager) :
     private var binding: YgDialogWaitCircularBinding? = null
 
     override fun createDialogView(
-        dialogShell: NormalDialogShell,
+        platformDialogWrapper: NormalPlatformDialogWrapper,
         metadata: WaitDialogMetadata
     ): View {
         val localBinding = binding ?: YgDialogWaitCircularBinding.inflate(
-            LayoutInflater.from(dialogShell.requireContext())
+            LayoutInflater.from(platformDialogWrapper.platformDialog.requireContext())
         )
         bindData(localBinding, metadata)
         this.binding = localBinding
@@ -72,7 +72,10 @@ class DefaultCircularWaitDialogHandler(fragmentManager: FragmentManager) :
         }
     }
 
-    override fun updateDialogView(dialogShell: NormalDialogShell, metadata: WaitDialogMetadata) {
+    override fun updateDialogView(
+        platformDialogWrapper: NormalPlatformDialogWrapper,
+        metadata: WaitDialogMetadata
+    ) {
         binding?.let { bindData(it, metadata) }
     }
 
@@ -106,11 +109,11 @@ class DefaultLinearWaitDialogHandler(fragmentManager: FragmentManager) :
     private var binding: YgDialogWaitLinearBinding? = null
 
     override fun createDialogView(
-        dialogShell: NormalDialogShell,
+        platformDialogWrapper: NormalPlatformDialogWrapper,
         metadata: WaitDialogMetadata
     ): View {
         val localBinding = binding ?: YgDialogWaitLinearBinding.inflate(
-            LayoutInflater.from(dialogShell.requireContext())
+            LayoutInflater.from(platformDialogWrapper.platformDialog.requireContext())
         )
         bindData(localBinding, metadata)
         this.binding = localBinding
@@ -119,7 +122,10 @@ class DefaultLinearWaitDialogHandler(fragmentManager: FragmentManager) :
         }
     }
 
-    override fun updateDialogView(dialogShell: NormalDialogShell, metadata: WaitDialogMetadata) {
+    override fun updateDialogView(
+        platformDialogWrapper: NormalPlatformDialogWrapper,
+        metadata: WaitDialogMetadata
+    ) {
         binding?.let { bindData(it, metadata) }
     }
 

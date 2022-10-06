@@ -5,8 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.LayoutRes
-import androidx.annotation.StyleRes
-import androidx.annotation.StyleableRes
 import androidx.fragment.app.FragmentManager
 import com.yullg.android.scaffold.R
 import com.yullg.android.scaffold.app.ScaffoldConfig
@@ -66,22 +64,28 @@ class DefaultCustomDialogHandler(fragmentManager: FragmentManager) :
     ) {
 
     override fun createDialogView(
-        dialogShell: NormalDialogShell,
+        platformDialogWrapper: NormalPlatformDialogWrapper,
         metadata: CustomDialogMetadata
     ): View {
         val view = when {
             metadata.view != null -> metadata.view.apply {
                 (parent as? ViewGroup)?.removeView(this)
             }
-            metadata.viewLayoutResId != null -> LayoutInflater.from(dialogShell.requireContext())
-                .inflate(metadata.viewLayoutResId, FrameLayout(dialogShell.requireContext()))
+            metadata.viewLayoutResId != null -> LayoutInflater.from(platformDialogWrapper.platformDialog.requireContext())
+                .inflate(
+                    metadata.viewLayoutResId,
+                    FrameLayout(platformDialogWrapper.platformDialog.requireContext())
+                )
             else -> throw IllegalArgumentException("Both 'view' and 'viewLayoutResId' of CustomDialog cannot be null")
         }
         metadata.viewBinder?.invoke(view)
         return view
     }
 
-    override fun updateDialogView(dialogShell: NormalDialogShell, metadata: CustomDialogMetadata) {
+    override fun updateDialogView(
+        platformDialogWrapper: NormalPlatformDialogWrapper,
+        metadata: CustomDialogMetadata
+    ) {
         ScaffoldLogger.warn("[Dialog] CustomDialog does not support updates")
     }
 

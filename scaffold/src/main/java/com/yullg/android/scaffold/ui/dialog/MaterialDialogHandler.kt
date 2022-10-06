@@ -24,34 +24,37 @@ interface MaterialDialogMetadata : DialogMetadata {
 }
 
 /**
- * 一个[DialogHandler]的抽象实现，它根据[MaterialAlertDialogBuilder]创建Dialog，具体实现只需要关心Dialog的视图。
+ * 一个[DialogHandler]的抽象实现，它使用[MaterialAlertDialogBuilder]创建Dialog，具体实现只需要关心Dialog的视图。
  */
 abstract class MaterialDialogHandler<M : MaterialDialogMetadata>(
     fragmentManager: FragmentManager,
     @StyleRes private val themeResId: Int = 0
-) : AbstractDialogHandler<M, NormalDialogShell>(fragmentManager) {
+) : AbstractDialogHandler<M, NormalPlatformDialogWrapper>(fragmentManager) {
 
-    final override fun createDialogShell(
+    final override fun createDialog(
         metadata: M,
-        inbuiltDismissListener: (NormalDialogShell) -> Unit
-    ): NormalDialogShell {
-        return NormalDialogShell(
-            createDialogCallback = { dialogShell ->
-                MaterialAlertDialogBuilder(dialogShell.requireContext(), themeResId)
-                    .setView(createDialogView(dialogShell, metadata))
+        inbuiltDismissListener: (NormalPlatformDialogWrapper) -> Unit
+    ): NormalPlatformDialogWrapper {
+        return NormalPlatformDialogWrapper(
+            createDialogCallback = { platformDialogWrapper ->
+                platformDialogWrapper.platformDialog.isCancelable = metadata.cancelable
+                MaterialAlertDialogBuilder(
+                    platformDialogWrapper.platformDialog.requireContext(),
+                    themeResId
+                ).setView(createDialogView(platformDialogWrapper, metadata))
                     .create()
                     .apply {
                         if (metadata.showDuration > 0 || metadata.onShowListener != null) {
                             setOnShowListener {
                                 try {
                                     if (metadata.showDuration > 0) {
-                                        dialogShellCoroutineScope?.launch {
+                                        currentCoroutineScope?.launch {
                                             try {
                                                 delay(metadata.showDuration)
-                                                dialogShell.dismiss()
+                                                platformDialogWrapper.dismiss()
                                             } catch (e: Exception) {
                                                 ScaffoldLogger.error(
-                                                    "[Dialog] Cannot dismiss this dialog [$dialogShell]",
+                                                    "[Dialog] Cannot dismiss this dialog [$platformDialogWrapper]",
                                                     e
                                                 )
                                             }
@@ -64,24 +67,28 @@ abstract class MaterialDialogHandler<M : MaterialDialogMetadata>(
                         }
                     }
             },
-            dismissDialogCallback = { dialogShell ->
+            dismissDialogCallback = { platformDialogWrapper ->
                 try {
-                    inbuiltDismissListener(dialogShell)
-                } finally {
                     metadata.onDismissListener?.invoke()
+                } finally {
+                    inbuiltDismissListener(platformDialogWrapper)
                 }
             }
-        ).apply {
-            isCancelable = metadata.cancelable
-        }
+        )
     }
 
-    final override fun updateDialogShell(dialogShell: NormalDialogShell, metadata: M) {
-        updateDialogView(dialogShell, metadata)
+    final override fun updateDialog(dialog: NormalPlatformDialogWrapper, metadata: M) {
+        updateDialogView(dialog, metadata)
     }
 
-    protected abstract fun createDialogView(dialogShell: NormalDialogShell, metadata: M): View
+    protected abstract fun createDialogView(
+        platformDialogWrapper: NormalPlatformDialogWrapper,
+        metadata: M
+    ): View
 
-    protected abstract fun updateDialogView(dialogShell: NormalDialogShell, metadata: M)
+    protected abstract fun updateDialogView(
+        platformDialogWrapper: NormalPlatformDialogWrapper,
+        metadata: M
+    )
 
 }

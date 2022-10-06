@@ -3,9 +3,9 @@ package com.yullg.android.scaffold.ui.dialog
 import androidx.annotation.CallSuper
 
 /**
- * Dialog的抽象基类，封装基本功能。
+ * Dialog交互接口的抽象基类
  *
- * 本质上，所有Dialog仅仅负责创建[DialogMetadata]，核心操作由[DialogHandler]处理。
+ * 本质上，所有BaseDialog的实例仅负责创建[DialogMetadata]，然后将创建的[DialogMetadata]交给[DialogHandler]处理。
  */
 abstract class BaseDialog<M : DialogMetadata, S : BaseDialog<M, S>>(
     protected val handler: DialogHandler<M>

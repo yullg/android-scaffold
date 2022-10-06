@@ -64,15 +64,18 @@ class DefaultCustomBottomSheetDialogHandler(fragmentManager: FragmentManager) :
     ) {
 
     override fun createDialogView(
-        dialogShell: BottomSheetDialogShell,
+        platformDialogWrapper: BottomSheetPlatformDialogWrapper,
         metadata: CustomBottomSheetDialogMetadata
     ): View {
         val view = when {
             metadata.view != null -> metadata.view.apply {
                 (parent as? ViewGroup)?.removeView(this)
             }
-            metadata.viewLayoutResId != null -> LayoutInflater.from(dialogShell.requireContext())
-                .inflate(metadata.viewLayoutResId, FrameLayout(dialogShell.requireContext()))
+            metadata.viewLayoutResId != null -> LayoutInflater.from(platformDialogWrapper.platformDialog.requireContext())
+                .inflate(
+                    metadata.viewLayoutResId,
+                    FrameLayout(platformDialogWrapper.platformDialog.requireContext())
+                )
             else -> throw IllegalArgumentException("Both 'view' and 'viewLayoutResId' of CustomBottomSheetDialog cannot be null")
         }
         metadata.viewBinder?.invoke(view)
@@ -80,7 +83,7 @@ class DefaultCustomBottomSheetDialogHandler(fragmentManager: FragmentManager) :
     }
 
     override fun updateDialogView(
-        dialogShell: BottomSheetDialogShell,
+        platformDialogWrapper: BottomSheetPlatformDialogWrapper,
         metadata: CustomBottomSheetDialogMetadata
     ) {
         ScaffoldLogger.warn("[Dialog] CustomBottomSheetDialog does not support updates")

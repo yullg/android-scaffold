@@ -134,7 +134,7 @@ class MainActivity : BaseActivity<EmptyAC>() {
             onDismissListener = {
                 tipDialog.apply {
                     resetMetadata()
-                    iconResId = R.drawable.yg_dialog_tip_done_black_40dp
+                    iconResId = com.yullg.android.scaffold.R.drawable.yg_dialog_tip_done_black_40dp
                     showDuration = 5000
                     message =
                         "报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了...报错了..."

@@ -13,7 +13,7 @@ data class TextAppearance(
     val typeface: Typeface? = null
 ) {
 
-    fun apply(textView: TextView) {
+    fun applyAppearance(textView: TextView) {
         textSize?.let { textView.textSize = it }
         textColor?.let { textView.setTextColor(it) }
         typeface?.let { textView.typeface = it }

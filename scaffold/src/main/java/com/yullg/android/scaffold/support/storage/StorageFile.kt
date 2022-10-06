@@ -3,15 +3,14 @@ package com.yullg.android.scaffold.support.storage
 import java.io.File
 
 /**
- * 表示一个受支持的存储文件，并提供与[String]和[File]的相互转换功能。
+ * 表示存储在由[StorageDirectory]定义的存储目录中的文件，并且提供与`String`表示形式的互相转换来避免依赖绝对路径。
  */
 class StorageFile(
     val storageDirectory: StorageDirectory,
     val relativePath: String
 ) {
 
-    val file: File
-        get() = File(storageDirectory.file, relativePath)
+    val file: File = File(storageDirectory.file, relativePath)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

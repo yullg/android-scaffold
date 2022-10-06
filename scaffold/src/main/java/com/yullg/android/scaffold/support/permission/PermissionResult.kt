@@ -35,7 +35,7 @@ data class MultiplePermissionResult(
      */
     val allDeniedForever: Boolean
         get() {
-            if (grantedArr.isEmpty()) return false // 保证默认值为false
+            if (grantedArr.isEmpty()) return false
             grantedArr.forEachIndexed { index, granted ->
                 if (granted || shouldShowRequestPermissionRationaleArr[index]) {
                     return false

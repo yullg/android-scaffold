@@ -249,6 +249,9 @@ class SoundPoolProxy(
                                 sound.streamId = it
                             }
                         }
+                        else -> {
+                            // nothing
+                        }
                     }
                 }
                 break

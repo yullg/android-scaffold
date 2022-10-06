@@ -14,6 +14,8 @@ object StorageSupport {
     /**
      * 将文件[source]复制到[target]
      *
+     * 如果在通往[target]的路径上缺少一些目录，那么将创建它们。如果[target]已经存在，则此方法将失败。
+     *
      * @throws FileAlreadyExistsException 如果目标文件已存在
      */
     @WorkerThread
@@ -23,6 +25,8 @@ object StorageSupport {
 
     /**
      * 将输入流[source]输出到[target]
+     *
+     * 如果在通往[target]的路径上缺少一些目录，那么将创建它们。如果[target]已经存在，则此方法将失败。
      *
      * @throws FileAlreadyExistsException 如果目标文件已存在
      */
@@ -42,6 +46,8 @@ object StorageSupport {
 
     /**
      * 将文件[source]复制到[target]
+     *
+     * 如果在通往[target]的路径上缺少一些目录，那么将创建它们。如果[target]已经存在，则此方法将失败。
      *
      * @throws FileAlreadyExistsException 如果目标文件已存在
      */

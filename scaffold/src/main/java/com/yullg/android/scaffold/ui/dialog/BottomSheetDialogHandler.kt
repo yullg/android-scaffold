@@ -24,32 +24,36 @@ interface BottomSheetDialogMetadata : DialogMetadata {
 }
 
 /**
- * 一个[DialogHandler]的抽象实现，它根据[BottomSheetDialog]创建Dialog，具体实现只需要关心Dialog的视图。
+ * 一个[DialogHandler]的抽象实现，它使用[BottomSheetDialog]创建Dialog，具体实现只需要关心Dialog的视图。
  */
 abstract class BottomSheetDialogHandler<M : BottomSheetDialogMetadata>(
     fragmentManager: FragmentManager,
     @StyleRes private val themeResId: Int = 0
-) : AbstractDialogHandler<M, BottomSheetDialogShell>(fragmentManager) {
+) : AbstractDialogHandler<M, BottomSheetPlatformDialogWrapper>(fragmentManager) {
 
-    final override fun createDialogShell(
+    final override fun createDialog(
         metadata: M,
-        inbuiltDismissListener: (BottomSheetDialogShell) -> Unit
-    ): BottomSheetDialogShell {
-        return BottomSheetDialogShell(
-            createDialogCallback = { dialogShell ->
-                BottomSheetDialog(dialogShell.requireContext(), themeResId).apply {
-                    setContentView(createDialogView(dialogShell, metadata))
+        inbuiltDismissListener: (BottomSheetPlatformDialogWrapper) -> Unit
+    ): BottomSheetPlatformDialogWrapper {
+        return BottomSheetPlatformDialogWrapper(
+            createDialogCallback = { platformDialogWrapper ->
+                platformDialogWrapper.platformDialog.isCancelable = metadata.cancelable
+                BottomSheetDialog(
+                    platformDialogWrapper.platformDialog.requireContext(),
+                    themeResId
+                ).apply {
+                    setContentView(createDialogView(platformDialogWrapper, metadata))
                     if (metadata.showDuration > 0 || metadata.onShowListener != null) {
                         setOnShowListener {
                             try {
                                 if (metadata.showDuration > 0) {
-                                    dialogShellCoroutineScope?.launch {
+                                    currentCoroutineScope?.launch {
                                         try {
                                             delay(metadata.showDuration)
-                                            dialogShell.dismiss()
+                                            platformDialogWrapper.dismiss()
                                         } catch (e: Exception) {
                                             ScaffoldLogger.error(
-                                                "[Dialog] Cannot dismiss this dialog [$dialogShell]",
+                                                "[Dialog] Cannot dismiss this dialog [$platformDialogWrapper]",
                                                 e
                                             )
                                         }
@@ -62,24 +66,28 @@ abstract class BottomSheetDialogHandler<M : BottomSheetDialogMetadata>(
                     }
                 }
             },
-            dismissDialogCallback = { dialogShell ->
+            dismissDialogCallback = { platformDialogWrapper ->
                 try {
-                    inbuiltDismissListener(dialogShell)
-                } finally {
                     metadata.onDismissListener?.invoke()
+                } finally {
+                    inbuiltDismissListener(platformDialogWrapper)
                 }
             }
-        ).apply {
-            isCancelable = metadata.cancelable
-        }
+        )
     }
 
-    final override fun updateDialogShell(dialogShell: BottomSheetDialogShell, metadata: M) {
-        updateDialogView(dialogShell, metadata)
+    final override fun updateDialog(dialog: BottomSheetPlatformDialogWrapper, metadata: M) {
+        updateDialogView(dialog, metadata)
     }
 
-    protected abstract fun createDialogView(dialogShell: BottomSheetDialogShell, metadata: M): View
+    protected abstract fun createDialogView(
+        platformDialogWrapper: BottomSheetPlatformDialogWrapper,
+        metadata: M
+    ): View
 
-    protected abstract fun updateDialogView(dialogShell: BottomSheetDialogShell, metadata: M)
+    protected abstract fun updateDialogView(
+        platformDialogWrapper: BottomSheetPlatformDialogWrapper,
+        metadata: M
+    )
 
 }

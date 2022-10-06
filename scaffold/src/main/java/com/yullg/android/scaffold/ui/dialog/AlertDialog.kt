@@ -133,11 +133,11 @@ class DefaultMaterialAlertDialogHandler(fragmentManager: FragmentManager) :
     private var binding: YgDialogAlertMaterialBinding? = null
 
     override fun createDialogView(
-        dialogShell: NormalDialogShell,
+        platformDialogWrapper: NormalPlatformDialogWrapper,
         metadata: AlertDialogMetadata
     ): View {
         val localBinding = binding ?: YgDialogAlertMaterialBinding.inflate(
-            LayoutInflater.from(dialogShell.requireContext())
+            LayoutInflater.from(platformDialogWrapper.platformDialog.requireContext())
         )
         bindData(localBinding, metadata)
         this.binding = localBinding
@@ -146,12 +146,15 @@ class DefaultMaterialAlertDialogHandler(fragmentManager: FragmentManager) :
         }
     }
 
-    override fun updateDialogView(dialogShell: NormalDialogShell, metadata: AlertDialogMetadata) {
+    override fun updateDialogView(
+        platformDialogWrapper: NormalPlatformDialogWrapper,
+        metadata: AlertDialogMetadata
+    ) {
         binding?.let { bindData(it, metadata) }
     }
 
     private fun bindData(binding: YgDialogAlertMaterialBinding, metadata: AlertDialogMetadata) {
-        metadata.titleAppearance?.apply(binding.ygTitle)
+        metadata.titleAppearance?.applyAppearance(binding.ygTitle)
         if (metadata.titleResId != null) {
             binding.ygTitle.setText(metadata.titleResId)
             binding.ygTitle.visibility = View.VISIBLE
@@ -161,7 +164,7 @@ class DefaultMaterialAlertDialogHandler(fragmentManager: FragmentManager) :
         } else {
             binding.ygTitle.visibility = View.GONE
         }
-        metadata.messageAppearance?.apply(binding.ygMessage)
+        metadata.messageAppearance?.applyAppearance(binding.ygMessage)
         if (metadata.messageResId != null) {
             binding.ygMessage.setText(metadata.messageResId)
             binding.ygMessage.visibility = View.VISIBLE
@@ -172,7 +175,7 @@ class DefaultMaterialAlertDialogHandler(fragmentManager: FragmentManager) :
             binding.ygMessage.visibility = View.GONE
         }
         binding.ygButtonNegative.setOnClickListener(metadata.negativeButtonClickListener)
-        metadata.negativeButtonTextAppearance?.apply(binding.ygButtonNegative)
+        metadata.negativeButtonTextAppearance?.applyAppearance(binding.ygButtonNegative)
         if (metadata.negativeButtonTextResId != null) {
             binding.ygButtonNegative.setText(metadata.negativeButtonTextResId)
             binding.ygButtonNegative.visibility = View.VISIBLE
@@ -183,7 +186,7 @@ class DefaultMaterialAlertDialogHandler(fragmentManager: FragmentManager) :
             binding.ygButtonNegative.visibility = View.GONE
         }
         binding.ygButtonNeutral.setOnClickListener(metadata.neutralButtonClickListener)
-        metadata.neutralButtonTextAppearance?.apply(binding.ygButtonNeutral)
+        metadata.neutralButtonTextAppearance?.applyAppearance(binding.ygButtonNeutral)
         if (metadata.neutralButtonTextResId != null) {
             binding.ygButtonNeutral.setText(metadata.neutralButtonTextResId)
             binding.ygButtonNeutral.visibility = View.VISIBLE
@@ -194,7 +197,7 @@ class DefaultMaterialAlertDialogHandler(fragmentManager: FragmentManager) :
             binding.ygButtonNeutral.visibility = View.GONE
         }
         binding.ygButtonPositive.setOnClickListener(metadata.positiveButtonClickListener)
-        metadata.positiveButtonTextAppearance?.apply(binding.ygButtonPositive)
+        metadata.positiveButtonTextAppearance?.applyAppearance(binding.ygButtonPositive)
         if (metadata.positiveButtonTextResId != null) {
             binding.ygButtonPositive.setText(metadata.positiveButtonTextResId)
             binding.ygButtonPositive.visibility = View.VISIBLE
@@ -217,11 +220,11 @@ class DefaultCupertinoAlertDialogHandler(fragmentManager: FragmentManager) :
     private var binding: YgDialogAlertCupertinoBinding? = null
 
     override fun createDialogView(
-        dialogShell: NormalDialogShell,
+        platformDialogWrapper: NormalPlatformDialogWrapper,
         metadata: AlertDialogMetadata
     ): View {
         val localBinding = binding ?: YgDialogAlertCupertinoBinding.inflate(
-            LayoutInflater.from(dialogShell.requireContext())
+            LayoutInflater.from(platformDialogWrapper.platformDialog.requireContext())
         )
         bindData(localBinding, metadata)
         this.binding = localBinding
@@ -230,12 +233,15 @@ class DefaultCupertinoAlertDialogHandler(fragmentManager: FragmentManager) :
         }
     }
 
-    override fun updateDialogView(dialogShell: NormalDialogShell, metadata: AlertDialogMetadata) {
+    override fun updateDialogView(
+        platformDialogWrapper: NormalPlatformDialogWrapper,
+        metadata: AlertDialogMetadata
+    ) {
         binding?.let { bindData(it, metadata) }
     }
 
     private fun bindData(binding: YgDialogAlertCupertinoBinding, metadata: AlertDialogMetadata) {
-        metadata.titleAppearance?.apply(binding.ygTitle)
+        metadata.titleAppearance?.applyAppearance(binding.ygTitle)
         if (metadata.titleResId != null) {
             binding.ygTitle.setText(metadata.titleResId)
             binding.ygTitle.visibility = View.VISIBLE
@@ -245,7 +251,7 @@ class DefaultCupertinoAlertDialogHandler(fragmentManager: FragmentManager) :
         } else {
             binding.ygTitle.visibility = View.GONE
         }
-        metadata.messageAppearance?.apply(binding.ygMessage)
+        metadata.messageAppearance?.applyAppearance(binding.ygMessage)
         if (metadata.messageResId != null) {
             binding.ygMessage.setText(metadata.messageResId)
             binding.ygMessage.visibility = View.VISIBLE
@@ -256,7 +262,7 @@ class DefaultCupertinoAlertDialogHandler(fragmentManager: FragmentManager) :
             binding.ygMessage.visibility = View.GONE
         }
         binding.ygButtonNegative.setOnClickListener(metadata.negativeButtonClickListener)
-        metadata.negativeButtonTextAppearance?.apply(binding.ygButtonNegative)
+        metadata.negativeButtonTextAppearance?.applyAppearance(binding.ygButtonNegative)
         if (metadata.negativeButtonTextResId != null) {
             binding.ygButtonNegative.setText(metadata.negativeButtonTextResId)
             binding.ygButtonNegative.visibility = View.VISIBLE
@@ -267,7 +273,7 @@ class DefaultCupertinoAlertDialogHandler(fragmentManager: FragmentManager) :
             binding.ygButtonNegative.visibility = View.GONE
         }
         binding.ygButtonNeutral.setOnClickListener(metadata.neutralButtonClickListener)
-        metadata.neutralButtonTextAppearance?.apply(binding.ygButtonNeutral)
+        metadata.neutralButtonTextAppearance?.applyAppearance(binding.ygButtonNeutral)
         if (metadata.neutralButtonTextResId != null) {
             binding.ygButtonNeutral.setText(metadata.neutralButtonTextResId)
             binding.ygButtonNeutral.visibility = View.VISIBLE
@@ -278,7 +284,7 @@ class DefaultCupertinoAlertDialogHandler(fragmentManager: FragmentManager) :
             binding.ygButtonNeutral.visibility = View.GONE
         }
         binding.ygButtonPositive.setOnClickListener(metadata.positiveButtonClickListener)
-        metadata.positiveButtonTextAppearance?.apply(binding.ygButtonPositive)
+        metadata.positiveButtonTextAppearance?.applyAppearance(binding.ygButtonPositive)
         if (metadata.positiveButtonTextResId != null) {
             binding.ygButtonPositive.setText(metadata.positiveButtonTextResId)
             binding.ygButtonPositive.visibility = View.VISIBLE
