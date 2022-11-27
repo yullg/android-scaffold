@@ -13,12 +13,12 @@
 
         <provider
             android:name=".internal.ScaffoldFileProvider"
-            android:authorities="${applicationId}.yullg.fileprovider"
+            android:authorities="${applicationId}.yullg.scaffoldfileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/yg_fileproviderpaths" />
+                android:resource="@xml/yg_scaffoldfileprovider_paths" />
         </provider>
 
     </application>
