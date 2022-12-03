@@ -3,7 +3,7 @@ package com.yullg.android.scaffold.core
 import android.os.Build
 import android.os.Process
 import androidx.core.content.pm.PackageInfoCompat
-import com.yullg.android.scaffold.helper.PackageHelper
+import com.yullg.android.scaffold.app.Scaffold
 import com.yullg.android.scaffold.helper.SettingsHelper
 import com.yullg.android.scaffold.internal.CrashLogger
 import com.yullg.android.scaffold.internal.ScaffoldLogger
@@ -106,18 +106,18 @@ private class DefaultUncaughtExceptionHandler(
 
     private fun generateMessage(): String {
         val json = JSONObject()
+        val packageInfo = with(Scaffold.context) {
+            packageManager.getPackageInfo(packageName, 0)
+        }
         json.put("SSAID", SettingsHelper.SSAID)
         json.put("LOCALE", Locale.getDefault().toString())
         json.put("TIME_ZONE", TimeZone.getDefault().id)
         json.put("Package", JSONObject().apply {
-            put("packageName", PackageHelper.myPackageInfo.packageName)
-            put("versionName", PackageHelper.myPackageInfo.versionName)
-            put(
-                "versionCode",
-                PackageInfoCompat.getLongVersionCode(PackageHelper.myPackageInfo)
-            )
-            put("firstInstallTime", PackageHelper.myPackageInfo.firstInstallTime)
-            put("lastUpdateTime", PackageHelper.myPackageInfo.lastUpdateTime)
+            put("packageName", packageInfo.packageName)
+            put("versionName", packageInfo.versionName)
+            put("versionCode", PackageInfoCompat.getLongVersionCode(packageInfo))
+            put("firstInstallTime", packageInfo.firstInstallTime)
+            put("lastUpdateTime", packageInfo.lastUpdateTime)
         })
         json.put("Build", JSONObject().apply {
             put("BOARD", Build.BOARD)

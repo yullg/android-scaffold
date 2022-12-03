@@ -5,8 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.yullg.android.scaffold.support.permission.PermissionSupport
 
 abstract class BaseFragment<T : IFragmentComponent> : Fragment() {
+
+    val permissionRequester = PermissionSupport.register(this)
 
     lateinit var fc: T
         private set

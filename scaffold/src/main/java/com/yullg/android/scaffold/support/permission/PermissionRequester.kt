@@ -11,7 +11,7 @@ import java.lang.ref.WeakReference
 /**
  * 封装权限授权流程
  */
-abstract class PermissionRequester<T : ActivityResultCaller> internal constructor(caller: T) {
+abstract class PermissionRequester<T : ActivityResultCaller>(caller: T) {
 
     private val callerRef = WeakReference(caller)
     private val singleLauncher =
@@ -38,6 +38,29 @@ abstract class PermissionRequester<T : ActivityResultCaller> internal constructo
                 callback.onError(e)
             }
         }
+    }
+
+    /**
+     * 单权限授权请求
+     */
+    fun request(
+        permission: String,
+        onResult: (SinglePermissionResult) -> Unit,
+        onError: ((Throwable) -> Unit)? = null
+    ) {
+        request(permission, object : PermissionRequestCallback<SinglePermissionResult> {
+            override fun onResult(result: SinglePermissionResult) {
+                onResult(result)
+            }
+
+            override fun onError(error: Throwable) {
+                if (onError != null) {
+                    onError(error)
+                } else {
+                    super.onError(error)
+                }
+            }
+        })
     }
 
     /**
@@ -68,6 +91,29 @@ abstract class PermissionRequester<T : ActivityResultCaller> internal constructo
         }
     }
 
+    /**
+     * 多权限授权请求
+     */
+    fun request(
+        permissions: Array<String>,
+        onResult: (MultiplePermissionResult) -> Unit,
+        onError: ((Throwable) -> Unit)? = null
+    ) {
+        request(permissions, object : PermissionRequestCallback<MultiplePermissionResult> {
+            override fun onResult(result: MultiplePermissionResult) {
+                onResult(result)
+            }
+
+            override fun onError(error: Throwable) {
+                if (onError != null) {
+                    onError(error)
+                } else {
+                    super.onError(error)
+                }
+            }
+        })
+    }
+
     private fun requireCaller(): T {
         return callerRef.get() ?: throw IllegalStateException("Caller has been reclaimed")
     }
@@ -89,7 +135,7 @@ interface PermissionRequestCallback<T> {
 
 }
 
-class ActivityPermissionRequester(activity: ComponentActivity) :
+internal class ActivityPermissionRequester(activity: ComponentActivity) :
     PermissionRequester<ComponentActivity>(activity) {
 
     override fun shouldShowRequestPermissionRationale(
@@ -99,7 +145,7 @@ class ActivityPermissionRequester(activity: ComponentActivity) :
 
 }
 
-class FragmentPermissionRequester(fragment: Fragment) :
+internal class FragmentPermissionRequester(fragment: Fragment) :
     PermissionRequester<Fragment>(fragment) {
 
     override fun shouldShowRequestPermissionRationale(

@@ -37,7 +37,7 @@ object PermissionSupport {
      * @see ActivityResultContracts.RequestPermission
      * @see ActivityResultContracts.RequestMultiplePermissions
      */
-    fun registerForRequestPermission(activity: ComponentActivity) =
+    fun register(activity: ComponentActivity): PermissionRequester<ComponentActivity> =
         ActivityPermissionRequester(activity)
 
     /**
@@ -49,7 +49,7 @@ object PermissionSupport {
      * @see ActivityResultContracts.RequestPermission
      * @see ActivityResultContracts.RequestMultiplePermissions
      */
-    fun registerForRequestPermission(fragment: Fragment) =
+    fun register(fragment: Fragment): PermissionRequester<Fragment> =
         FragmentPermissionRequester(fragment)
 
 }

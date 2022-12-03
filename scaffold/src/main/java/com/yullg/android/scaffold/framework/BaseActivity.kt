@@ -2,8 +2,11 @@ package com.yullg.android.scaffold.framework
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.yullg.android.scaffold.support.permission.PermissionSupport
 
 abstract class BaseActivity<T : IActivityComponent> : AppCompatActivity() {
+
+    val permissionRequester = PermissionSupport.register(this)
 
     lateinit var ac: T
         private set

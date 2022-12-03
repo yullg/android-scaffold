@@ -46,7 +46,7 @@ object SettingsHelper {
     }
 
     /**
-     * 打开指定的应用程序信息设置Activity，捕获所有异常。
+     * 打开指定的应用程序信息设置Activity
      *
      * @see Settings.ACTION_APPLICATION_DETAILS_SETTINGS
      */
@@ -57,7 +57,7 @@ object SettingsHelper {
         )
 
     /**
-     * 打开系统设置Activity，捕获所有异常。
+     * 打开系统设置Activity
      */
     fun startSettingsActivity(action: String, uri: Uri? = null, extras: Bundle? = null): Boolean =
         try {

@@ -12,7 +12,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
 /**
- * 提供设备位置相关功能的支持
+ * 提供设备定位相关功能的支持
  */
 object LocationSupport {
 
@@ -24,7 +24,7 @@ object LocationSupport {
     }
 
     /**
-     * 检查位置服务是否开启
+     * 检查定位服务是否开启
      *
      * @see LocationManagerCompat.isLocationEnabled
      */
