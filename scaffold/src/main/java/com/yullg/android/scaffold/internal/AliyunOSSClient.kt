@@ -3,7 +3,7 @@ package com.yullg.android.scaffold.internal
 import android.util.Base64
 import android.webkit.MimeTypeMap
 import androidx.annotation.RestrictTo
-import com.yullg.android.scaffold.helper.DigestHelper
+import com.yullg.android.scaffold.support.security.HashSupport
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URI
@@ -168,8 +168,8 @@ private fun computeSignature(
     headers: String?,
     resource: String
 ): String {
-    val binaryData = DigestHelper.hmacSHA1(accessKeySecret.toByteArray(Charsets.UTF_8))
-        .digest(
+    val binaryData = HashSupport.hmacSHA1(accessKeySecret.toByteArray(Charsets.UTF_8))
+        .operate(
             "$requestMethod\n\n$contentType\n$dateStr\n${
                 if (headers.isNullOrBlank()) "" else "$headers\n"
             }$resource".toByteArray(Charsets.UTF_8)
