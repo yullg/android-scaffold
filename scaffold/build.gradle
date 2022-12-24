@@ -7,7 +7,7 @@ plugins {
 
 ext {
     scaffoldVersionCode = 8
-    scaffoldVersionName = "1.2.0-SNAPSHOT"
+    scaffoldVersionName = "1.2.0"
 }
 
 android {
