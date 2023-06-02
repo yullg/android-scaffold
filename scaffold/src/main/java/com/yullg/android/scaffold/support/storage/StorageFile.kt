@@ -30,16 +30,16 @@ class StorageFile(
     /**
      * 返回这个[StorageFile]实例的`String`表示形式，如下所示：
      *
-     * `storageDirectory.name + "$" + relativePath`
+     * `storageDirectory.name + ":" + relativePath`
      */
     override fun toString(): String {
-        return "${storageDirectory.name}$$relativePath"
+        return "${storageDirectory.name}:$relativePath"
     }
 
     companion object {
 
         fun from(source: String): StorageFile {
-            val index = source.indexOf("$")
+            val index = source.indexOf(":")
             if (index < 0) throw IllegalArgumentException("Source is not a string of StorageFile: $source")
             return StorageFile(
                 StorageDirectory.valueOf(source.substring(0, index)),

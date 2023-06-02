@@ -12,48 +12,48 @@ import java.io.OutputStream
 object StorageSupport {
 
     /**
-     * 将文件[source]复制到[target]
+     * 将文件[source]复制到[destination]
      *
-     * 如果在通往[target]的路径上缺少一些目录，那么将创建它们。如果[target]已经存在，则此方法将失败。
+     * 如果在通往[destination]的路径上缺少一些目录，那么将创建它们。如果[destination]已经存在，则此方法将失败。
      *
      * @throws FileAlreadyExistsException 如果目标文件已存在
      */
     @WorkerThread
-    fun copyFrom(source: File, target: StorageFile) {
-        source.copyTo(target.file)
+    fun copyFrom(source: File, destination: StorageFile) {
+        source.copyTo(destination.file)
     }
 
     /**
-     * 将输入流[source]输出到[target]
+     * 将输入流[source]输出到[destination]
      *
-     * 如果在通往[target]的路径上缺少一些目录，那么将创建它们。如果[target]已经存在，则此方法将失败。
+     * 如果在通往[destination]的路径上缺少一些目录，那么将创建它们。如果[destination]已经存在，则此方法将失败。
      *
      * @throws FileAlreadyExistsException 如果目标文件已存在
      */
     @WorkerThread
-    fun copyFrom(source: InputStream, target: StorageFile) {
-        if (target.file.exists()) {
+    fun copyFrom(source: InputStream, destination: StorageFile) {
+        if (destination.file.exists()) {
             throw FileAlreadyExistsException(
-                file = target.file,
+                file = destination.file,
                 reason = "The destination file already exists."
             )
         }
-        target.file.parentFile?.mkdirs()
-        target.file.outputStream().use {
+        destination.file.parentFile?.mkdirs()
+        destination.file.outputStream().use {
             source.copyTo(it)
         }
     }
 
     /**
-     * 将文件[source]复制到[target]
+     * 将文件[source]复制到[destination]
      *
-     * 如果在通往[target]的路径上缺少一些目录，那么将创建它们。如果[target]已经存在，则此方法将失败。
+     * 如果在通往[destination]的路径上缺少一些目录，那么将创建它们。如果[destination]已经存在，则此方法将失败。
      *
      * @throws FileAlreadyExistsException 如果目标文件已存在
      */
     @WorkerThread
-    fun copyTo(source: StorageFile, target: File) {
-        source.file.copyTo(target)
+    fun copyTo(source: StorageFile, destination: File) {
+        source.file.copyTo(destination)
     }
 
     /**
@@ -62,9 +62,9 @@ object StorageSupport {
      * @throws FileNotFoundException 如果源文件不存在
      */
     @WorkerThread
-    fun copyTo(source: StorageFile, target: OutputStream) {
+    fun copyTo(source: StorageFile, destination: OutputStream) {
         source.file.inputStream().use {
-            it.copyTo(target)
+            it.copyTo(destination)
         }
     }
 

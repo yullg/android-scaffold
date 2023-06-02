@@ -78,7 +78,7 @@ open class MutableLoggerConfig private constructor() : LoggerConfig {
 
     override val logFileMaxSize: Long = -1
 
-    override var logFileMaxLife: Int = 30
+    override var logFileMaxLife: Int = 15
 
     override var uploader: LogFileUploader? = null
 

@@ -31,6 +31,11 @@ data class MultiplePermissionResult(
     val allGranted get() = grantedArr.all { it }
 
     /**
+     * 是否至少有一个权限已经授予
+     */
+    val anyGranted get() = grantedArr.any { it }
+
+    /**
      * 是否所有权限都已经拒绝且不再响应授权请求
      */
     val allDeniedForever: Boolean
